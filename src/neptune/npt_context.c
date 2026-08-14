@@ -802,6 +802,9 @@ npt_context_dispatch_one_command(struct npt_context *ctx,
    } else {
       /* Generated dispatcher reads its own header. */
       npt_dispatch_command(dispatch);
+      /* Event handles the decode substituted stay pinned for the
+       * duration of the call they were passed to. */
+      npt_event_unpin_dispatched(ctx);
    }
 
    return !npt_cs_decoder_get_fatal(dec);
@@ -893,8 +896,7 @@ npt_context_pair_event_fence(struct npt_context *ctx,
          npt_log("pair_event_fence: failed to create sync queue for "
                  "ring_idx %u", ring_idx);
          close(sync_fd);
-         if (paired->release_token)
-            npt_event_release(ctx, paired->release_token);
+         npt_event_release_proxy(ctx, paired->release_proxy);
          if (paired->check_fence)
             npt_d3d12_gate_release(paired->check_fence);
          ctx->retire_fence(ctx->ctx_id, ring_idx, fence_id);

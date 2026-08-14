@@ -372,13 +372,24 @@ npt_event_arm(struct npt_context *ctx, uint64_t token, uint32_t ring_idx,
    const bool auto_release = (arm_flags & NPT_EVENT_ARM_FLAG_AUTO_RELEASE) != 0;
 
    mtx_lock(&ctx->event_mutex);
-   struct npt_event_proxy *pr = lookup_locked(ctx, token);
+   struct npt_event_proxy *pr =
+      auto_release ? NULL : lookup_locked(ctx, token);
    if (!pr) {
       /* Lazy-create for an ARM that beat its REGISTER_EVENT, WITHOUT a
        * registration reference — the arm reference taken below holds it.
-       * AUTO_RELEASE arms never send REGISTER at all, so for them this
-       * is the only creation path and the arm reference is the proxy's
-       * single reference. */
+       *
+       * AUTO_RELEASE arms never send REGISTER at all: the arm reference
+       * is the proxy's single reference and each arm gets a fresh proxy,
+       * never a table hit.  The guest reuses one HANDLE (= token) across
+       * waits, and a prior arm's proxy for it can still be alive here --
+       * already signaled, since nothing clears the host event -- so
+       * reusing it would retire the new fence before the GPU work, and
+       * that spurious retire drops the last reference while the decode
+       * thread may still be inside the D3D call registering the handle.
+       * The insert replaces the token's table entry, so the SEOC that
+       * follows this ARM in stream order resolves to this proxy; the
+       * displaced proxy lives on through its outstanding references and
+       * is released by pointer. */
       pr = event_proxy_create_locked(ctx, token, /*initial_refcount=*/0);
       if (!pr) {
          mtx_unlock(&ctx->event_mutex);
@@ -413,7 +424,7 @@ npt_event_arm(struct npt_context *ctx, uint64_t token, uint32_t ring_idx,
 
       const struct npt_event_paired paired = {
          .fd = dup_fd,
-         .release_token = auto_release ? token : 0,
+         .release_proxy = auto_release ? pr : NULL,
       };
       event_pair_parked(ctx, parked, &paired);
       return true;
@@ -430,7 +441,6 @@ npt_event_arm(struct npt_context *ctx, uint64_t token, uint32_t ring_idx,
    p->dup_fd   = dup_fd;
    p->proxy    = pr;
    p->auto_release = auto_release;
-   p->token    = token;
    list_addtail(&p->head, &ctx->event_pending_arms);
 
    mtx_unlock(&ctx->event_mutex);
@@ -454,7 +464,10 @@ npt_event_proxy_unref_locked(struct npt_context *ctx,
                                              tok_hash(&pr->token),
                                              &pr->token);
    }
-   if (e)
+   /* An AUTO_RELEASE arm for the same token may have replaced this
+    * proxy's table entry with a fresh one; only remove the entry if it
+    * is still ours. */
+   if (e && e->data == pr)
       _mesa_hash_table_remove(ctx->event_proxies, e);
    free(pr);
 }
@@ -530,6 +543,17 @@ npt_event_gate_wait(struct npt_context *ctx, void *fence, uint64_t value,
 }
 
 void
+npt_event_release_proxy(struct npt_context *ctx, struct npt_event_proxy *pr)
+{
+   if (!pr)
+      return;
+
+   mtx_lock(&ctx->event_mutex);
+   npt_event_proxy_unref_locked(ctx, pr, NULL);
+   mtx_unlock(&ctx->event_mutex);
+}
+
+void
 npt_event_release(struct npt_context *ctx, uint64_t token)
 {
    if (!token)
@@ -573,7 +597,7 @@ npt_event_pop_arm_or_park_fence(struct npt_context *ctx, uint32_t ring_idx,
             /* AUTO_RELEASE: transfer the arm reference to the caller's
              * sync-queue entry (released after retirement, post-fire). */
             if (p->auto_release)
-               out->release_token = p->token;
+               out->release_proxy = p->proxy;
             else
                npt_event_proxy_unref_locked(ctx, p->proxy, NULL);
          }
@@ -643,17 +667,33 @@ npt_event_drain_parked_ring(struct npt_context *ctx, uint32_t ring_idx)
    npt_event_drain_parked(ctx, ring_idx, /*all=*/false);
 }
 
-void *
-npt_event_lookup(struct npt_context *ctx, uint64_t token)
+/* Decode-time pins.  A substituted handle is used by the D3D call for
+ * the rest of the dispatched command, but the proxy's other references
+ * can all drop concurrently: the guest waiter's RELEASE_EVENT may
+ * interleave between the app's ARM and the method using the token
+ * (separate guest threads share one method ring), after which the arm
+ * reference is the last one -- and the out-of-band fence thread drops
+ * THAT one the moment the fence pops the arm.  Pin every proxy a
+ * command's decode resolves until the command's dispatch returns.
+ * Substitution and dispatch run on the same thread, so the pin list is
+ * thread-local; npt_context_dispatch_one_command drains it. */
+#define NPT_EVENT_MAX_PINS_PER_CMD 8
+static _Thread_local struct {
+   struct npt_event_proxy *pr[NPT_EVENT_MAX_PINS_PER_CMD];
+   unsigned count;
+} event_cmd_pins;
+
+void
+npt_event_unpin_dispatched(struct npt_context *ctx)
 {
-   if (!token || !ctx || !ctx->event_proxies)
-      return NULL;
+   if (!event_cmd_pins.count)
+      return;
 
    mtx_lock(&ctx->event_mutex);
-   struct npt_event_proxy *pr = lookup_locked(ctx, token);
-   void *ret = pr ? event_fd_signal_handle(&pr->proxy) : NULL;
+   for (unsigned i = 0; i < event_cmd_pins.count; i++)
+      npt_event_proxy_unref_locked(ctx, event_cmd_pins.pr[i], NULL);
    mtx_unlock(&ctx->event_mutex);
-   return ret;
+   event_cmd_pins.count = 0;
 }
 
 /* Out-of-line so npt_cs.h doesn't need npt_context.h (header cycle). */
@@ -663,6 +703,25 @@ npt_event_replace_by_token(struct npt_dispatch_context *dispatch,
 {
    if (!id || !dispatch)
       return NULL;
-   return npt_event_lookup(npt_context_from_dispatch(dispatch),
-                            (uint64_t)id);
+
+   struct npt_context *ctx = npt_context_from_dispatch(dispatch);
+   const uint64_t token = (uint64_t)id;
+   if (!ctx || !ctx->event_proxies)
+      return NULL;
+
+   mtx_lock(&ctx->event_mutex);
+   struct npt_event_proxy *pr = lookup_locked(ctx, token);
+   void *ret = pr ? event_fd_signal_handle(&pr->proxy) : NULL;
+   if (pr) {
+      if (event_cmd_pins.count < NPT_EVENT_MAX_PINS_PER_CMD) {
+         pr->refcount++;
+         event_cmd_pins.pr[event_cmd_pins.count++] = pr;
+      } else {
+         /* No command carries this many event args; keep the handle
+          * usable but loudly unpinned rather than corrupt the list. */
+         npt_log("event: pin list overflow for token %" PRIu64, token);
+      }
+   }
+   mtx_unlock(&ctx->event_mutex);
+   return ret;
 }

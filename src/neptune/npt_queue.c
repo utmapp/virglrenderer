@@ -74,7 +74,7 @@ npt_queue_alloc_sync(uint32_t ring_idx,
    sync->sync_fd  = paired->fd;
    sync->ring_idx = ring_idx;
    sync->fence_id = fence_id;
-   sync->release_token = paired->release_token;
+   sync->release_proxy = paired->release_proxy;
    sync->check_fence = paired->check_fence;
    sync->check_value = paired->check_value;
    sync->fast_poll = false;
@@ -106,8 +106,7 @@ npt_queue_sync_retire(struct npt_queue *queue, struct npt_queue_sync *sync)
    /* AUTO_RELEASE arm: the proxy reference was transferred to this
     * entry at pairing; the fence has retired (the proxy fired), so the
     * D3D library is done writing the signal handle -- release it. */
-   if (sync->release_token)
-      npt_event_release(queue->context, sync->release_token);
+   npt_event_release_proxy(queue->context, sync->release_proxy);
    if (sync->check_fence)
       npt_d3d12_gate_release(sync->check_fence);
    npt_queue_free_sync(sync);
@@ -128,8 +127,7 @@ npt_queue_sync_submit(struct npt_queue *queue,
    if (!sync) {
       if (paired->fd >= 0)
          close(paired->fd);
-      if (paired->release_token)
-         npt_event_release(queue->context, paired->release_token);
+      npt_event_release_proxy(queue->context, paired->release_proxy);
       if (paired->check_fence)
          npt_d3d12_gate_release(paired->check_fence);
       return false;
@@ -265,6 +263,14 @@ npt_queue_thread(void *arg)
       rc = npt_wait_sync_fd(sync->sync_fd, kPollTimeoutMs);
       if (trace)
          clock_gettime(CLOCK_MONOTONIC, &t1);
+
+      /* Consume the fire's token(s) like the gate path does: the proxy
+       * event is manual-reset and nothing else ever drains its exported
+       * pipe, so a leftover token would make the NEXT arm of this
+       * guest HANDLE (guests reuse them) start out readable and retire
+       * its fence before the GPU work ran. */
+      if (rc > 0)
+         npt_queue_drain_wakeups(sync->sync_fd);
 
       mtx_lock(&queue->sync_thread.mutex);
 

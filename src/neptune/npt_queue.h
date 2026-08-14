@@ -15,6 +15,7 @@
 #include "npt_common.h"
 
 struct npt_context;
+struct npt_event_proxy;
 
 struct npt_queue_sync {
    /* sync-file fd carrying the GPU-done payload.  -1 means no GPU
@@ -25,10 +26,11 @@ struct npt_queue_sync {
    uint32_t ring_idx;
    uint64_t fence_id;
 
-   /* Non-zero: an AUTO_RELEASE arm's transferred proxy reference; the
+   /* Non-NULL: an AUTO_RELEASE arm's transferred proxy reference; the
     * worker releases it after the fence retires, so the signal handle
-    * the D3D library stored stays valid until it has been written. */
-   uint64_t release_token;
+    * the D3D library stored stays valid until it has been written.
+    * Held by pointer: the token may already map to a newer proxy. */
+   struct npt_event_proxy *release_proxy;
 
    /* Value-gated retirement (GATE_WAIT): retire only once
     * GetCompletedValue(check_fence) >= check_value.  check_fence carries

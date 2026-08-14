@@ -46,10 +46,9 @@ struct npt_event_pending_arm {
    /* Keeps a refcount on the proxy until pop transfers dup_fd. */
    struct npt_event_proxy *proxy;
    /* NPT_EVENT_ARM_FLAG_AUTO_RELEASE: pop transfers the arm's proxy
-    * reference to the sync-queue entry (token below) instead of
+    * reference to the sync-queue entry (by pointer) instead of
     * unreffing; the sync queue releases it after the fence retires. */
    bool     auto_release;
-   uint64_t token;
    /* GATE_WAIT arms: retire only when the fence truly reaches
     * check_value, re-verified on every wakeup, since the ring's gate
     * event also carries other gates' fires.  check_fence holds an
@@ -62,7 +61,11 @@ struct npt_event_pending_arm {
 /* What a pop hands to the sync queue. */
 struct npt_event_paired {
    int      fd;             /* dup'd wait fd; ownership transferred */
-   uint64_t release_token;  /* AUTO_RELEASE arm's transferred proxy ref */
+   /* AUTO_RELEASE arm's transferred proxy reference, released by
+    * pointer, not token: a reused token maps to a NEWER proxy in the
+    * table by the time the sync queue releases, and a by-token release
+    * would drop the new proxy's reference instead. */
+   struct npt_event_proxy *release_proxy;
    void    *check_fence;    /* value-gated retirement (or NULL) */
    uint64_t check_value;
 };
@@ -89,12 +92,18 @@ bool npt_event_arm(struct npt_context *ctx, uint64_t token,
 
 void npt_event_release(struct npt_context *ctx, uint64_t token);
 
+/* Drop a proxy reference held by pointer (an AUTO_RELEASE arm's
+ * transferred reference in a sync-queue entry). */
+void npt_event_release_proxy(struct npt_context *ctx,
+                             struct npt_event_proxy *pr);
+
 /* Atomic pop-or-park for event-ring fences: returns the duped proxy fd
  * (>= 0, ownership transferred), NPT_EVENT_FENCE_PARKED when the fence
  * outran its ARM and was parked (npt_event_arm will pair and route it),
- * or NPT_EVENT_FENCE_ERR on allocation failure.  *release_token is set
- * to the arm's token when the arm carried AUTO_RELEASE (the caller must
- * npt_event_release it after the fence retires), 0 otherwise. */
+ * or NPT_EVENT_FENCE_ERR on allocation failure.  out->release_proxy is
+ * set to the arm's transferred proxy reference when the arm carried
+ * AUTO_RELEASE (the caller must npt_event_release_proxy it after the
+ * fence retires), NULL otherwise. */
 #define NPT_EVENT_FENCE_PARKED (-2)
 #define NPT_EVENT_FENCE_ERR    (-1)
 int npt_event_pop_arm_or_park_fence(struct npt_context *ctx,
@@ -124,8 +133,10 @@ void npt_event_drain_parked_fences(struct npt_context *ctx);
  * the guest's wait on it. */
 void npt_event_drain_parked_ring(struct npt_context *ctx, uint32_t ring_idx);
 
-/* Returns the signal-end fd (cast to void *) or NULL on miss. */
-void *npt_event_lookup(struct npt_context *ctx, uint64_t token);
+/* Drop the pins npt_event_replace_by_token took while decoding the
+ * current command.  Call after every dispatched command, on the decode
+ * thread that ran it. */
+void npt_event_unpin_dispatched(struct npt_context *ctx);
 
 struct npt_dispatch_context;
 void *npt_event_replace_by_token(struct npt_dispatch_context *dispatch,
