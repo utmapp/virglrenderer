@@ -835,8 +835,12 @@ int virgl_renderer_init(void *cookie, int flags, struct virgl_renderer_callbacks
 
    int ret;
 
-   /* VIRGL_RENDERER_THREAD_SYNC is a hint and can be silently ignored */
-   if (!has_eventfd() || getenv("VIRGL_DISABLE_MT"))
+   /* VIRGL_RENDERER_THREAD_SYNC is a hint and can be silently ignored.
+    * The proxy path only needs a fence signalling channel, which
+    * create_fence_pipe() provides on non-Linux too (a pipe instead of an
+    * eventfd); strip the flag only where neither exists.  vrend's stricter
+    * eventfd requirement is handled at its init below. */
+   if ((!has_eventfd() && !has_fence_pipe()) || getenv("VIRGL_DISABLE_MT"))
       flags &= ~VIRGL_RENDERER_THREAD_SYNC;
 
    if (state.client_initialized && (state.cookie != cookie ||
@@ -939,10 +943,15 @@ int virgl_renderer_init(void *cookie, int flags, struct virgl_renderer_callbacks
          goto fail;
       }
 
-      if (flags & VIRGL_RENDERER_THREAD_SYNC)
-         renderer_flags |= VREND_USE_THREAD_SYNC;
-      if (flags & VIRGL_RENDERER_ASYNC_FENCE_CB)
-         renderer_flags |= VREND_USE_ASYNC_FENCE_CB;
+      /* vrend's sync thread requires a real eventfd (it creates one
+       * internally); without one, keep vrend on the poll path -- the pipe
+       * fallback above is scoped to the proxy. */
+      if (has_eventfd()) {
+         if (flags & VIRGL_RENDERER_THREAD_SYNC)
+            renderer_flags |= VREND_USE_THREAD_SYNC;
+         if (flags & VIRGL_RENDERER_ASYNC_FENCE_CB)
+            renderer_flags |= VREND_USE_ASYNC_FENCE_CB;
+      }
       if (flags & VIRGL_RENDERER_USE_EXTERNAL_BLOB)
          renderer_flags |= VREND_USE_EXTERNAL_BLOB;
       if (flags & VIRGL_RENDERER_USE_VIDEO)

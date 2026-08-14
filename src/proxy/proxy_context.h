@@ -62,8 +62,13 @@ struct proxy_context {
    struct list_head free_fences;
 
    struct {
-      /* when VIRGL_RENDERER_THREAD_SYNC is set */
+      /* when VIRGL_RENDERER_THREAD_SYNC is set: the fence signalling
+       * channel from create_fence_pipe().  fence_eventfd is the end we
+       * poll/drain; fence_eventfd_write is the end the render worker (and
+       * the destroy-path stop wake) writes.  On Linux both are the same
+       * eventfd; on macOS they are the two ends of a pipe. */
       int fence_eventfd;
+      int fence_eventfd_write;
 
       /* when VIRGL_RENDERER_ASYNC_FENCE_CB is also set */
       thrd_t thread;

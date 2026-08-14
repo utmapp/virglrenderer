@@ -32,6 +32,9 @@
 #ifdef HAVE_EVENTFD_H
 #include <sys/eventfd.h>
 #endif
+#ifndef _WIN32
+#include <fcntl.h>
+#endif
 #include <unistd.h>
 
 #include "util/os_misc.h"
@@ -101,6 +104,63 @@ int create_eventfd(unsigned int initval)
    return eventfd(initval, EFD_CLOEXEC | EFD_NONBLOCK);
 #else
    (void)initval;
+   return -1;
+#endif
+}
+
+bool has_fence_pipe(void)
+{
+#ifdef _WIN32
+   return false;
+#else
+   return true;
+#endif
+}
+
+/*
+ * Create the fence signalling channel: *out_write_fd receives one 8-byte
+ * token per retire (via write_eventfd; the fd may cross a process boundary
+ * over SCM_RIGHTS) and *out_read_fd is polled and drained (flush_eventfd)
+ * by the waiter.  On Linux both ends are the same eventfd; elsewhere they
+ * are the two ends of a nonblocking pipe.  With a pipe, a full-buffer
+ * write fails with EAGAIN, which is harmless: the pipe stays readable, so
+ * the "signalled" edge the poller needs is preserved.
+ */
+int create_fence_pipe(int *out_read_fd, int *out_write_fd)
+{
+#ifdef HAVE_EVENTFD_H
+   int fd = create_eventfd(0);
+   if (fd < 0)
+      return -1;
+   *out_read_fd = fd;
+   *out_write_fd = fd;
+   return 0;
+#elif !defined(_WIN32)
+   int fds[2];
+   if (pipe(fds))
+      return -1;
+   for (int i = 0; i < 2; i++) {
+      const int fdflags = fcntl(fds[i], F_GETFD);
+      const int stflags = fcntl(fds[i], F_GETFL);
+      if (fdflags < 0 || fcntl(fds[i], F_SETFD, fdflags | FD_CLOEXEC) ||
+          stflags < 0 || fcntl(fds[i], F_SETFL, stflags | O_NONBLOCK)) {
+         close(fds[0]);
+         close(fds[1]);
+         return -1;
+      }
+   }
+#ifdef F_SETNOSIGPIPE
+   /* The write end is handed to another process; if the read end goes away
+    * first, a write must fail with EPIPE instead of raising SIGPIPE.  The
+    * flag lives on the open file description, so it survives SCM_RIGHTS. */
+   fcntl(fds[1], F_SETNOSIGPIPE, 1);
+#endif
+   *out_read_fd = fds[0];
+   *out_write_fd = fds[1];
+   return 0;
+#else
+   (void)out_read_fd;
+   (void)out_write_fd;
    return -1;
 #endif
 }
