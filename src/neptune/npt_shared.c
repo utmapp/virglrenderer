@@ -2,9 +2,12 @@
  * Copyright 2026 Turing Software LLC
  * SPDX-License-Identifier: MIT
  *
- * D3D11 shared / presentable textures over virtio-gpu blob resources.
- * See npt_shared.h for the model.  The COM flow (GetSharedHandle /
- * OpenSharedResource) is platform-neutral; only the descriptor behind
+ * Shared / presentable textures over virtio-gpu blob resources.
+ * See npt_shared.h for the model.  The COM flow is platform-neutral --
+ * export through IDXGIResource::GetSharedHandle or
+ * ID3D12Device::CreateSharedHandle, import through
+ * ID3D11Device::OpenSharedResource or ID3D12Device::OpenSharedHandle,
+ * whichever family the object belongs to; only the descriptor behind
  * the HANDLE differs: dxvk's DxvkSharedTextureDescriptor (dmabuf) on
  * Linux, the darwin backend's shared-texture descriptor (shm fd) on macOS.
  */
@@ -286,8 +289,21 @@ npt_shared_open_res(struct npt_context *ctx, uint64_t device_id,
        cmd->export_info.plane_count > NPT_BLOB_EXPORT_MAX_PLANES)
       return NPT_E_INVALIDARG;
 
-   void *device = npt_context_lookup_object(ctx, NULL, device_id,
-                                            NPT_OBJECT_TYPE_ID3D11DEVICE);
+   /* The backends import API-agnostically -- the descriptor a D3D11
+    * producer exports opens in a D3D12 consumer and the reverse -- but the
+    * entry point is per-family: a D3D12 device has no
+    * ID3D11Device::OpenSharedResource, and its vtable holds an unrelated
+    * method at that slot.  Pick the family from the object table, keeping
+    * a typed lookup in each branch so a non-device id reaches neither
+    * call.  Only a definitely-D3D12 device takes the D3D12 branch: a
+    * device registered under no precise type answers to both queries, and
+    * D3D11 is the default family. */
+   const bool is_d3d12 =
+      npt_context_object_is(ctx, device_id, NPT_OBJECT_TYPE_ID3D12DEVICE) &&
+      !npt_context_object_is(ctx, device_id, NPT_OBJECT_TYPE_ID3D11DEVICE);
+   void *device = npt_context_lookup_object(
+      ctx, NULL, device_id,
+      is_d3d12 ? NPT_OBJECT_TYPE_ID3D12DEVICE : NPT_OBJECT_TYPE_ID3D11DEVICE);
    if (!device) {
       npt_log("shared: open: device id 0x%016" PRIx64 " not found", device_id);
       return NPT_E_INVALIDARG;
@@ -362,14 +378,27 @@ npt_shared_open_res(struct npt_context *ctx, uint64_t device_id,
    if (desc.fd < 0)
       return NPT_E_FAIL;
 
-   PFN_ID3D11Device_OpenSharedResource open_shared =
-      NPT_COM_VTBL_FUNC(PFN_ID3D11Device_OpenSharedResource,
-                        npt_com_vtable(device),
-                        NPT_VTBL_ID3D11Device_OpenSharedResource);
-
    void *texture = NULL;
-   HRESULT hr = open_shared(device, (HANDLE)(uintptr_t)&desc,
-                            &NPT_IID_ID3D11Texture2D, &texture);
+   HRESULT hr;
+   if (is_d3d12) {
+      PFN_ID3D12Device_OpenSharedHandle open_shared12 =
+         NPT_COM_VTBL_FUNC(PFN_ID3D12Device_OpenSharedHandle,
+                           npt_com_vtable(device),
+                           NPT_VTBL_ID3D12Device_OpenSharedHandle);
+      hr = open_shared12
+              ? open_shared12(device, (HANDLE)(uintptr_t)&desc,
+                              &NPT_IID_ID3D12Resource, &texture)
+              : NPT_E_NOTIMPL;
+   } else {
+      PFN_ID3D11Device_OpenSharedResource open_shared =
+         NPT_COM_VTBL_FUNC(PFN_ID3D11Device_OpenSharedResource,
+                           npt_com_vtable(device),
+                           NPT_VTBL_ID3D11Device_OpenSharedResource);
+      hr = open_shared
+              ? open_shared(device, (HANDLE)(uintptr_t)&desc,
+                            &NPT_IID_ID3D11Texture2D, &texture)
+              : NPT_E_NOTIMPL;
+   }
    close(desc.fd);
 
    if (NPT_FAILED(hr) || !texture) {
@@ -381,7 +410,8 @@ npt_shared_open_res(struct npt_context *ctx, uint64_t device_id,
    /* The freshly imported texture carries one reference; the object
     * table registration is what the guest's minted id releases. */
    npt_context_register_object(ctx, cmd->mint_object_id, texture,
-                               NPT_OBJECT_TYPE_ID3D11TEXTURE2D);
+                               is_d3d12 ? NPT_OBJECT_TYPE_ID3D12RESOURCE
+                                        : NPT_OBJECT_TYPE_ID3D11TEXTURE2D);
 
    npt_log("shared: opened res_id=%u -> id 0x%016" PRIx64 " (ctx %u)",
            cmd->res_id, cmd->mint_object_id, ctx->ctx_id);

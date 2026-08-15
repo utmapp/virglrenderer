@@ -40,6 +40,52 @@ npt_resource_update(struct npt_context *ctx,
       return;
    }
 
+   /* A D3D12 resource is not an ID3D11DeviceChild: slot 3 of its vtable is
+    * GetPrivateData, so the D3D11 path below would call the wrong method
+    * entirely and the update would be lost with no error anywhere. Route it
+    * through the D3D12 API, which takes the same (subresource, box, pitches)
+    * shape. WriteToSubresource requires the resource to be mapped, and the
+    * guest's no-pointer Map is local bookkeeping that never reaches the host,
+    * so the bracket has to be applied here. */
+   if (npt_context_object_is(ctx, resource_id, NPT_OBJECT_TYPE_ID3D12RESOURCE)) {
+      PFN_ID3D12Resource_WriteToSubresource wts12 =
+         NPT_COM_VTBL_FUNC(PFN_ID3D12Resource_WriteToSubresource,
+                           npt_com_vtable(resource),
+                           NPT_VTBL_ID3D12Resource_WriteToSubresource);
+      if (!wts12) {
+         npt_log("resource_update: no D3D12 WriteToSubresource");
+         return;
+      }
+      D3D12_BOX box12;
+      const D3D12_BOX *box12_arg = NULL;
+      if (has_box) {
+         box12.left   = box_left;
+         box12.top    = box_top;
+         box12.front  = box_front;
+         box12.right  = box_right;
+         box12.bottom = box_bottom;
+         box12.back   = box_back;
+         box12_arg = &box12;
+      }
+      PFN_ID3D12Resource_Map map12 =
+         NPT_COM_VTBL_FUNC(PFN_ID3D12Resource_Map, npt_com_vtable(resource),
+                           NPT_VTBL_ID3D12Resource_Map);
+      PFN_ID3D12Resource_Unmap unmap12 =
+         NPT_COM_VTBL_FUNC(PFN_ID3D12Resource_Unmap, npt_com_vtable(resource),
+                           NPT_VTBL_ID3D12Resource_Unmap);
+      const bool mapped = map12 && !NPT_FAILED(map12(resource, subresource,
+                                                     NULL, NULL));
+      HRESULT hr = wts12(resource, subresource, box12_arg, payload,
+                         row_pitch, depth_pitch);
+      if (mapped && unmap12)
+         unmap12(resource, subresource, NULL);
+      if (NPT_FAILED(hr))
+         npt_log("resource_update: D3D12 WriteToSubresource sub %u failed "
+                 "0x%08x (mapped=%d pitch=%u/%u)", subresource,
+                 (unsigned)hr, (int)mapped, row_pitch, depth_pitch);
+      return;
+   }
+
    ID3D11Device *device = NULL;
    PFN_ID3D11DeviceChild_GetDevice get_dev =
       NPT_COM_VTBL_FUNC(PFN_ID3D11DeviceChild_GetDevice,
@@ -84,6 +130,29 @@ npt_resource_update(struct npt_context *ctx,
 
    npt_com_release(imm_ctx);
    npt_com_release(device);
+}
+
+/* MAP and UNMAP name their API family with context_id: zero means a
+ * D3D12 resource the guest maps directly, non-zero the ID3D11DeviceContext
+ * to map it through.  Each family keeps an unrelated method at the slots
+ * the other's path calls (ID3D12Resource::Map is slot 8, SetEvictionPriority
+ * on an ID3D11Resource), so a context_id disagreeing with what the resource
+ * is would call the wrong method and report nothing.  The field still
+ * selects -- a resource registered under no precise type answers to either
+ * family -- and the object table only vetoes a definite contradiction. */
+static bool
+npt_resource_family_matches(struct npt_context *ctx, uint64_t resource_id,
+                            uint64_t context_id, const char *what)
+{
+   const npt_object_type want = context_id ? NPT_OBJECT_TYPE_ID3D11RESOURCE
+                                           : NPT_OBJECT_TYPE_ID3D12RESOURCE;
+   if (npt_context_object_is(ctx, resource_id, want))
+      return true;
+
+   npt_log("%s: resource 0x%" PRIx64 " is not a D3D%s resource "
+           "(context_id 0x%" PRIx64 ")", what, resource_id,
+           context_id ? "11" : "12", context_id);
+   return false;
 }
 
 /* Returns 0 on invalid flags (causes D3D11 Map to fail). */
@@ -167,6 +236,9 @@ npt_resource_map(struct npt_context *ctx,
       npt_log("map_resource: NULL resource");
       return NPT_E_FAIL;
    }
+   if (!npt_resource_family_matches(ctx, resource_id, context_id,
+                                    "map_resource"))
+      return NPT_E_INVALIDARG;
 
    struct npt_resource *shmem_res =
       npt_context_get_resource(ctx, shmem_res_id);
@@ -202,6 +274,10 @@ npt_resource_map(struct npt_context *ctx,
          NPT_COM_VTBL_FUNC(PFN_ID3D12Resource_Map,
                            npt_com_vtable(resource),
                            NPT_VTBL_ID3D12Resource_Map);
+      if (!map12) {
+         npt_log("map_resource: no D3D12 Map");
+         return NPT_E_FAIL;
+      }
       hr = map12(resource, subresource, rr, &pData);
       if (NPT_FAILED(hr))
          return hr;
@@ -300,6 +376,9 @@ npt_resource_unmap(struct npt_context *ctx,
       npt_log("unmap_resource: NULL resource");
       return NPT_E_FAIL;
    }
+   if (!npt_resource_family_matches(ctx, resource_id, context_id,
+                                    "unmap_resource"))
+      return NPT_E_INVALIDARG;
 
    struct npt_resource *shmem_res =
       npt_context_get_resource(ctx, shmem_res_id);
@@ -404,6 +483,10 @@ npt_resource_unmap(struct npt_context *ctx,
          NPT_COM_VTBL_FUNC(PFN_ID3D12Resource_Unmap,
                            npt_com_vtable(resource),
                            NPT_VTBL_ID3D12Resource_Unmap);
+      if (!unmap12) {
+         npt_log("unmap_resource: no D3D12 Unmap");
+         return NPT_E_FAIL;
+      }
       unmap12(resource, subresource, wr);
 
       npt_sync_map_remove(ctx, entry);
@@ -412,6 +495,11 @@ npt_resource_unmap(struct npt_context *ctx,
 
    void *imm_ctx = npt_context_lookup_object(ctx, NULL, context_id,
                                               NPT_OBJECT_TYPE_ID3D11DEVICECONTEXT);
+   if (!imm_ctx) {
+      npt_log("unmap_resource: NULL immediate context");
+      return NPT_E_FAIL;
+   }
+
    PFN_ID3D11DeviceContext_Unmap unmap_fn =
       NPT_COM_VTBL_FUNC(PFN_ID3D11DeviceContext_Unmap,
                         npt_com_vtable(imm_ctx),

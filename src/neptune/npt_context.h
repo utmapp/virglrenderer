@@ -346,6 +346,13 @@ npt_context_register_object(struct npt_context *ctx,
 void
 npt_context_unregister_object(struct npt_context *ctx, uint64_t id);
 
+/* Whether the registered object is compatible with `want`, with none of
+ * npt_context_lookup_object's miss diagnostics: an id of another type is
+ * an expected answer here, not a violation. */
+bool
+npt_context_object_is(struct npt_context *ctx, uint64_t id,
+                      npt_object_type want);
+
 /* Returns the pointer when the registered type is compatible with
  * `expected` (exact match, or either is an ancestor of the other;
  * IUNKNOWN matches anything).  On miss / type-mismatch logs the

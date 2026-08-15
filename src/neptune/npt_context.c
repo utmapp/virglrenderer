@@ -232,6 +232,24 @@ npt_object_type_is_compatible(npt_object_type actual,
           npt_object_type_has_ancestor(expected, actual);
 }
 
+/* Callers pick an API family with this for an id that is legitimately
+ * either one, so a mismatch is an expected answer rather than a violation
+ * to diagnose. */
+bool
+npt_context_object_is(struct npt_context *ctx, uint64_t id,
+                      npt_object_type want)
+{
+   if (!id)
+      return false;
+   mtx_lock(&ctx->object_mutex);
+   const struct hash_entry *entry =
+      _mesa_hash_table_search(ctx->object_table, &id);
+   const struct npt_object *obj = entry ? entry->data : NULL;
+   const npt_object_type actual = obj ? obj->type : (npt_object_type)0;
+   mtx_unlock(&ctx->object_mutex);
+   return obj && npt_object_type_is_compatible(actual, want);
+}
+
 void *
 npt_context_lookup_object(struct npt_context *ctx,
                           struct npt_cs_decoder *dec,
