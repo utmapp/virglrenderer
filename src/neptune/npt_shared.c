@@ -66,7 +66,10 @@ npt_shared_dxgi_to_virgl_format(uint32_t dxgi_format)
  * dxmt's dxmt_shared_texture_handle share this exact ABI: same 'DMTX'
  * magic, version, and field layout. */
 #define NPT_DARWIN_SHARED_TEXTURE_MAGIC   0x58544D44u /* 'DMTX' */
-#define NPT_DARWIN_SHARED_HANDLE_VERSION  1u
+/* Every peer that builds or reads the POD declares the same version, and
+ * an import refuses a handle whose version differs rather than read a
+ * layout it does not have. */
+#define NPT_DARWIN_SHARED_HANDLE_VERSION  2u
 struct npt_darwin_shared_texture {
    uint32_t magic;
    uint32_t version;
@@ -77,6 +80,9 @@ struct npt_darwin_shared_texture {
    uint32_t bind_flags, misc_flags, cpu_access;
    uint64_t stride;        /* bytesPerRow */
    uint64_t size;          /* logical stride*height */
+   uint64_t offset;        /* byte offset of the surface within fd (a
+                            * surface placed in a shared heap is a window
+                            * into the heap's one object); 0 otherwise */
 };
 #endif
 
@@ -183,11 +189,13 @@ npt_shared_export_blob(struct npt_context *ctx, uint64_t texture_id,
     * memory; modifier/texture_layout have no meaning here. */
    info.allocation_size = desc->size;
    info.plane_count = 1;
-   info.planes[0].offset = 0;
+   info.planes[0].offset = desc->offset;
    info.planes[0].pitch = desc->stride;
 
    const int export_fd = desc->fd;
-   const uint64_t export_size = desc->size;
+   /* The blob has to span the window, not just the surface: a placed
+    * texture starts `offset` into the heap's object. */
+   const uint64_t export_size = desc->offset + desc->size;
 #else
    const struct DxvkSharedTextureDescriptor *desc =
       (const struct DxvkSharedTextureDescriptor *)(uintptr_t)handle;
@@ -307,6 +315,7 @@ npt_shared_open_res(struct npt_context *ctx, uint64_t device_id,
    memset(&desc, 0, sizeof(desc));
    desc.magic = NPT_DARWIN_SHARED_TEXTURE_MAGIC;
    desc.version = NPT_DARWIN_SHARED_HANDLE_VERSION;
+   desc.offset = cmd->export_info.planes[0].offset;
    desc.width = cmd->width;
    desc.height = cmd->height;
    desc.dxgi_format = cmd->format;
