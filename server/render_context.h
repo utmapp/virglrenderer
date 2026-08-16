@@ -10,6 +10,8 @@
 
 #include <stdatomic.h>
 
+#include "c11/threads.h"
+
 enum render_backend_type {
    RENDER_BACKEND_NONE = 0,
    RENDER_BACKEND_VENUS,
@@ -35,6 +37,13 @@ struct render_context {
 
    /* optional */
    int fence_eventfd;
+
+   /* optional out-of-band fence channel (RENDER_CONTEXT_OP_ATTACH_FENCE_SOCKET):
+    * a dedicated thread reads submit_fence records off fence_socket_fd and
+    * registers them without queueing behind the dispatch thread. */
+   int fence_socket_fd;
+   thrd_t fence_thread;
+   bool fence_thread_created;
 };
 
 struct render_context_args {

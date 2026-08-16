@@ -30,6 +30,17 @@ struct proxy_context {
    struct proxy_client *client;
    struct proxy_socket socket;
 
+   uint32_t capset_id;
+
+   /* Out-of-band fence channel (RENDER_CONTEXT_OP_ATTACH_FENCE_SOCKET):
+    * write end of a socketpair whose read end a dedicated server thread
+    * drains, so arrival-order-tolerant fences (Neptune event rings)
+    * register without queueing behind the worker's dispatch backlog.
+    * -1 = not attached yet, -2 = attach failed / channel dead (all
+    * fences then take the synchronous main-socket path).  Written only
+    * from the submit_fence caller thread. */
+   int fence_socket_fd;
+
    /* this tracks resources early attached in get_blob */
    struct hash_table *resource_table;
 

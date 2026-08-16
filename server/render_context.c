@@ -5,7 +5,9 @@
 
 #include "render_context.h"
 
+#include <errno.h>
 #include <sys/mman.h>
+#include <sys/socket.h>
 #include <unistd.h>
 
 #include "util/u_thread.h"
@@ -74,6 +76,97 @@ render_context_dispatch_submit_fence(struct render_context *ctx,
    }
 
    return sent;
+}
+
+/* Read exactly `size` bytes off a SOCK_STREAM fd.  Returns false on EOF or
+ * error (EOF mid-record included: a torn record means the peer died). */
+static bool
+render_context_fence_read_full(int fd, void *data, size_t size)
+{
+   uint8_t *cur = data;
+   while (size) {
+      const ssize_t r = read(fd, cur, size);
+      if (r < 0) {
+         if (errno == EINTR || errno == EAGAIN)
+            continue;
+         return false;
+      }
+      if (r == 0)
+         return false;
+      cur += r;
+      size -= (size_t)r;
+   }
+   return true;
+}
+
+/* Out-of-band fence channel (see render_protocol.h): registers submit_fence
+ * records the moment they arrive, independent of the dispatch thread's
+ * backlog.  Only arrival-order-tolerant fences travel here, no replies ever
+ * flow back, and any fd the backend registered for the fence is unwanted. */
+static int
+render_context_fence_thread(void *arg)
+{
+   struct render_context *ctx = arg;
+
+   u_thread_setname("virgl-fence");
+
+   for (;;) {
+      struct render_context_op_submit_fence_request req;
+      if (!render_context_fence_read_full(ctx->fence_socket_fd, &req,
+                                          sizeof(req)))
+         break;
+
+      if (req.header.op != RENDER_CONTEXT_OP_SUBMIT_FENCE ||
+          req.ring_index >= (uint32_t)ctx->timeline_count) {
+         render_log("fence channel: bad record (op %u ring %u); closing",
+                    req.header.op, req.ring_index);
+         break;
+      }
+
+      if (!render_state_submit_fence(ctx->ctx_id,
+                                     VIRGL_RENDERER_FENCE_FLAG_MERGEABLE,
+                                     req.ring_index, req.seqno))
+         render_log("fence channel: submit_fence(ring %u) failed",
+                    req.ring_index);
+
+      /* One-shot hand-off, same as the dispatch path: take the fd the
+       * backend may have registered so it never strands in the table. */
+      const int fence_fd =
+         virgl_fence_take_fd(virgl_fence_ring_key(req.ring_index, req.seqno));
+      if (fence_fd >= 0)
+         close(fence_fd);
+   }
+
+   return 0;
+}
+
+static bool
+render_context_dispatch_attach_fence_socket(struct render_context *ctx,
+                                            UNUSED const union render_context_op_request *request,
+                                            const int *fds,
+                                            int fd_count)
+{
+   if (fd_count != 1) {
+      render_log("attach_fence_socket: expected 1 fd, got %d", fd_count);
+      return false;
+   }
+   if (ctx->fence_thread_created) {
+      render_log("attach_fence_socket: already attached");
+      close(fds[0]);
+      return false;
+   }
+
+   ctx->fence_socket_fd = fds[0];
+   if (thrd_create(&ctx->fence_thread, render_context_fence_thread, ctx) !=
+       thrd_success) {
+      render_log("attach_fence_socket: thrd_create failed");
+      close(ctx->fence_socket_fd);
+      ctx->fence_socket_fd = -1;
+      return false;
+   }
+   ctx->fence_thread_created = true;
+
+   return true;
 }
 
 static bool
@@ -231,6 +324,7 @@ static const struct render_context_dispatch_entry
       RENDER_CONTEXT_DISPATCH(DESTROY_RESOURCE, destroy_resource, 0),
       RENDER_CONTEXT_DISPATCH(SUBMIT_CMD, submit_cmd, 0),
       RENDER_CONTEXT_DISPATCH(SUBMIT_FENCE, submit_fence, 0),
+      RENDER_CONTEXT_DISPATCH(ATTACH_FENCE_SOCKET, attach_fence_socket, 1),
 #undef RENDER_CONTEXT_DISPATCH
    };
 
@@ -289,6 +383,16 @@ render_context_run(struct render_context *ctx)
 static void
 render_context_fini(struct render_context *ctx)
 {
+   /* stop the fence channel before the backend context goes away: its
+    * thread calls into render_state and must be joined first */
+   if (ctx->fence_thread_created) {
+      shutdown(ctx->fence_socket_fd, SHUT_RDWR);
+      thrd_join(ctx->fence_thread, NULL);
+      ctx->fence_thread_created = false;
+   }
+   if (ctx->fence_socket_fd >= 0)
+      close(ctx->fence_socket_fd);
+
    /* destroy the context first to join its sync threads and ring threads */
    render_state_destroy_context(ctx->ctx_id);
 
@@ -382,6 +486,7 @@ render_context_init(struct render_context *ctx, const struct render_context_args
    render_socket_init(&ctx->socket, args->ctx_fd);
    ctx->shmem_fd = -1;
    ctx->fence_eventfd = -1;
+   ctx->fence_socket_fd = -1;
 
    if (!render_context_init_name(ctx, args->ctx_id, args->ctx_name))
       return false;

@@ -8,8 +8,11 @@
 #include <fcntl.h>
 #include <poll.h>
 #include <sys/mman.h>
+#include <sys/socket.h>
 #include <sys/stat.h>
 #include <unistd.h>
+
+#include "virtgpu_drm.h"
 
 #include "server/render_protocol.h"
 #include "util/anon_file.h"
@@ -201,6 +204,90 @@ proxy_context_sync_thread(void *arg)
    return 0;
 }
 
+/* Out-of-band fence routing.  Only Neptune event-ring fences qualify:
+ * their retirement pairs with an ARM that travels independently (the host
+ * parks whichever side arrives first), so registering them ahead of queued
+ * submits is legal -- and registering them promptly is the point, since on
+ * the main socket a fence queues behind the dispatch thread's in-flight
+ * submits and every present-gate wake lags that backlog.  Low rings retire
+ * in dispatch order ("everything before me was consumed") and have to stay
+ * on the ordered main socket.  The ring split mirrors the host's
+ * NPT_EVENT_RING_BASE convention: the upper half of the timeline range. */
+static bool
+proxy_context_fence_ring_is_oob(const struct proxy_context *ctx,
+                                uint32_t ring_idx)
+{
+   return ctx->capset_id == VIRTGPU_DRM_CAPSET_NEPTUNE &&
+          ring_idx >= PROXY_CONTEXT_TIMELINE_COUNT / 2;
+}
+
+static bool
+proxy_context_fence_socket_attach(struct proxy_context *ctx)
+{
+   int fds[2];
+   if (socketpair(AF_UNIX, SOCK_STREAM, 0, fds)) {
+      proxy_log("fence channel: socketpair failed");
+      return false;
+   }
+   for (int i = 0; i < 2; i++) {
+      const int flags = fcntl(fds[i], F_GETFD);
+      if (flags >= 0)
+         fcntl(fds[i], F_SETFD, flags | FD_CLOEXEC);
+   }
+
+   const struct render_context_op_attach_fence_socket_request req = {
+      .header.op = RENDER_CONTEXT_OP_ATTACH_FENCE_SOCKET,
+   };
+   if (!proxy_socket_send_request_with_fds(&ctx->socket, &req, sizeof(req),
+                                           &fds[1], 1)) {
+      proxy_log("fence channel: attach failed");
+      close(fds[0]);
+      close(fds[1]);
+      return false;
+   }
+   close(fds[1]);
+   ctx->fence_socket_fd = fds[0];
+   proxy_log("fence channel attached for ctx %d (event-ring fences "
+             "out-of-band)", ctx->base.ctx_id);
+   return true;
+}
+
+static bool
+proxy_context_fence_oob_submit(struct proxy_context *ctx,
+                               uint32_t flags,
+                               uint32_t ring_idx,
+                               uint32_t seqno)
+{
+   if (ctx->fence_socket_fd == -1 && !proxy_context_fence_socket_attach(ctx))
+      ctx->fence_socket_fd = -2;
+   if (ctx->fence_socket_fd < 0)
+      return false;
+
+   const struct render_context_op_submit_fence_request req = {
+      .header.op = RENDER_CONTEXT_OP_SUBMIT_FENCE,
+      .flags = flags,
+      .ring_index = ring_idx,
+      .seqno = seqno,
+   };
+   const uint8_t *cur = (const uint8_t *)&req;
+   size_t left = sizeof(req);
+   while (left) {
+      const ssize_t s = send(ctx->fence_socket_fd, cur, left, MSG_NOSIGNAL);
+      if (s < 0) {
+         if (errno == EINTR || errno == EAGAIN)
+            continue;
+         proxy_log("fence channel: send failed (errno %d); falling back to "
+                   "the main socket", errno);
+         close(ctx->fence_socket_fd);
+         ctx->fence_socket_fd = -2;
+         return false;
+      }
+      cur += s;
+      left -= (size_t)s;
+   }
+   return true;
+}
+
 static int
 proxy_context_submit_fence(struct virgl_context *base,
                            uint32_t flags,
@@ -230,6 +317,15 @@ proxy_context_submit_fence(struct virgl_context *base,
 
    if (proxy_renderer.flags & VIRGL_RENDERER_ASYNC_FENCE_CB)
       mtx_unlock(&ctx->timeline_mutex);
+
+   /* Event-ring fences take the out-of-band channel: registered by the
+    * server's dedicated fence thread instead of queueing behind the
+    * dispatch thread's in-flight submits, and the QEMU virtio thread
+    * pays no reply round trip.  Any channel failure falls through to
+    * the ordered synchronous path below. */
+   if (proxy_context_fence_ring_is_oob(ctx, ring_idx) &&
+       proxy_context_fence_oob_submit(ctx, flags, ring_idx, fence->seqno))
+      return 0;
 
    const struct render_context_op_submit_fence_request req = {
       .header.op = RENDER_CONTEXT_OP_SUBMIT_FENCE,
@@ -548,6 +644,9 @@ proxy_context_destroy(struct virgl_context *base)
    if (!proxy_client_destroy_context(ctx->client, ctx->base.ctx_id))
       proxy_log("failed to destroy ctx %d", ctx->base.ctx_id);
 
+   if (ctx->fence_socket_fd >= 0)
+      close(ctx->fence_socket_fd);
+
    if (ctx->sync_thread.fence_eventfd >= 0) {
       if (ctx->sync_thread.created) {
          ctx->sync_thread.stop = true;
@@ -742,6 +841,8 @@ proxy_context_create(uint32_t ctx_id,
    proxy_context_init_base(ctx);
    ctx->client = client;
    proxy_socket_init(&ctx->socket, ctx_fd);
+   ctx->capset_id = capset_id;
+   ctx->fence_socket_fd = -1;
    ctx->shmem.fd = -1;
    mtx_init(&ctx->timeline_mutex, mtx_plain);
    mtx_init(&ctx->free_fences_mutex, mtx_plain);

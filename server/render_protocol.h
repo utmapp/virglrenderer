@@ -39,6 +39,7 @@ enum render_context_op {
    RENDER_CONTEXT_OP_DESTROY_RESOURCE,
    RENDER_CONTEXT_OP_SUBMIT_CMD,
    RENDER_CONTEXT_OP_SUBMIT_FENCE,
+   RENDER_CONTEXT_OP_ATTACH_FENCE_SOCKET,
 
    RENDER_CONTEXT_OP_COUNT,
 };
@@ -227,6 +228,26 @@ struct render_context_op_submit_fence_reply {
    uint16_t pad;
 };
 
+/* Attach a side channel dedicated to fence submission.
+ *
+ * One fd follows via SCM_RIGHTS: a SOCK_STREAM socket whose payload is a
+ * stream of fixed-size render_context_op_submit_fence_request records.  A
+ * dedicated server thread reads and registers them immediately, so a fence
+ * never queues behind the dispatch thread's in-flight submits (whose
+ * processing can take milliseconds, or park outright in a ring wait).
+ *
+ * Only fences whose retirement is arrival-order-tolerant may travel this
+ * channel.  For Neptune those are the event-ring fences (upper half of the
+ * timeline range): the host pairs them with ARM commands and explicitly
+ * parks whichever side arrives first.  Low rings retire in dispatch order
+ * ("everything before me was consumed") and must stay on the main socket.
+ * No replies ever flow on this channel and no fd is exported for these
+ * fences; retirement rides the shmem timeline as usual.
+ */
+struct render_context_op_attach_fence_socket_request {
+   struct render_context_op_header header;
+};
+
 union render_context_op_request {
    struct render_context_op_header header;
    struct render_context_op_nop_request nop;
@@ -236,6 +257,7 @@ union render_context_op_request {
    struct render_context_op_destroy_resource_request destroy_resource;
    struct render_context_op_submit_cmd_request submit_cmd;
    struct render_context_op_submit_fence_request submit_fence;
+   struct render_context_op_attach_fence_socket_request attach_fence_socket;
 };
 
 #ifdef __APPLE__
