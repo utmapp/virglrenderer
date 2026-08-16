@@ -37,6 +37,12 @@ npt_capset_d3d12_override(void)
    return debug_get_num_option("NPT_CAPSET_D3D12", -1);
 }
 
+long
+npt_capset_caps_override(void)
+{
+   return debug_get_num_option("NPT_CAPSET_CAPS", -1);
+}
+
 void
 npt_debug_init(void)
 {

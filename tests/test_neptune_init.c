@@ -92,6 +92,31 @@ test_neptune_get_capset(void)
     * headers define -- a mismatch means the capset plumbing is stale. */
    EXPECT(caps.wire_format_version == NPT_PROTOCOL_WIRE_VERSION);
 
+   /* Backend-capability bits derive from NPT_BACKEND: the DXMT set for
+    * "dxmt", DXIL alone for d3dmetal (the default).  The D3D12 bit comes
+    * from a dlopen probe that varies by host, so it is masked out. */
+   const uint32_t dxmt_bits =
+      VIRGL_RENDERER_CAPSET_NEPTUNE_CAP_TBDR |
+      VIRGL_RENDERER_CAPSET_NEPTUNE_CAP_MSAA_RTV_FORCED_SC1 |
+      VIRGL_RENDERER_CAPSET_NEPTUNE_CAP_MAP_DEFAULT_BUFFERS |
+      VIRGL_RENDERER_CAPSET_NEPTUNE_CAP_SHADER_CACHE;
+   const uint32_t backend_bits = dxmt_bits |
+      VIRGL_RENDERER_CAPSET_NEPTUNE_CAP_EXTENDED_RESOURCE_SHARING |
+      VIRGL_RENDERER_CAPSET_NEPTUNE_CAP_DXIL;
+   EXPECT((caps.caps_flags & backend_bits) ==
+          VIRGL_RENDERER_CAPSET_NEPTUNE_CAP_DXIL); /* default = d3dmetal */
+
+   setenv("NPT_BACKEND", "dxmt", 1);
+   virgl_renderer_fill_caps(VIRTGPU_DRM_CAPSET_NEPTUNE, 0, &caps);
+   EXPECT((caps.caps_flags & backend_bits) == dxmt_bits);
+   unsetenv("NPT_BACKEND");
+
+   /* NPT_CAPSET_CAPS overrides the whole word. */
+   setenv("NPT_CAPSET_CAPS", "0x22", 1);
+   virgl_renderer_fill_caps(VIRTGPU_DRM_CAPSET_NEPTUNE, 0, &caps);
+   EXPECT(caps.caps_flags == 0x22u);
+   unsetenv("NPT_CAPSET_CAPS");
+
    teardown();
    return 1;
 }

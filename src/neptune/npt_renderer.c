@@ -33,11 +33,9 @@ static struct npt_renderer_state npt_state;
  * Probed with a private dlopen rather than from npt_library state,
  * because the capset is reported before any context -- and so before
  * npt_library_init -- exists.  The dlopen refcount makes the later real
- * load cheap.
- *
- * A split-arch proxy runs on a different arch than the render server, so
- * its local dlopen proves nothing and the answer has to be overridden
- * instead.
+ * load cheap.  A split-arch proxy runs on a different arch than the
+ * render server, so its local dlopen proves nothing and the answer has
+ * to be overridden instead.
  */
 static bool
 npt_capset_probe_d3d12(void)
@@ -67,6 +65,35 @@ npt_capset_probe_d3d12(void)
 #endif
 }
 
+/* Backend-capability bits for the backend the render server will load.
+ *
+ * The capset is filled in the QEMU process before any worker has the
+ * backend dlopen'ed, so the backend cannot be asked -- but it is already
+ * determined, since render_worker.c picks the slice from NPT_BACKEND and
+ * QEMU's environment propagates down.  Mirror that parse and answer from
+ * a fixed per-backend table.
+ *
+ * npt_capset_caps_override replaces the whole derived word, the D3D12
+ * bit included, where that mirroring cannot hold.
+ */
+static uint32_t
+npt_capset_backend_caps(void)
+{
+   const char *backend = getenv("NPT_BACKEND");
+   if (backend && !strcmp(backend, "dxmt")) {
+      /* Not EXTENDED_RESOURCE_SHARING: DXMT reports the cap but fails
+       * every SHARED_NTHANDLE texture create, so advertising it would
+       * only move an app's failure from the cap check to create time. */
+      return VIRGL_RENDERER_CAPSET_NEPTUNE_CAP_TBDR |
+             VIRGL_RENDERER_CAPSET_NEPTUNE_CAP_MSAA_RTV_FORCED_SC1 |
+             VIRGL_RENDERER_CAPSET_NEPTUNE_CAP_MAP_DEFAULT_BUFFERS |
+             VIRGL_RENDERER_CAPSET_NEPTUNE_CAP_SHADER_CACHE;
+   }
+   /* D3DMetal has none of the DXMT bits, but its shader front end
+    * (Metal Shader Converter) takes DXIL natively; DXMT parses DXBC only. */
+   return VIRGL_RENDERER_CAPSET_NEPTUNE_CAP_DXIL;
+}
+
 size_t
 npt_get_capset(void *capset, UNUSED uint32_t flags)
 {
@@ -81,6 +108,13 @@ npt_get_capset(void *capset, UNUSED uint32_t flags)
       c->wire_format_version = NPT_PROTOCOL_WIRE_VERSION;
       if (d3d12_state == 2)
          c->caps_flags |= VIRGL_RENDERER_CAPSET_NEPTUNE_CAP_D3D12;
+      c->caps_flags |= npt_capset_backend_caps();
+
+      const long override = npt_capset_caps_override();
+      if (override >= 0)
+         c->caps_flags = (uint32_t)override;
+      npt_log("capset: wire=%u caps=0x%08x", c->wire_format_version,
+              c->caps_flags);
    }
 
    return sizeof(struct virgl_renderer_capset_neptune);

@@ -22,4 +22,18 @@ struct virgl_renderer_capset_neptune {
  * than discover it through a failed wire call. */
 #define VIRGL_RENDERER_CAPSET_NEPTUNE_CAP_D3D12 (1u << 0)
 
+/* Adapter-scope capabilities that differ by host backend; the guest
+ * D3D11 UMD folds them into its own cap answers.  TBDR is Metal on Apple
+ * silicon either way, but D3DMetal presents itself as immediate-mode. */
+#define VIRGL_RENDERER_CAPSET_NEPTUNE_CAP_TBDR                        (1u << 1)
+#define VIRGL_RENDERER_CAPSET_NEPTUNE_CAP_MSAA_RTV_FORCED_SC1         (1u << 2)
+#define VIRGL_RENDERER_CAPSET_NEPTUNE_CAP_EXTENDED_RESOURCE_SHARING   (1u << 3)
+#define VIRGL_RENDERER_CAPSET_NEPTUNE_CAP_MAP_DEFAULT_BUFFERS         (1u << 4)
+#define VIRGL_RENDERER_CAPSET_NEPTUNE_CAP_SHADER_CACHE                (1u << 5)
+
+/* The D3D12 backend consumes DXIL containers directly (SM 6.x).  Set for
+ * D3DMetal (Metal Shader Converter's native input is DXIL); clear for
+ * DXMT, whose shader front end parses DXBC only. */
+#define VIRGL_RENDERER_CAPSET_NEPTUNE_CAP_DXIL                        (1u << 6)
+
 #endif /* NEPTUNE_HW_H */
