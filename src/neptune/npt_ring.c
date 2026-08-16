@@ -66,8 +66,14 @@ npt_ring_init_control(struct npt_ring *ring, const struct npt_ring_layout *layou
    ctrl->status = get_resource_pointer(layout->resource, layout->status.begin);
 
    /* head and status are host-owned: reject pre-populated values. */
-   if (*ctrl->head || *ctrl->status)
+   if (*ctrl->head || *ctrl->status) {
+      npt_log("ring: res %u head@%u=0x%08x status@%u=0x%08x tail@%u=0x%08x "
+              "not zero at create (stale ring memory or aliased blob)",
+              layout->resource->res_id, (unsigned)layout->head.begin,
+              *ctrl->head, (unsigned)layout->status.begin, *ctrl->status,
+              (unsigned)layout->tail.begin, *ctrl->tail);
       return false;
+   }
 
    return true;
 }
