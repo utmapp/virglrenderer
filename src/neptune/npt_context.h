@@ -130,6 +130,12 @@ struct npt_context {
     * Drained by COM_RELEASE and context_destroy. */
    mtx_t object_mutex;
    struct hash_table *object_table;
+   /* Bumped (release) whenever an id leaves the table or changes type;
+    * decoders compare it (acquire) to validate their private lookup
+    * cache (npt_cs.h).  Registration of a NEW id never bumps it: a
+    * cache can only hold ids that were present, and a fresh id is a
+    * miss until first looked up. */
+   _Atomic uint64_t object_gen;
 
    mtx_t pending_blob_mutex;
    struct hash_table *pending_blob_table;  /* blob_id -> npt_pending_blob */

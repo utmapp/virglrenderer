@@ -70,6 +70,8 @@ struct npt_ring {
    struct npt_context *context;
 
    uint64_t idle_timeout;
+   /* Per-ring countdown for npt_feedback_poll (dispatch-thread private). */
+   uint32_t feedback_poll_skip;
    void *cmd;
 
    mtx_t mutex;

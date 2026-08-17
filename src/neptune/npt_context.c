@@ -172,6 +172,8 @@ npt_context_register_object(struct npt_context *ctx,
          if (existing->type == NPT_OBJECT_TYPE_IUNKNOWN ||
              npt_object_type_has_ancestor(type, existing->type)) {
             existing->type = type;
+            atomic_fetch_add_explicit(&ctx->object_gen, 1,
+                                      memory_order_release);
          } else if (type != NPT_OBJECT_TYPE_IUNKNOWN &&
                     !npt_object_type_has_ancestor(existing->type, type)) {
             npt_log("object table: id 0x%016" PRIx64
@@ -208,6 +210,9 @@ npt_context_unregister_object(struct npt_context *ctx, uint64_t id)
    if (entry) {
       free(entry->data);
       _mesa_hash_table_remove(ctx->object_table, entry);
+      /* Invalidate every decoder's lookup cache before the id can be
+       * reused by a new object. */
+      atomic_fetch_add_explicit(&ctx->object_gen, 1, memory_order_release);
    }
    mtx_unlock(&ctx->object_mutex);
 }
@@ -250,6 +255,15 @@ npt_context_object_is(struct npt_context *ctx, uint64_t id,
    return obj && npt_object_type_is_compatible(actual, want);
 }
 
+static inline uint32_t
+npt_lookup_cache_slot(uint64_t id)
+{
+   /* ids are COM pointers (16-byte aligned) or small monotonic guest
+    * counters; fold the useful bits down. */
+   return (uint32_t)((id >> 4) ^ (id >> 16) ^ (id >> 28)) &
+          (NPT_CS_LOOKUP_CACHE_SIZE - 1);
+}
+
 void *
 npt_context_lookup_object(struct npt_context *ctx,
                           struct npt_cs_decoder *dec,
@@ -258,6 +272,28 @@ npt_context_lookup_object(struct npt_context *ctx,
 {
    if (!id)
       return NULL;
+
+   /* Fast path: this decoder's private cache, valid while the context's
+    * object generation has not moved (see npt_cs.h).  The acquire load
+    * pairs with the release bump in unregister / type change, so a hit
+    * can never hand out an id that was removed before this call. */
+   struct npt_cs_lookup_entry *ce = NULL;
+   if (likely(dec)) {
+      const uint64_t gen =
+         atomic_load_explicit(&ctx->object_gen, memory_order_acquire);
+      if (unlikely(dec->lookup_gen != gen)) {
+         memset(dec->lookup_cache, 0, sizeof(dec->lookup_cache));
+         dec->lookup_gen = gen;
+      }
+      ce = &dec->lookup_cache[npt_lookup_cache_slot(id)];
+      if (likely(ce->id == id &&
+                 npt_object_type_is_compatible((npt_object_type)ce->type,
+                                               expected))) {
+         if (npt_profile_enabled())
+            npt_profile_record_lookup(0, false, 0);
+         return ce->host_ptr;
+      }
+   }
 
    const uint64_t prof_t0 =
       npt_profile_enabled() ? npt_profile_now_ns() : 0;
@@ -268,6 +304,11 @@ npt_context_lookup_object(struct npt_context *ctx,
    const npt_object_type actual = obj ? obj->type : (npt_object_type)0;
    void *host_ptr = obj ? obj->host_ptr : NULL;
    mtx_unlock(&ctx->object_mutex);
+   if (obj && ce) {
+      ce->id = id;
+      ce->host_ptr = host_ptr;
+      ce->type = (uint32_t)actual;
+   }
    if (npt_profile_enabled()) {
       /* cmd_type=0: per-method attribution happens at the ring loop. */
       npt_profile_record_lookup(npt_profile_now_ns() - prof_t0,
@@ -439,6 +480,7 @@ npt_context_create(uint32_t ctx_id,
 
    if (mtx_init(&ctx->object_mutex, mtx_plain) != thrd_success)
       goto err_object_mutex;
+   atomic_store_explicit(&ctx->object_gen, 0, memory_order_relaxed);
 
    ctx->object_table =
       _mesa_hash_table_create(NULL, hash_uint64, equal_uint64);

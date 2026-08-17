@@ -185,9 +185,25 @@ struct npt_cs_decoder_saved_state {
    uint8_t *pool_reset_to;
 };
 
+/* Per-decoder object-handle lookup cache (see npt_context_lookup_object).
+ * Every ring thread owns one decoder, so this is private to the thread
+ * and a hit touches no shared cache line -- the table's mutex would cost
+ * every ring thread an exclusive line acquisition per handle argument.
+ * Direct-mapped; flushed whole when the context's object generation moves
+ * (any unregister / type change). */
+#define NPT_CS_LOOKUP_CACHE_SIZE 256u
+struct npt_cs_lookup_entry {
+   uint64_t id;
+   void *host_ptr;
+   uint32_t type;
+};
+
 struct npt_cs_decoder {
    bool *fatal_error;
    struct npt_cs_decoder_temp_pool temp_pool;
+
+   uint64_t lookup_gen;
+   struct npt_cs_lookup_entry lookup_cache[NPT_CS_LOOKUP_CACHE_SIZE];
 
    struct npt_cs_decoder_saved_state saved_state;
    bool saved_state_valid;

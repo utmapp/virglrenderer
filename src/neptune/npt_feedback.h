@@ -110,11 +110,6 @@ struct npt_feedback_state {
    struct list_head pending;
    uint32_t pending_count;
 
-   /* Commands still to skip before the next deadline check; see
-    * NPT_FEEDBACK_POLL_CHECK_EVERY.  Heuristic only -- several ring
-    * threads share one context, so it is written racily on purpose. */
-   _Atomic uint32_t poll_skip;
-
    /* Last poll wall-clock; drives the rate-limit. */
    uint64_t last_poll_ns;
    uint64_t total_poll_ns;
@@ -198,8 +193,11 @@ npt_feedback_slot_ptr(struct npt_resource *res,
 
 /* Poll all pending entries (rate-limited internally).  Called from the
  * dispatch loop between commands; no-op on an empty pending list, and
- * only checks the deadline every NPT_FEEDBACK_POLL_CHECK_EVERY calls. */
-void npt_feedback_poll(struct npt_context *ctx);
+ * only checks the deadline every NPT_FEEDBACK_POLL_CHECK_EVERY calls.
+ * `skip` is the CALLER's (per-ring) countdown; a context-wide counter
+ * would be a shared cache line written by every ring thread on every
+ * command. */
+void npt_feedback_poll(struct npt_context *ctx, uint32_t *skip);
 
 /* Same, but with an explicit rate-limit -- the ring thread's idle loop
  * passes NPT_FEEDBACK_POLL_IDLE_INTERVAL_NS. */

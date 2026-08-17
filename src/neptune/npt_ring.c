@@ -361,7 +361,7 @@ npt_ring_submit_cmd(struct npt_ring *ring,
        * This runs on the dispatch thread, keeping the host D3D11 context
        * single-threaded; the poll rate-limits itself and early-outs when
        * nothing is pending. */
-      npt_feedback_poll(ring->context);
+      npt_feedback_poll(ring->context, &ring->feedback_poll_skip);
    }
 
    npt_cs_decoder_reset(dec);
