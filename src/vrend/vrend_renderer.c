@@ -13537,7 +13537,8 @@ void *vrend_renderer_get_cursor_contents(struct pipe_resource *pres,
    }
 
    for (h = 0; h < res->base.height0; h++) {
-      uint32_t doff = (res->base.height0 - h - 1) * res->base.width0 * blsize;
+      uint32_t dh = res->y_0_top ? (res->base.height0 - h - 1) : (h);
+      uint32_t doff = dh * res->base.width0 * blsize;
       uint32_t soff = h * res->base.width0 * blsize;
 
       memcpy(data2 + doff, data + soff, res->base.width0 * blsize);
