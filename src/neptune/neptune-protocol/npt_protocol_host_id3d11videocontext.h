@@ -97,11 +97,42 @@ npt_dispatch_ID3D11VideoContext_GetDecoderBuffer(struct npt_dispatch_context *ct
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_ID3D11VIDEOCONTEXT);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_GetDecoderBuffer on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_ID3D11VideoContext_GetDecoderBuffer_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_GetDecoderBuffer: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_ID3D11VideoContext_GetDecoderBuffer _original = NPT_COM_VTBL_FUNC(
         PFN_ID3D11VideoContext_GetDecoderBuffer, npt_com_vtable(args._self),
@@ -191,11 +222,42 @@ npt_dispatch_ID3D11VideoContext_ReleaseDecoderBuffer(struct npt_dispatch_context
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_ID3D11VIDEOCONTEXT);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_ReleaseDecoderBuffer on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_ID3D11VideoContext_ReleaseDecoderBuffer_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_ReleaseDecoderBuffer: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_ID3D11VideoContext_ReleaseDecoderBuffer _original = NPT_COM_VTBL_FUNC(
         PFN_ID3D11VideoContext_ReleaseDecoderBuffer, npt_com_vtable(args._self),
@@ -305,11 +367,42 @@ npt_dispatch_ID3D11VideoContext_DecoderBeginFrame(struct npt_dispatch_context *c
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_ID3D11VIDEOCONTEXT);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_DecoderBeginFrame on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_ID3D11VideoContext_DecoderBeginFrame_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_DecoderBeginFrame: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_ID3D11VideoContext_DecoderBeginFrame _original = NPT_COM_VTBL_FUNC(
         PFN_ID3D11VideoContext_DecoderBeginFrame, npt_com_vtable(args._self),
@@ -396,11 +489,42 @@ npt_dispatch_ID3D11VideoContext_DecoderEndFrame(struct npt_dispatch_context *ctx
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_ID3D11VIDEOCONTEXT);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_DecoderEndFrame on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_ID3D11VideoContext_DecoderEndFrame_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_DecoderEndFrame: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_ID3D11VideoContext_DecoderEndFrame _original = NPT_COM_VTBL_FUNC(
         PFN_ID3D11VideoContext_DecoderEndFrame, npt_com_vtable(args._self),
@@ -508,11 +632,42 @@ npt_dispatch_ID3D11VideoContext_SubmitDecoderBuffers(struct npt_dispatch_context
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_ID3D11VIDEOCONTEXT);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_SubmitDecoderBuffers on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_ID3D11VideoContext_SubmitDecoderBuffers_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_SubmitDecoderBuffers: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_ID3D11VideoContext_SubmitDecoderBuffers _original = NPT_COM_VTBL_FUNC(
         PFN_ID3D11VideoContext_SubmitDecoderBuffers, npt_com_vtable(args._self),
@@ -612,11 +767,42 @@ npt_dispatch_ID3D11VideoContext_DecoderExtension(struct npt_dispatch_context *ct
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_ID3D11VIDEOCONTEXT);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_DecoderExtension on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_ID3D11VideoContext_DecoderExtension_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_DecoderExtension: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_ID3D11VideoContext_DecoderExtension _original = NPT_COM_VTBL_FUNC(
         PFN_ID3D11VideoContext_DecoderExtension, npt_com_vtable(args._self),
@@ -714,11 +900,42 @@ npt_dispatch_ID3D11VideoContext_VideoProcessorSetOutputTargetRect(struct npt_dis
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_ID3D11VIDEOCONTEXT);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_VideoProcessorSetOutputTargetRect on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_ID3D11VideoContext_VideoProcessorSetOutputTargetRect_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_VideoProcessorSetOutputTargetRect: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_ID3D11VideoContext_VideoProcessorSetOutputTargetRect _original = NPT_COM_VTBL_FUNC(
         PFN_ID3D11VideoContext_VideoProcessorSetOutputTargetRect, npt_com_vtable(args._self),
@@ -818,11 +1035,42 @@ npt_dispatch_ID3D11VideoContext_VideoProcessorSetOutputBackgroundColor(struct np
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_ID3D11VIDEOCONTEXT);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_VideoProcessorSetOutputBackgroundColor on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_ID3D11VideoContext_VideoProcessorSetOutputBackgroundColor_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_VideoProcessorSetOutputBackgroundColor: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_ID3D11VideoContext_VideoProcessorSetOutputBackgroundColor _original = NPT_COM_VTBL_FUNC(
         PFN_ID3D11VideoContext_VideoProcessorSetOutputBackgroundColor, npt_com_vtable(args._self),
@@ -919,11 +1167,42 @@ npt_dispatch_ID3D11VideoContext_VideoProcessorSetOutputColorSpace(struct npt_dis
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_ID3D11VIDEOCONTEXT);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_VideoProcessorSetOutputColorSpace on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_ID3D11VideoContext_VideoProcessorSetOutputColorSpace_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_VideoProcessorSetOutputColorSpace: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_ID3D11VideoContext_VideoProcessorSetOutputColorSpace _original = NPT_COM_VTBL_FUNC(
         PFN_ID3D11VideoContext_VideoProcessorSetOutputColorSpace, npt_com_vtable(args._self),
@@ -1015,11 +1294,42 @@ npt_dispatch_ID3D11VideoContext_VideoProcessorSetOutputAlphaFillMode(struct npt_
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_ID3D11VIDEOCONTEXT);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_VideoProcessorSetOutputAlphaFillMode on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_ID3D11VideoContext_VideoProcessorSetOutputAlphaFillMode_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_VideoProcessorSetOutputAlphaFillMode: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_ID3D11VideoContext_VideoProcessorSetOutputAlphaFillMode _original = NPT_COM_VTBL_FUNC(
         PFN_ID3D11VideoContext_VideoProcessorSetOutputAlphaFillMode, npt_com_vtable(args._self),
@@ -1111,11 +1421,42 @@ npt_dispatch_ID3D11VideoContext_VideoProcessorSetOutputConstriction(struct npt_d
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_ID3D11VIDEOCONTEXT);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_VideoProcessorSetOutputConstriction on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_ID3D11VideoContext_VideoProcessorSetOutputConstriction_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_VideoProcessorSetOutputConstriction: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_ID3D11VideoContext_VideoProcessorSetOutputConstriction _original = NPT_COM_VTBL_FUNC(
         PFN_ID3D11VideoContext_VideoProcessorSetOutputConstriction, npt_com_vtable(args._self),
@@ -1204,11 +1545,42 @@ npt_dispatch_ID3D11VideoContext_VideoProcessorSetOutputStereoMode(struct npt_dis
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_ID3D11VIDEOCONTEXT);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_VideoProcessorSetOutputStereoMode on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_ID3D11VideoContext_VideoProcessorSetOutputStereoMode_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_VideoProcessorSetOutputStereoMode: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_ID3D11VideoContext_VideoProcessorSetOutputStereoMode _original = NPT_COM_VTBL_FUNC(
         PFN_ID3D11VideoContext_VideoProcessorSetOutputStereoMode, npt_com_vtable(args._self),
@@ -1313,11 +1685,42 @@ npt_dispatch_ID3D11VideoContext_VideoProcessorSetOutputExtension(struct npt_disp
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_ID3D11VIDEOCONTEXT);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_VideoProcessorSetOutputExtension on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_ID3D11VideoContext_VideoProcessorSetOutputExtension_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_VideoProcessorSetOutputExtension: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_ID3D11VideoContext_VideoProcessorSetOutputExtension _original = NPT_COM_VTBL_FUNC(
         PFN_ID3D11VideoContext_VideoProcessorSetOutputExtension, npt_com_vtable(args._self),
@@ -1417,11 +1820,42 @@ npt_dispatch_ID3D11VideoContext_VideoProcessorGetOutputTargetRect(struct npt_dis
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_ID3D11VIDEOCONTEXT);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_VideoProcessorGetOutputTargetRect on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_ID3D11VideoContext_VideoProcessorGetOutputTargetRect_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_VideoProcessorGetOutputTargetRect: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_ID3D11VideoContext_VideoProcessorGetOutputTargetRect _original = NPT_COM_VTBL_FUNC(
         PFN_ID3D11VideoContext_VideoProcessorGetOutputTargetRect, npt_com_vtable(args._self),
@@ -1521,11 +1955,42 @@ npt_dispatch_ID3D11VideoContext_VideoProcessorGetOutputBackgroundColor(struct np
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_ID3D11VIDEOCONTEXT);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_VideoProcessorGetOutputBackgroundColor on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_ID3D11VideoContext_VideoProcessorGetOutputBackgroundColor_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_VideoProcessorGetOutputBackgroundColor: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_ID3D11VideoContext_VideoProcessorGetOutputBackgroundColor _original = NPT_COM_VTBL_FUNC(
         PFN_ID3D11VideoContext_VideoProcessorGetOutputBackgroundColor, npt_com_vtable(args._self),
@@ -1618,11 +2083,42 @@ npt_dispatch_ID3D11VideoContext_VideoProcessorGetOutputColorSpace(struct npt_dis
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_ID3D11VIDEOCONTEXT);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_VideoProcessorGetOutputColorSpace on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_ID3D11VideoContext_VideoProcessorGetOutputColorSpace_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_VideoProcessorGetOutputColorSpace: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_ID3D11VideoContext_VideoProcessorGetOutputColorSpace _original = NPT_COM_VTBL_FUNC(
         PFN_ID3D11VideoContext_VideoProcessorGetOutputColorSpace, npt_com_vtable(args._self),
@@ -1722,11 +2218,42 @@ npt_dispatch_ID3D11VideoContext_VideoProcessorGetOutputAlphaFillMode(struct npt_
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_ID3D11VIDEOCONTEXT);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_VideoProcessorGetOutputAlphaFillMode on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_ID3D11VideoContext_VideoProcessorGetOutputAlphaFillMode_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_VideoProcessorGetOutputAlphaFillMode: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_ID3D11VideoContext_VideoProcessorGetOutputAlphaFillMode _original = NPT_COM_VTBL_FUNC(
         PFN_ID3D11VideoContext_VideoProcessorGetOutputAlphaFillMode, npt_com_vtable(args._self),
@@ -1826,11 +2353,42 @@ npt_dispatch_ID3D11VideoContext_VideoProcessorGetOutputConstriction(struct npt_d
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_ID3D11VIDEOCONTEXT);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_VideoProcessorGetOutputConstriction on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_ID3D11VideoContext_VideoProcessorGetOutputConstriction_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_VideoProcessorGetOutputConstriction: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_ID3D11VideoContext_VideoProcessorGetOutputConstriction _original = NPT_COM_VTBL_FUNC(
         PFN_ID3D11VideoContext_VideoProcessorGetOutputConstriction, npt_com_vtable(args._self),
@@ -1923,11 +2481,42 @@ npt_dispatch_ID3D11VideoContext_VideoProcessorGetOutputStereoMode(struct npt_dis
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_ID3D11VIDEOCONTEXT);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_VideoProcessorGetOutputStereoMode on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_ID3D11VideoContext_VideoProcessorGetOutputStereoMode_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_VideoProcessorGetOutputStereoMode: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_ID3D11VideoContext_VideoProcessorGetOutputStereoMode _original = NPT_COM_VTBL_FUNC(
         PFN_ID3D11VideoContext_VideoProcessorGetOutputStereoMode, npt_com_vtable(args._self),
@@ -2043,11 +2632,42 @@ npt_dispatch_ID3D11VideoContext_VideoProcessorGetOutputExtension(struct npt_disp
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_ID3D11VIDEOCONTEXT);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_VideoProcessorGetOutputExtension on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_ID3D11VideoContext_VideoProcessorGetOutputExtension_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_VideoProcessorGetOutputExtension: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_ID3D11VideoContext_VideoProcessorGetOutputExtension _original = NPT_COM_VTBL_FUNC(
         PFN_ID3D11VideoContext_VideoProcessorGetOutputExtension, npt_com_vtable(args._self),
@@ -2139,11 +2759,42 @@ npt_dispatch_ID3D11VideoContext_VideoProcessorSetStreamFrameFormat(struct npt_di
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_ID3D11VIDEOCONTEXT);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_VideoProcessorSetStreamFrameFormat on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_ID3D11VideoContext_VideoProcessorSetStreamFrameFormat_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_VideoProcessorSetStreamFrameFormat: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_ID3D11VideoContext_VideoProcessorSetStreamFrameFormat _original = NPT_COM_VTBL_FUNC(
         PFN_ID3D11VideoContext_VideoProcessorSetStreamFrameFormat, npt_com_vtable(args._self),
@@ -2243,11 +2894,42 @@ npt_dispatch_ID3D11VideoContext_VideoProcessorSetStreamColorSpace(struct npt_dis
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_ID3D11VIDEOCONTEXT);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_VideoProcessorSetStreamColorSpace on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_ID3D11VideoContext_VideoProcessorSetStreamColorSpace_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_VideoProcessorSetStreamColorSpace: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_ID3D11VideoContext_VideoProcessorSetStreamColorSpace _original = NPT_COM_VTBL_FUNC(
         PFN_ID3D11VideoContext_VideoProcessorSetStreamColorSpace, npt_com_vtable(args._self),
@@ -2351,11 +3033,42 @@ npt_dispatch_ID3D11VideoContext_VideoProcessorSetStreamOutputRate(struct npt_dis
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_ID3D11VIDEOCONTEXT);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_VideoProcessorSetStreamOutputRate on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_ID3D11VideoContext_VideoProcessorSetStreamOutputRate_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_VideoProcessorSetStreamOutputRate: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_ID3D11VideoContext_VideoProcessorSetStreamOutputRate _original = NPT_COM_VTBL_FUNC(
         PFN_ID3D11VideoContext_VideoProcessorSetStreamOutputRate, npt_com_vtable(args._self),
@@ -2456,11 +3169,42 @@ npt_dispatch_ID3D11VideoContext_VideoProcessorSetStreamSourceRect(struct npt_dis
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_ID3D11VIDEOCONTEXT);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_VideoProcessorSetStreamSourceRect on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_ID3D11VideoContext_VideoProcessorSetStreamSourceRect_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_VideoProcessorSetStreamSourceRect: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_ID3D11VideoContext_VideoProcessorSetStreamSourceRect _original = NPT_COM_VTBL_FUNC(
         PFN_ID3D11VideoContext_VideoProcessorSetStreamSourceRect, npt_com_vtable(args._self),
@@ -2561,11 +3305,42 @@ npt_dispatch_ID3D11VideoContext_VideoProcessorSetStreamDestRect(struct npt_dispa
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_ID3D11VIDEOCONTEXT);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_VideoProcessorSetStreamDestRect on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_ID3D11VideoContext_VideoProcessorSetStreamDestRect_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_VideoProcessorSetStreamDestRect: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_ID3D11VideoContext_VideoProcessorSetStreamDestRect _original = NPT_COM_VTBL_FUNC(
         PFN_ID3D11VideoContext_VideoProcessorSetStreamDestRect, npt_com_vtable(args._self),
@@ -2660,11 +3435,42 @@ npt_dispatch_ID3D11VideoContext_VideoProcessorSetStreamAlpha(struct npt_dispatch
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_ID3D11VIDEOCONTEXT);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_VideoProcessorSetStreamAlpha on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_ID3D11VideoContext_VideoProcessorSetStreamAlpha_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_VideoProcessorSetStreamAlpha: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_ID3D11VideoContext_VideoProcessorSetStreamAlpha _original = NPT_COM_VTBL_FUNC(
         PFN_ID3D11VideoContext_VideoProcessorSetStreamAlpha, npt_com_vtable(args._self),
@@ -2773,11 +3579,42 @@ npt_dispatch_ID3D11VideoContext_VideoProcessorSetStreamPalette(struct npt_dispat
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_ID3D11VIDEOCONTEXT);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_VideoProcessorSetStreamPalette on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_ID3D11VideoContext_VideoProcessorSetStreamPalette_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_VideoProcessorSetStreamPalette: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_ID3D11VideoContext_VideoProcessorSetStreamPalette _original = NPT_COM_VTBL_FUNC(
         PFN_ID3D11VideoContext_VideoProcessorSetStreamPalette, npt_com_vtable(args._self),
@@ -2887,11 +3724,42 @@ npt_dispatch_ID3D11VideoContext_VideoProcessorSetStreamPixelAspectRatio(struct n
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_ID3D11VIDEOCONTEXT);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_VideoProcessorSetStreamPixelAspectRatio on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_ID3D11VideoContext_VideoProcessorSetStreamPixelAspectRatio_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_VideoProcessorSetStreamPixelAspectRatio: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_ID3D11VideoContext_VideoProcessorSetStreamPixelAspectRatio _original = NPT_COM_VTBL_FUNC(
         PFN_ID3D11VideoContext_VideoProcessorSetStreamPixelAspectRatio, npt_com_vtable(args._self),
@@ -2989,11 +3857,42 @@ npt_dispatch_ID3D11VideoContext_VideoProcessorSetStreamLumaKey(struct npt_dispat
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_ID3D11VIDEOCONTEXT);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_VideoProcessorSetStreamLumaKey on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_ID3D11VideoContext_VideoProcessorSetStreamLumaKey_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_VideoProcessorSetStreamLumaKey: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_ID3D11VideoContext_VideoProcessorSetStreamLumaKey _original = NPT_COM_VTBL_FUNC(
         PFN_ID3D11VideoContext_VideoProcessorSetStreamLumaKey, npt_com_vtable(args._self),
@@ -3100,11 +3999,42 @@ npt_dispatch_ID3D11VideoContext_VideoProcessorSetStreamStereoFormat(struct npt_d
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_ID3D11VIDEOCONTEXT);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_VideoProcessorSetStreamStereoFormat on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_ID3D11VideoContext_VideoProcessorSetStreamStereoFormat_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_VideoProcessorSetStreamStereoFormat: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_ID3D11VideoContext_VideoProcessorSetStreamStereoFormat _original = NPT_COM_VTBL_FUNC(
         PFN_ID3D11VideoContext_VideoProcessorSetStreamStereoFormat, npt_com_vtable(args._self),
@@ -3196,11 +4126,42 @@ npt_dispatch_ID3D11VideoContext_VideoProcessorSetStreamAutoProcessingMode(struct
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_ID3D11VIDEOCONTEXT);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_VideoProcessorSetStreamAutoProcessingMode on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_ID3D11VideoContext_VideoProcessorSetStreamAutoProcessingMode_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_VideoProcessorSetStreamAutoProcessingMode: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_ID3D11VideoContext_VideoProcessorSetStreamAutoProcessingMode _original = NPT_COM_VTBL_FUNC(
         PFN_ID3D11VideoContext_VideoProcessorSetStreamAutoProcessingMode, npt_com_vtable(args._self),
@@ -3298,11 +4259,42 @@ npt_dispatch_ID3D11VideoContext_VideoProcessorSetStreamFilter(struct npt_dispatc
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_ID3D11VIDEOCONTEXT);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_VideoProcessorSetStreamFilter on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_ID3D11VideoContext_VideoProcessorSetStreamFilter_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_VideoProcessorSetStreamFilter: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_ID3D11VideoContext_VideoProcessorSetStreamFilter _original = NPT_COM_VTBL_FUNC(
         PFN_ID3D11VideoContext_VideoProcessorSetStreamFilter, npt_com_vtable(args._self),
@@ -3410,11 +4402,42 @@ npt_dispatch_ID3D11VideoContext_VideoProcessorSetStreamExtension(struct npt_disp
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_ID3D11VIDEOCONTEXT);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_VideoProcessorSetStreamExtension on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_ID3D11VideoContext_VideoProcessorSetStreamExtension_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_VideoProcessorSetStreamExtension: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_ID3D11VideoContext_VideoProcessorSetStreamExtension _original = NPT_COM_VTBL_FUNC(
         PFN_ID3D11VideoContext_VideoProcessorSetStreamExtension, npt_com_vtable(args._self),
@@ -3510,11 +4533,42 @@ npt_dispatch_ID3D11VideoContext_VideoProcessorGetStreamFrameFormat(struct npt_di
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_ID3D11VIDEOCONTEXT);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_VideoProcessorGetStreamFrameFormat on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_ID3D11VideoContext_VideoProcessorGetStreamFrameFormat_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_VideoProcessorGetStreamFrameFormat: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_ID3D11VideoContext_VideoProcessorGetStreamFrameFormat _original = NPT_COM_VTBL_FUNC(
         PFN_ID3D11VideoContext_VideoProcessorGetStreamFrameFormat, npt_com_vtable(args._self),
@@ -3610,11 +4664,42 @@ npt_dispatch_ID3D11VideoContext_VideoProcessorGetStreamColorSpace(struct npt_dis
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_ID3D11VIDEOCONTEXT);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_VideoProcessorGetStreamColorSpace on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_ID3D11VideoContext_VideoProcessorGetStreamColorSpace_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_VideoProcessorGetStreamColorSpace: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_ID3D11VideoContext_VideoProcessorGetStreamColorSpace _original = NPT_COM_VTBL_FUNC(
         PFN_ID3D11VideoContext_VideoProcessorGetStreamColorSpace, npt_com_vtable(args._self),
@@ -3724,11 +4809,42 @@ npt_dispatch_ID3D11VideoContext_VideoProcessorGetStreamOutputRate(struct npt_dis
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_ID3D11VIDEOCONTEXT);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_VideoProcessorGetStreamOutputRate on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_ID3D11VideoContext_VideoProcessorGetStreamOutputRate_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_VideoProcessorGetStreamOutputRate: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_ID3D11VideoContext_VideoProcessorGetStreamOutputRate _original = NPT_COM_VTBL_FUNC(
         PFN_ID3D11VideoContext_VideoProcessorGetStreamOutputRate, npt_com_vtable(args._self),
@@ -3831,11 +4947,42 @@ npt_dispatch_ID3D11VideoContext_VideoProcessorGetStreamSourceRect(struct npt_dis
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_ID3D11VIDEOCONTEXT);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_VideoProcessorGetStreamSourceRect on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_ID3D11VideoContext_VideoProcessorGetStreamSourceRect_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_VideoProcessorGetStreamSourceRect: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_ID3D11VideoContext_VideoProcessorGetStreamSourceRect _original = NPT_COM_VTBL_FUNC(
         PFN_ID3D11VideoContext_VideoProcessorGetStreamSourceRect, npt_com_vtable(args._self),
@@ -3938,11 +5085,42 @@ npt_dispatch_ID3D11VideoContext_VideoProcessorGetStreamDestRect(struct npt_dispa
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_ID3D11VIDEOCONTEXT);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_VideoProcessorGetStreamDestRect on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_ID3D11VideoContext_VideoProcessorGetStreamDestRect_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_VideoProcessorGetStreamDestRect: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_ID3D11VideoContext_VideoProcessorGetStreamDestRect _original = NPT_COM_VTBL_FUNC(
         PFN_ID3D11VideoContext_VideoProcessorGetStreamDestRect, npt_com_vtable(args._self),
@@ -4045,11 +5223,42 @@ npt_dispatch_ID3D11VideoContext_VideoProcessorGetStreamAlpha(struct npt_dispatch
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_ID3D11VIDEOCONTEXT);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_VideoProcessorGetStreamAlpha on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_ID3D11VideoContext_VideoProcessorGetStreamAlpha_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_VideoProcessorGetStreamAlpha: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_ID3D11VideoContext_VideoProcessorGetStreamAlpha _original = NPT_COM_VTBL_FUNC(
         PFN_ID3D11VideoContext_VideoProcessorGetStreamAlpha, npt_com_vtable(args._self),
@@ -4156,11 +5365,42 @@ npt_dispatch_ID3D11VideoContext_VideoProcessorGetStreamPalette(struct npt_dispat
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_ID3D11VIDEOCONTEXT);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_VideoProcessorGetStreamPalette on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_ID3D11VideoContext_VideoProcessorGetStreamPalette_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_VideoProcessorGetStreamPalette: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_ID3D11VideoContext_VideoProcessorGetStreamPalette _original = NPT_COM_VTBL_FUNC(
         PFN_ID3D11VideoContext_VideoProcessorGetStreamPalette, npt_com_vtable(args._self),
@@ -4270,11 +5510,42 @@ npt_dispatch_ID3D11VideoContext_VideoProcessorGetStreamPixelAspectRatio(struct n
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_ID3D11VIDEOCONTEXT);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_VideoProcessorGetStreamPixelAspectRatio on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_ID3D11VideoContext_VideoProcessorGetStreamPixelAspectRatio_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_VideoProcessorGetStreamPixelAspectRatio: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_ID3D11VideoContext_VideoProcessorGetStreamPixelAspectRatio _original = NPT_COM_VTBL_FUNC(
         PFN_ID3D11VideoContext_VideoProcessorGetStreamPixelAspectRatio, npt_com_vtable(args._self),
@@ -4384,11 +5655,42 @@ npt_dispatch_ID3D11VideoContext_VideoProcessorGetStreamLumaKey(struct npt_dispat
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_ID3D11VIDEOCONTEXT);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_VideoProcessorGetStreamLumaKey on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_ID3D11VideoContext_VideoProcessorGetStreamLumaKey_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_VideoProcessorGetStreamLumaKey: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_ID3D11VideoContext_VideoProcessorGetStreamLumaKey _original = NPT_COM_VTBL_FUNC(
         PFN_ID3D11VideoContext_VideoProcessorGetStreamLumaKey, npt_com_vtable(args._self),
@@ -4519,11 +5821,42 @@ npt_dispatch_ID3D11VideoContext_VideoProcessorGetStreamStereoFormat(struct npt_d
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_ID3D11VIDEOCONTEXT);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_VideoProcessorGetStreamStereoFormat on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_ID3D11VideoContext_VideoProcessorGetStreamStereoFormat_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_VideoProcessorGetStreamStereoFormat: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_ID3D11VideoContext_VideoProcessorGetStreamStereoFormat _original = NPT_COM_VTBL_FUNC(
         PFN_ID3D11VideoContext_VideoProcessorGetStreamStereoFormat, npt_com_vtable(args._self),
@@ -4619,11 +5952,42 @@ npt_dispatch_ID3D11VideoContext_VideoProcessorGetStreamAutoProcessingMode(struct
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_ID3D11VIDEOCONTEXT);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_VideoProcessorGetStreamAutoProcessingMode on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_ID3D11VideoContext_VideoProcessorGetStreamAutoProcessingMode_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_VideoProcessorGetStreamAutoProcessingMode: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_ID3D11VideoContext_VideoProcessorGetStreamAutoProcessingMode _original = NPT_COM_VTBL_FUNC(
         PFN_ID3D11VideoContext_VideoProcessorGetStreamAutoProcessingMode, npt_com_vtable(args._self),
@@ -4729,11 +6093,42 @@ npt_dispatch_ID3D11VideoContext_VideoProcessorGetStreamFilter(struct npt_dispatc
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_ID3D11VIDEOCONTEXT);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_VideoProcessorGetStreamFilter on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_ID3D11VideoContext_VideoProcessorGetStreamFilter_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_VideoProcessorGetStreamFilter: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_ID3D11VideoContext_VideoProcessorGetStreamFilter _original = NPT_COM_VTBL_FUNC(
         PFN_ID3D11VideoContext_VideoProcessorGetStreamFilter, npt_com_vtable(args._self),
@@ -4852,11 +6247,42 @@ npt_dispatch_ID3D11VideoContext_VideoProcessorGetStreamExtension(struct npt_disp
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_ID3D11VIDEOCONTEXT);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_VideoProcessorGetStreamExtension on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_ID3D11VideoContext_VideoProcessorGetStreamExtension_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_VideoProcessorGetStreamExtension: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_ID3D11VideoContext_VideoProcessorGetStreamExtension _original = NPT_COM_VTBL_FUNC(
         PFN_ID3D11VideoContext_VideoProcessorGetStreamExtension, npt_com_vtable(args._self),
@@ -4979,11 +6405,42 @@ npt_dispatch_ID3D11VideoContext_VideoProcessorBlt(struct npt_dispatch_context *c
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_ID3D11VIDEOCONTEXT);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_VideoProcessorBlt on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_ID3D11VideoContext_VideoProcessorBlt_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_VideoProcessorBlt: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_ID3D11VideoContext_VideoProcessorBlt _original = NPT_COM_VTBL_FUNC(
         PFN_ID3D11VideoContext_VideoProcessorBlt, npt_com_vtable(args._self),
@@ -5091,11 +6548,42 @@ npt_dispatch_ID3D11VideoContext_NegotiateCryptoSessionKeyExchange(struct npt_dis
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_ID3D11VIDEOCONTEXT);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_NegotiateCryptoSessionKeyExchange on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_ID3D11VideoContext_NegotiateCryptoSessionKeyExchange_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_NegotiateCryptoSessionKeyExchange: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_ID3D11VideoContext_NegotiateCryptoSessionKeyExchange _original = NPT_COM_VTBL_FUNC(
         PFN_ID3D11VideoContext_NegotiateCryptoSessionKeyExchange, npt_com_vtable(args._self),
@@ -5218,11 +6706,42 @@ npt_dispatch_ID3D11VideoContext_EncryptionBlt(struct npt_dispatch_context *ctx,
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_ID3D11VIDEOCONTEXT);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_EncryptionBlt on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_ID3D11VideoContext_EncryptionBlt_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_EncryptionBlt: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_ID3D11VideoContext_EncryptionBlt _original = NPT_COM_VTBL_FUNC(
         PFN_ID3D11VideoContext_EncryptionBlt, npt_com_vtable(args._self),
@@ -5369,11 +6888,42 @@ npt_dispatch_ID3D11VideoContext_DecryptionBlt(struct npt_dispatch_context *ctx,
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_ID3D11VIDEOCONTEXT);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_DecryptionBlt on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_ID3D11VideoContext_DecryptionBlt_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_DecryptionBlt: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_ID3D11VideoContext_DecryptionBlt _original = NPT_COM_VTBL_FUNC(
         PFN_ID3D11VideoContext_DecryptionBlt, npt_com_vtable(args._self),
@@ -5477,11 +7027,42 @@ npt_dispatch_ID3D11VideoContext_StartSessionKeyRefresh(struct npt_dispatch_conte
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_ID3D11VIDEOCONTEXT);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_StartSessionKeyRefresh on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_ID3D11VideoContext_StartSessionKeyRefresh_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_StartSessionKeyRefresh: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_ID3D11VideoContext_StartSessionKeyRefresh _original = NPT_COM_VTBL_FUNC(
         PFN_ID3D11VideoContext_StartSessionKeyRefresh, npt_com_vtable(args._self),
@@ -5567,11 +7148,42 @@ npt_dispatch_ID3D11VideoContext_FinishSessionKeyRefresh(struct npt_dispatch_cont
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_ID3D11VIDEOCONTEXT);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_FinishSessionKeyRefresh on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_ID3D11VideoContext_FinishSessionKeyRefresh_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_FinishSessionKeyRefresh: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_ID3D11VideoContext_FinishSessionKeyRefresh _original = NPT_COM_VTBL_FUNC(
         PFN_ID3D11VideoContext_FinishSessionKeyRefresh, npt_com_vtable(args._self),
@@ -5676,11 +7288,42 @@ npt_dispatch_ID3D11VideoContext_GetEncryptionBltKey(struct npt_dispatch_context 
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_ID3D11VIDEOCONTEXT);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_GetEncryptionBltKey on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_ID3D11VideoContext_GetEncryptionBltKey_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_GetEncryptionBltKey: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_ID3D11VideoContext_GetEncryptionBltKey _original = NPT_COM_VTBL_FUNC(
         PFN_ID3D11VideoContext_GetEncryptionBltKey, npt_com_vtable(args._self),
@@ -5788,11 +7431,42 @@ npt_dispatch_ID3D11VideoContext_NegotiateAuthenticatedChannelKeyExchange(struct 
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_ID3D11VIDEOCONTEXT);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_NegotiateAuthenticatedChannelKeyExchange on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_ID3D11VideoContext_NegotiateAuthenticatedChannelKeyExchange_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_NegotiateAuthenticatedChannelKeyExchange: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_ID3D11VideoContext_NegotiateAuthenticatedChannelKeyExchange _original = NPT_COM_VTBL_FUNC(
         PFN_ID3D11VideoContext_NegotiateAuthenticatedChannelKeyExchange, npt_com_vtable(args._self),
@@ -5912,11 +7586,42 @@ npt_dispatch_ID3D11VideoContext_QueryAuthenticatedChannel(struct npt_dispatch_co
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_ID3D11VIDEOCONTEXT);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_QueryAuthenticatedChannel on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_ID3D11VideoContext_QueryAuthenticatedChannel_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_QueryAuthenticatedChannel: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_ID3D11VideoContext_QueryAuthenticatedChannel _original = NPT_COM_VTBL_FUNC(
         PFN_ID3D11VideoContext_QueryAuthenticatedChannel, npt_com_vtable(args._self),
@@ -6027,11 +7732,42 @@ npt_dispatch_ID3D11VideoContext_ConfigureAuthenticatedChannel(struct npt_dispatc
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_ID3D11VIDEOCONTEXT);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_ConfigureAuthenticatedChannel on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_ID3D11VideoContext_ConfigureAuthenticatedChannel_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_ConfigureAuthenticatedChannel: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_ID3D11VideoContext_ConfigureAuthenticatedChannel _original = NPT_COM_VTBL_FUNC(
         PFN_ID3D11VideoContext_ConfigureAuthenticatedChannel, npt_com_vtable(args._self),
@@ -6126,11 +7862,42 @@ npt_dispatch_ID3D11VideoContext_VideoProcessorSetStreamRotation(struct npt_dispa
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_ID3D11VIDEOCONTEXT);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_VideoProcessorSetStreamRotation on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_ID3D11VideoContext_VideoProcessorSetStreamRotation_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_VideoProcessorSetStreamRotation: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_ID3D11VideoContext_VideoProcessorSetStreamRotation _original = NPT_COM_VTBL_FUNC(
         PFN_ID3D11VideoContext_VideoProcessorSetStreamRotation, npt_com_vtable(args._self),
@@ -6233,11 +8000,42 @@ npt_dispatch_ID3D11VideoContext_VideoProcessorGetStreamRotation(struct npt_dispa
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_ID3D11VIDEOCONTEXT);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_VideoProcessorGetStreamRotation on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_ID3D11VideoContext_VideoProcessorGetStreamRotation_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext_VideoProcessorGetStreamRotation: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_ID3D11VideoContext_VideoProcessorGetStreamRotation _original = NPT_COM_VTBL_FUNC(
         PFN_ID3D11VideoContext_VideoProcessorGetStreamRotation, npt_com_vtable(args._self),
@@ -6345,11 +8143,42 @@ npt_dispatch_ID3D11VideoContext1_SubmitDecoderBuffers1(struct npt_dispatch_conte
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_ID3D11VIDEOCONTEXT1);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext1_SubmitDecoderBuffers1 on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_ID3D11VideoContext1_SubmitDecoderBuffers1_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext1_SubmitDecoderBuffers1: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_ID3D11VideoContext1_SubmitDecoderBuffers1 _original = NPT_COM_VTBL_FUNC(
         PFN_ID3D11VideoContext1_SubmitDecoderBuffers1, npt_com_vtable(args._self),
@@ -6458,11 +8287,42 @@ npt_dispatch_ID3D11VideoContext1_GetDataForNewHardwareKey(struct npt_dispatch_co
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_ID3D11VIDEOCONTEXT1);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext1_GetDataForNewHardwareKey on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_ID3D11VideoContext1_GetDataForNewHardwareKey_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext1_GetDataForNewHardwareKey: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_ID3D11VideoContext1_GetDataForNewHardwareKey _original = NPT_COM_VTBL_FUNC(
         PFN_ID3D11VideoContext1_GetDataForNewHardwareKey, npt_com_vtable(args._self),
@@ -6556,11 +8416,42 @@ npt_dispatch_ID3D11VideoContext1_CheckCryptoSessionStatus(struct npt_dispatch_co
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_ID3D11VIDEOCONTEXT1);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext1_CheckCryptoSessionStatus on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_ID3D11VideoContext1_CheckCryptoSessionStatus_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext1_CheckCryptoSessionStatus: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_ID3D11VideoContext1_CheckCryptoSessionStatus _original = NPT_COM_VTBL_FUNC(
         PFN_ID3D11VideoContext1_CheckCryptoSessionStatus, npt_com_vtable(args._self),
@@ -6664,11 +8555,42 @@ npt_dispatch_ID3D11VideoContext1_DecoderEnableDownsampling(struct npt_dispatch_c
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_ID3D11VIDEOCONTEXT1);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext1_DecoderEnableDownsampling on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_ID3D11VideoContext1_DecoderEnableDownsampling_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext1_DecoderEnableDownsampling: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_ID3D11VideoContext1_DecoderEnableDownsampling _original = NPT_COM_VTBL_FUNC(
         PFN_ID3D11VideoContext1_DecoderEnableDownsampling, npt_com_vtable(args._self),
@@ -6766,11 +8688,42 @@ npt_dispatch_ID3D11VideoContext1_DecoderUpdateDownsampling(struct npt_dispatch_c
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_ID3D11VIDEOCONTEXT1);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext1_DecoderUpdateDownsampling on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_ID3D11VideoContext1_DecoderUpdateDownsampling_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext1_DecoderUpdateDownsampling: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_ID3D11VideoContext1_DecoderUpdateDownsampling _original = NPT_COM_VTBL_FUNC(
         PFN_ID3D11VideoContext1_DecoderUpdateDownsampling, npt_com_vtable(args._self),
@@ -6859,11 +8812,42 @@ npt_dispatch_ID3D11VideoContext1_VideoProcessorSetOutputColorSpace1(struct npt_d
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_ID3D11VIDEOCONTEXT1);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext1_VideoProcessorSetOutputColorSpace1 on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_ID3D11VideoContext1_VideoProcessorSetOutputColorSpace1_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext1_VideoProcessorSetOutputColorSpace1: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_ID3D11VideoContext1_VideoProcessorSetOutputColorSpace1 _original = NPT_COM_VTBL_FUNC(
         PFN_ID3D11VideoContext1_VideoProcessorSetOutputColorSpace1, npt_com_vtable(args._self),
@@ -6952,11 +8936,42 @@ npt_dispatch_ID3D11VideoContext1_VideoProcessorSetOutputShaderUsage(struct npt_d
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_ID3D11VIDEOCONTEXT1);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext1_VideoProcessorSetOutputShaderUsage on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_ID3D11VideoContext1_VideoProcessorSetOutputShaderUsage_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext1_VideoProcessorSetOutputShaderUsage: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_ID3D11VideoContext1_VideoProcessorSetOutputShaderUsage _original = NPT_COM_VTBL_FUNC(
         PFN_ID3D11VideoContext1_VideoProcessorSetOutputShaderUsage, npt_com_vtable(args._self),
@@ -7049,11 +9064,42 @@ npt_dispatch_ID3D11VideoContext1_VideoProcessorGetOutputColorSpace1(struct npt_d
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_ID3D11VIDEOCONTEXT1);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext1_VideoProcessorGetOutputColorSpace1 on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_ID3D11VideoContext1_VideoProcessorGetOutputColorSpace1_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext1_VideoProcessorGetOutputColorSpace1: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_ID3D11VideoContext1_VideoProcessorGetOutputColorSpace1 _original = NPT_COM_VTBL_FUNC(
         PFN_ID3D11VideoContext1_VideoProcessorGetOutputColorSpace1, npt_com_vtable(args._self),
@@ -7146,11 +9192,42 @@ npt_dispatch_ID3D11VideoContext1_VideoProcessorGetOutputShaderUsage(struct npt_d
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_ID3D11VIDEOCONTEXT1);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext1_VideoProcessorGetOutputShaderUsage on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_ID3D11VideoContext1_VideoProcessorGetOutputShaderUsage_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext1_VideoProcessorGetOutputShaderUsage: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_ID3D11VideoContext1_VideoProcessorGetOutputShaderUsage _original = NPT_COM_VTBL_FUNC(
         PFN_ID3D11VideoContext1_VideoProcessorGetOutputShaderUsage, npt_com_vtable(args._self),
@@ -7242,11 +9319,42 @@ npt_dispatch_ID3D11VideoContext1_VideoProcessorSetStreamColorSpace1(struct npt_d
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_ID3D11VIDEOCONTEXT1);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext1_VideoProcessorSetStreamColorSpace1 on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_ID3D11VideoContext1_VideoProcessorSetStreamColorSpace1_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext1_VideoProcessorSetStreamColorSpace1: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_ID3D11VideoContext1_VideoProcessorSetStreamColorSpace1 _original = NPT_COM_VTBL_FUNC(
         PFN_ID3D11VideoContext1_VideoProcessorSetStreamColorSpace1, npt_com_vtable(args._self),
@@ -7344,11 +9452,42 @@ npt_dispatch_ID3D11VideoContext1_VideoProcessorSetStreamMirror(struct npt_dispat
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_ID3D11VIDEOCONTEXT1);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext1_VideoProcessorSetStreamMirror on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_ID3D11VideoContext1_VideoProcessorSetStreamMirror_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext1_VideoProcessorSetStreamMirror: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_ID3D11VideoContext1_VideoProcessorSetStreamMirror _original = NPT_COM_VTBL_FUNC(
         PFN_ID3D11VideoContext1_VideoProcessorSetStreamMirror, npt_com_vtable(args._self),
@@ -7444,11 +9583,42 @@ npt_dispatch_ID3D11VideoContext1_VideoProcessorGetStreamColorSpace1(struct npt_d
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_ID3D11VIDEOCONTEXT1);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext1_VideoProcessorGetStreamColorSpace1 on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_ID3D11VideoContext1_VideoProcessorGetStreamColorSpace1_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext1_VideoProcessorGetStreamColorSpace1: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_ID3D11VideoContext1_VideoProcessorGetStreamColorSpace1 _original = NPT_COM_VTBL_FUNC(
         PFN_ID3D11VideoContext1_VideoProcessorGetStreamColorSpace1, npt_com_vtable(args._self),
@@ -7558,11 +9728,42 @@ npt_dispatch_ID3D11VideoContext1_VideoProcessorGetStreamMirror(struct npt_dispat
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_ID3D11VIDEOCONTEXT1);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext1_VideoProcessorGetStreamMirror on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_ID3D11VideoContext1_VideoProcessorGetStreamMirror_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext1_VideoProcessorGetStreamMirror: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_ID3D11VideoContext1_VideoProcessorGetStreamMirror _original = NPT_COM_VTBL_FUNC(
         PFN_ID3D11VideoContext1_VideoProcessorGetStreamMirror, npt_com_vtable(args._self),
@@ -7686,11 +9887,42 @@ npt_dispatch_ID3D11VideoContext1_VideoProcessorGetBehaviorHints(struct npt_dispa
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_ID3D11VIDEOCONTEXT1);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext1_VideoProcessorGetBehaviorHints on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_ID3D11VideoContext1_VideoProcessorGetBehaviorHints_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext1_VideoProcessorGetBehaviorHints: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_ID3D11VideoContext1_VideoProcessorGetBehaviorHints _original = NPT_COM_VTBL_FUNC(
         PFN_ID3D11VideoContext1_VideoProcessorGetBehaviorHints, npt_com_vtable(args._self),
@@ -7794,11 +10026,42 @@ npt_dispatch_ID3D11VideoContext2_VideoProcessorSetOutputHDRMetaData(struct npt_d
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_ID3D11VIDEOCONTEXT2);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext2_VideoProcessorSetOutputHDRMetaData on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_ID3D11VideoContext2_VideoProcessorSetOutputHDRMetaData_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext2_VideoProcessorSetOutputHDRMetaData: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_ID3D11VideoContext2_VideoProcessorSetOutputHDRMetaData _original = NPT_COM_VTBL_FUNC(
         PFN_ID3D11VideoContext2_VideoProcessorSetOutputHDRMetaData, npt_com_vtable(args._self),
@@ -7909,11 +10172,42 @@ npt_dispatch_ID3D11VideoContext2_VideoProcessorGetOutputHDRMetaData(struct npt_d
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_ID3D11VIDEOCONTEXT2);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext2_VideoProcessorGetOutputHDRMetaData on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_ID3D11VideoContext2_VideoProcessorGetOutputHDRMetaData_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext2_VideoProcessorGetOutputHDRMetaData: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_ID3D11VideoContext2_VideoProcessorGetOutputHDRMetaData _original = NPT_COM_VTBL_FUNC(
         PFN_ID3D11VideoContext2_VideoProcessorGetOutputHDRMetaData, npt_com_vtable(args._self),
@@ -8020,11 +10314,42 @@ npt_dispatch_ID3D11VideoContext2_VideoProcessorSetStreamHDRMetaData(struct npt_d
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_ID3D11VIDEOCONTEXT2);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext2_VideoProcessorSetStreamHDRMetaData on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_ID3D11VideoContext2_VideoProcessorSetStreamHDRMetaData_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext2_VideoProcessorSetStreamHDRMetaData: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_ID3D11VideoContext2_VideoProcessorSetStreamHDRMetaData _original = NPT_COM_VTBL_FUNC(
         PFN_ID3D11VideoContext2_VideoProcessorSetStreamHDRMetaData, npt_com_vtable(args._self),
@@ -8138,11 +10463,42 @@ npt_dispatch_ID3D11VideoContext2_VideoProcessorGetStreamHDRMetaData(struct npt_d
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_ID3D11VIDEOCONTEXT2);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext2_VideoProcessorGetStreamHDRMetaData on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_ID3D11VideoContext2_VideoProcessorGetStreamHDRMetaData_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext2_VideoProcessorGetStreamHDRMetaData: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_ID3D11VideoContext2_VideoProcessorGetStreamHDRMetaData _original = NPT_COM_VTBL_FUNC(
         PFN_ID3D11VideoContext2_VideoProcessorGetStreamHDRMetaData, npt_com_vtable(args._self),
@@ -8295,11 +10651,42 @@ npt_dispatch_ID3D11VideoContext3_DecoderBeginFrame1(struct npt_dispatch_context 
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_ID3D11VIDEOCONTEXT3);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext3_DecoderBeginFrame1 on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_ID3D11VideoContext3_DecoderBeginFrame1_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext3_DecoderBeginFrame1: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_ID3D11VideoContext3_DecoderBeginFrame1 _original = NPT_COM_VTBL_FUNC(
         PFN_ID3D11VideoContext3_DecoderBeginFrame1, npt_com_vtable(args._self),
@@ -8407,11 +10794,42 @@ npt_dispatch_ID3D11VideoContext3_SubmitDecoderBuffers2(struct npt_dispatch_conte
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_ID3D11VIDEOCONTEXT3);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext3_SubmitDecoderBuffers2 on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_ID3D11VideoContext3_SubmitDecoderBuffers2_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11VideoContext3_SubmitDecoderBuffers2: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_ID3D11VideoContext3_SubmitDecoderBuffers2 _original = NPT_COM_VTBL_FUNC(
         PFN_ID3D11VideoContext3_SubmitDecoderBuffers2, npt_com_vtable(args._self),

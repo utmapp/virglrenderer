@@ -264,11 +264,16 @@ npt_lookup_cache_slot(uint64_t id)
           (NPT_CS_LOOKUP_CACHE_SIZE - 1);
 }
 
-void *
-npt_context_lookup_object(struct npt_context *ctx,
-                          struct npt_cs_decoder *dec,
-                          uint64_t id,
-                          npt_object_type expected)
+/* On a non-permissive failure of a nonzero id, sets *miss and leaves
+ * the error policy to the caller: npt_context_lookup_object goes
+ * decoder-fatal, npt_cs_handle_lookup records a decoder-private miss
+ * the generated dispatch may absorb. */
+static void *
+npt_context_lookup_object_impl(struct npt_context *ctx,
+                               struct npt_cs_decoder *dec,
+                               uint64_t id,
+                               npt_object_type expected,
+                               bool *miss)
 {
    if (!id)
       return NULL;
@@ -332,9 +337,21 @@ npt_context_lookup_object(struct npt_context *ctx,
               " (expected type %u)", id, (unsigned)expected);
    }
 
-   if (!permissive && dec)
-      npt_cs_decoder_set_fatal(dec);
+   *miss = !permissive;
    return NULL;
+}
+
+void *
+npt_context_lookup_object(struct npt_context *ctx,
+                          struct npt_cs_decoder *dec,
+                          uint64_t id,
+                          npt_object_type expected)
+{
+   bool miss = false;
+   void *obj = npt_context_lookup_object_impl(ctx, dec, id, expected, &miss);
+   if (miss && dec)
+      npt_cs_decoder_set_fatal(dec);
+   return obj;
 }
 
 void
@@ -396,7 +413,12 @@ npt_cs_handle_lookup(struct npt_dispatch_context *dispatch,
    if (!id)
       return NULL;
    struct npt_context *ctx = npt_context_from_dispatch(dispatch);
-   return npt_context_lookup_object(ctx, dispatch->decoder, id, type);
+   bool miss = false;
+   void *obj = npt_context_lookup_object_impl(ctx, dispatch->decoder, id,
+                                              type, &miss);
+   if (miss)
+      npt_cs_decoder_note_handle_miss(dispatch->decoder);
+   return obj;
 }
 
 void

@@ -363,9 +363,11 @@ npt_context_object_is(struct npt_context *ctx, uint64_t id,
  * `expected` (exact match, or either is an ancestor of the other;
  * IUNKNOWN matches anything).  On miss / type-mismatch logs the
  * violation and returns NULL; non-permissive lookups also mark the
- * decoder fatal so the ring tears down.  IUNKNOWN-expected lookups
- * are permissive: a missing id returns NULL silently to accommodate
- * the COM_RELEASE-vs-Create race. */
+ * decoder fatal so the ring tears down.  (The generated dispatch goes
+ * through npt_cs_handle_lookup instead, which records a decoder-private
+ * miss it may absorb.)  IUNKNOWN-expected lookups are permissive: a
+ * missing id returns NULL silently to accommodate the
+ * COM_RELEASE-vs-Create race. */
 void *
 npt_context_lookup_object(struct npt_context *ctx,
                           struct npt_cs_decoder *dec,

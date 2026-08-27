@@ -119,11 +119,42 @@ npt_dispatch_ID3D11On12Device_CreateWrappedResource(struct npt_dispatch_context 
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_ID3D11ON12DEVICE);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11On12Device_CreateWrappedResource on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_ID3D11On12Device_CreateWrappedResource_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11On12Device_CreateWrappedResource: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_ID3D11On12Device_CreateWrappedResource _original = NPT_COM_VTBL_FUNC(
         PFN_ID3D11On12Device_CreateWrappedResource, npt_com_vtable(args._self),
@@ -231,11 +262,42 @@ npt_dispatch_ID3D11On12Device_ReleaseWrappedResources(struct npt_dispatch_contex
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_ID3D11ON12DEVICE);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11On12Device_ReleaseWrappedResources on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_ID3D11On12Device_ReleaseWrappedResources_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11On12Device_ReleaseWrappedResources: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_ID3D11On12Device_ReleaseWrappedResources _original = NPT_COM_VTBL_FUNC(
         PFN_ID3D11On12Device_ReleaseWrappedResources, npt_com_vtable(args._self),
@@ -340,11 +402,42 @@ npt_dispatch_ID3D11On12Device_AcquireWrappedResources(struct npt_dispatch_contex
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_ID3D11ON12DEVICE);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11On12Device_AcquireWrappedResources on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_ID3D11On12Device_AcquireWrappedResources_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11On12Device_AcquireWrappedResources: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_ID3D11On12Device_AcquireWrappedResources _original = NPT_COM_VTBL_FUNC(
         PFN_ID3D11On12Device_AcquireWrappedResources, npt_com_vtable(args._self),
@@ -450,11 +543,42 @@ npt_dispatch_ID3D11On12Device1_GetD3D12Device(struct npt_dispatch_context *ctx,
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_ID3D11ON12DEVICE1);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11On12Device1_GetD3D12Device on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_ID3D11On12Device1_GetD3D12Device_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11On12Device1_GetD3D12Device: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_ID3D11On12Device1_GetD3D12Device _original = NPT_COM_VTBL_FUNC(
         PFN_ID3D11On12Device1_GetD3D12Device, npt_com_vtable(args._self),
@@ -575,11 +699,42 @@ npt_dispatch_ID3D11On12Device2_UnwrapUnderlyingResource(struct npt_dispatch_cont
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_ID3D11ON12DEVICE2);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11On12Device2_UnwrapUnderlyingResource on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_ID3D11On12Device2_UnwrapUnderlyingResource_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11On12Device2_UnwrapUnderlyingResource: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_ID3D11On12Device2_UnwrapUnderlyingResource _original = NPT_COM_VTBL_FUNC(
         PFN_ID3D11On12Device2_UnwrapUnderlyingResource, npt_com_vtable(args._self),
@@ -712,11 +867,42 @@ npt_dispatch_ID3D11On12Device2_ReturnUnderlyingResource(struct npt_dispatch_cont
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_ID3D11ON12DEVICE2);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11On12Device2_ReturnUnderlyingResource on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_ID3D11On12Device2_ReturnUnderlyingResource_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D11On12Device2_ReturnUnderlyingResource: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_ID3D11On12Device2_ReturnUnderlyingResource _original = NPT_COM_VTBL_FUNC(
         PFN_ID3D11On12Device2_ReturnUnderlyingResource, npt_com_vtable(args._self),

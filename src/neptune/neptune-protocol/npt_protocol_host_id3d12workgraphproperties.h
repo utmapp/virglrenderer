@@ -67,11 +67,42 @@ npt_dispatch_ID3D12WorkGraphProperties_GetNumWorkGraphs(struct npt_dispatch_cont
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_ID3D12WORKGRAPHPROPERTIES);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D12WorkGraphProperties_GetNumWorkGraphs on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_ID3D12WorkGraphProperties_GetNumWorkGraphs_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D12WorkGraphProperties_GetNumWorkGraphs: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_ID3D12WorkGraphProperties_GetNumWorkGraphs _original = NPT_COM_VTBL_FUNC(
         PFN_ID3D12WorkGraphProperties_GetNumWorkGraphs, npt_com_vtable(args._self),
@@ -153,11 +184,42 @@ npt_dispatch_ID3D12WorkGraphProperties_GetProgramName(struct npt_dispatch_contex
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_ID3D12WORKGRAPHPROPERTIES);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D12WorkGraphProperties_GetProgramName on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_ID3D12WorkGraphProperties_GetProgramName_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D12WorkGraphProperties_GetProgramName: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_ID3D12WorkGraphProperties_GetProgramName _original = NPT_COM_VTBL_FUNC(
         PFN_ID3D12WorkGraphProperties_GetProgramName, npt_com_vtable(args._self),
@@ -248,11 +310,42 @@ npt_dispatch_ID3D12WorkGraphProperties_GetWorkGraphIndex(struct npt_dispatch_con
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_ID3D12WORKGRAPHPROPERTIES);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D12WorkGraphProperties_GetWorkGraphIndex on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_ID3D12WorkGraphProperties_GetWorkGraphIndex_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D12WorkGraphProperties_GetWorkGraphIndex: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_ID3D12WorkGraphProperties_GetWorkGraphIndex _original = NPT_COM_VTBL_FUNC(
         PFN_ID3D12WorkGraphProperties_GetWorkGraphIndex, npt_com_vtable(args._self),
@@ -334,11 +427,42 @@ npt_dispatch_ID3D12WorkGraphProperties_GetNumNodes(struct npt_dispatch_context *
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_ID3D12WORKGRAPHPROPERTIES);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D12WorkGraphProperties_GetNumNodes on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_ID3D12WorkGraphProperties_GetNumNodes_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D12WorkGraphProperties_GetNumNodes: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_ID3D12WorkGraphProperties_GetNumNodes _original = NPT_COM_VTBL_FUNC(
         PFN_ID3D12WorkGraphProperties_GetNumNodes, npt_com_vtable(args._self),
@@ -425,11 +549,42 @@ npt_dispatch_ID3D12WorkGraphProperties_GetNodeID(struct npt_dispatch_context *ct
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_ID3D12WORKGRAPHPROPERTIES);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D12WorkGraphProperties_GetNodeID on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_ID3D12WorkGraphProperties_GetNodeID_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D12WorkGraphProperties_GetNodeID: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_ID3D12WorkGraphProperties_GetNodeID _original = NPT_COM_VTBL_FUNC(
         PFN_ID3D12WorkGraphProperties_GetNodeID, npt_com_vtable(args._self),
@@ -516,11 +671,42 @@ npt_dispatch_ID3D12WorkGraphProperties_GetNodeIndex(struct npt_dispatch_context 
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_ID3D12WORKGRAPHPROPERTIES);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D12WorkGraphProperties_GetNodeIndex on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_ID3D12WorkGraphProperties_GetNodeIndex_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D12WorkGraphProperties_GetNodeIndex: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_ID3D12WorkGraphProperties_GetNodeIndex _original = NPT_COM_VTBL_FUNC(
         PFN_ID3D12WorkGraphProperties_GetNodeIndex, npt_com_vtable(args._self),
@@ -605,11 +791,42 @@ npt_dispatch_ID3D12WorkGraphProperties_GetNodeLocalRootArgumentsTableIndex(struc
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_ID3D12WORKGRAPHPROPERTIES);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D12WorkGraphProperties_GetNodeLocalRootArgumentsTableIndex on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_ID3D12WorkGraphProperties_GetNodeLocalRootArgumentsTableIndex_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D12WorkGraphProperties_GetNodeLocalRootArgumentsTableIndex: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_ID3D12WorkGraphProperties_GetNodeLocalRootArgumentsTableIndex _original = NPT_COM_VTBL_FUNC(
         PFN_ID3D12WorkGraphProperties_GetNodeLocalRootArgumentsTableIndex, npt_com_vtable(args._self),
@@ -691,11 +908,42 @@ npt_dispatch_ID3D12WorkGraphProperties_GetNumEntrypoints(struct npt_dispatch_con
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_ID3D12WORKGRAPHPROPERTIES);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D12WorkGraphProperties_GetNumEntrypoints on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_ID3D12WorkGraphProperties_GetNumEntrypoints_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D12WorkGraphProperties_GetNumEntrypoints: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_ID3D12WorkGraphProperties_GetNumEntrypoints _original = NPT_COM_VTBL_FUNC(
         PFN_ID3D12WorkGraphProperties_GetNumEntrypoints, npt_com_vtable(args._self),
@@ -782,11 +1030,42 @@ npt_dispatch_ID3D12WorkGraphProperties_GetEntrypointID(struct npt_dispatch_conte
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_ID3D12WORKGRAPHPROPERTIES);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D12WorkGraphProperties_GetEntrypointID on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_ID3D12WorkGraphProperties_GetEntrypointID_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D12WorkGraphProperties_GetEntrypointID: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_ID3D12WorkGraphProperties_GetEntrypointID _original = NPT_COM_VTBL_FUNC(
         PFN_ID3D12WorkGraphProperties_GetEntrypointID, npt_com_vtable(args._self),
@@ -873,11 +1152,42 @@ npt_dispatch_ID3D12WorkGraphProperties_GetEntrypointIndex(struct npt_dispatch_co
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_ID3D12WORKGRAPHPROPERTIES);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D12WorkGraphProperties_GetEntrypointIndex on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_ID3D12WorkGraphProperties_GetEntrypointIndex_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D12WorkGraphProperties_GetEntrypointIndex: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_ID3D12WorkGraphProperties_GetEntrypointIndex _original = NPT_COM_VTBL_FUNC(
         PFN_ID3D12WorkGraphProperties_GetEntrypointIndex, npt_com_vtable(args._self),
@@ -962,11 +1272,42 @@ npt_dispatch_ID3D12WorkGraphProperties_GetEntrypointRecordSizeInBytes(struct npt
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_ID3D12WORKGRAPHPROPERTIES);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D12WorkGraphProperties_GetEntrypointRecordSizeInBytes on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_ID3D12WorkGraphProperties_GetEntrypointRecordSizeInBytes_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D12WorkGraphProperties_GetEntrypointRecordSizeInBytes: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_ID3D12WorkGraphProperties_GetEntrypointRecordSizeInBytes _original = NPT_COM_VTBL_FUNC(
         PFN_ID3D12WorkGraphProperties_GetEntrypointRecordSizeInBytes, npt_com_vtable(args._self),
@@ -1054,11 +1395,42 @@ npt_dispatch_ID3D12WorkGraphProperties_GetWorkGraphMemoryRequirements(struct npt
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_ID3D12WORKGRAPHPROPERTIES);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D12WorkGraphProperties_GetWorkGraphMemoryRequirements on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_ID3D12WorkGraphProperties_GetWorkGraphMemoryRequirements_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping ID3D12WorkGraphProperties_GetWorkGraphMemoryRequirements: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_ID3D12WorkGraphProperties_GetWorkGraphMemoryRequirements _original = NPT_COM_VTBL_FUNC(
         PFN_ID3D12WorkGraphProperties_GetWorkGraphMemoryRequirements, npt_com_vtable(args._self),

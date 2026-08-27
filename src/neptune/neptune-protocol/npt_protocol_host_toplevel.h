@@ -86,6 +86,21 @@ npt_dispatch_CreateDXGIFactory(struct npt_dispatch_context *ctx,
 
     npt_replace_CreateDXGIFactory_args_handle(ctx, &args);
 
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing method self: drop when nothing awaits a reply, go
+         * fatal when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping CreateDXGIFactory: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
+
     if (ctx->toplevel_dispatch_overrides &&
         ctx->toplevel_dispatch_overrides->CreateDXGIFactory) {
         args.ret = ctx->toplevel_dispatch_overrides->CreateDXGIFactory(ctx, &args);
@@ -181,6 +196,21 @@ npt_dispatch_CreateDXGIFactory1(struct npt_dispatch_context *ctx,
         return;
 
     npt_replace_CreateDXGIFactory1_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing method self: drop when nothing awaits a reply, go
+         * fatal when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping CreateDXGIFactory1: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     if (ctx->toplevel_dispatch_overrides &&
         ctx->toplevel_dispatch_overrides->CreateDXGIFactory1) {
@@ -281,6 +311,21 @@ npt_dispatch_CreateDXGIFactory2(struct npt_dispatch_context *ctx,
 
     npt_replace_CreateDXGIFactory2_args_handle(ctx, &args);
 
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing method self: drop when nothing awaits a reply, go
+         * fatal when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping CreateDXGIFactory2: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
+
     if (ctx->toplevel_dispatch_overrides &&
         ctx->toplevel_dispatch_overrides->CreateDXGIFactory2) {
         args.ret = ctx->toplevel_dispatch_overrides->CreateDXGIFactory2(ctx, &args);
@@ -352,6 +397,21 @@ npt_dispatch_DXGIDeclareAdapterRemovalSupport(struct npt_dispatch_context *ctx,
         return;
 
     npt_replace_DXGIDeclareAdapterRemovalSupport_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing method self: drop when nothing awaits a reply, go
+         * fatal when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping DXGIDeclareAdapterRemovalSupport: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     if (ctx->toplevel_dispatch_overrides &&
         ctx->toplevel_dispatch_overrides->DXGIDeclareAdapterRemovalSupport) {
@@ -499,6 +559,21 @@ npt_dispatch_D3D11CreateDevice(struct npt_dispatch_context *ctx,
         return;
 
     npt_replace_D3D11CreateDevice_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing method self: drop when nothing awaits a reply, go
+         * fatal when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping D3D11CreateDevice: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     if (ctx->toplevel_dispatch_overrides &&
         ctx->toplevel_dispatch_overrides->D3D11CreateDevice) {
@@ -675,6 +750,21 @@ npt_dispatch_D3D11CreateDeviceAndSwapChain(struct npt_dispatch_context *ctx,
 
     npt_replace_D3D11CreateDeviceAndSwapChain_args_handle(ctx, &args);
 
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing method self: drop when nothing awaits a reply, go
+         * fatal when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping D3D11CreateDeviceAndSwapChain: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
+
     if (ctx->toplevel_dispatch_overrides &&
         ctx->toplevel_dispatch_overrides->D3D11CreateDeviceAndSwapChain) {
         args.ret = ctx->toplevel_dispatch_overrides->D3D11CreateDeviceAndSwapChain(ctx, &args);
@@ -843,6 +933,21 @@ npt_dispatch_D3D11On12CreateDevice(struct npt_dispatch_context *ctx,
 
     npt_replace_D3D11On12CreateDevice_args_handle(ctx, &args);
 
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing method self: drop when nothing awaits a reply, go
+         * fatal when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping D3D11On12CreateDevice: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
+
     if (ctx->toplevel_dispatch_overrides &&
         ctx->toplevel_dispatch_overrides->D3D11On12CreateDevice) {
         args.ret = ctx->toplevel_dispatch_overrides->D3D11On12CreateDevice(ctx, &args);
@@ -951,6 +1056,21 @@ npt_dispatch_D3D12CreateDevice(struct npt_dispatch_context *ctx,
 
     npt_replace_D3D12CreateDevice_args_handle(ctx, &args);
 
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing method self: drop when nothing awaits a reply, go
+         * fatal when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping D3D12CreateDevice: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
+
     if (ctx->toplevel_dispatch_overrides &&
         ctx->toplevel_dispatch_overrides->D3D12CreateDevice) {
         args.ret = ctx->toplevel_dispatch_overrides->D3D12CreateDevice(ctx, &args);
@@ -1056,6 +1176,21 @@ npt_dispatch_D3D12CreateRootSignatureDeserializer(struct npt_dispatch_context *c
 
     npt_replace_D3D12CreateRootSignatureDeserializer_args_handle(ctx, &args);
 
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing method self: drop when nothing awaits a reply, go
+         * fatal when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping D3D12CreateRootSignatureDeserializer: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
+
     if (ctx->toplevel_dispatch_overrides &&
         ctx->toplevel_dispatch_overrides->D3D12CreateRootSignatureDeserializer) {
         args.ret = ctx->toplevel_dispatch_overrides->D3D12CreateRootSignatureDeserializer(ctx, &args);
@@ -1157,6 +1292,21 @@ npt_dispatch_D3D12CreateVersionedRootSignatureDeserializer(struct npt_dispatch_c
         return;
 
     npt_replace_D3D12CreateVersionedRootSignatureDeserializer_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing method self: drop when nothing awaits a reply, go
+         * fatal when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping D3D12CreateVersionedRootSignatureDeserializer: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     if (ctx->toplevel_dispatch_overrides &&
         ctx->toplevel_dispatch_overrides->D3D12CreateVersionedRootSignatureDeserializer) {
@@ -1297,6 +1447,21 @@ npt_dispatch_D3D12SerializeRootSignature(struct npt_dispatch_context *ctx,
 
     npt_replace_D3D12SerializeRootSignature_args_handle(ctx, &args);
 
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing method self: drop when nothing awaits a reply, go
+         * fatal when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping D3D12SerializeRootSignature: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
+
     if (ctx->toplevel_dispatch_overrides &&
         ctx->toplevel_dispatch_overrides->D3D12SerializeRootSignature) {
         args.ret = ctx->toplevel_dispatch_overrides->D3D12SerializeRootSignature(ctx, &args);
@@ -1432,6 +1597,21 @@ npt_dispatch_D3D12SerializeVersionedRootSignature(struct npt_dispatch_context *c
         return;
 
     npt_replace_D3D12SerializeVersionedRootSignature_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing method self: drop when nothing awaits a reply, go
+         * fatal when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping D3D12SerializeVersionedRootSignature: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     if (ctx->toplevel_dispatch_overrides &&
         ctx->toplevel_dispatch_overrides->D3D12SerializeVersionedRootSignature) {

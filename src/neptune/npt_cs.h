@@ -200,6 +200,14 @@ struct npt_cs_lookup_entry {
 
 struct npt_cs_decoder {
    bool *fatal_error;
+
+   /* A nonzero object id npt_cs_handle_lookup could not resolve.
+    * Decoder-private, unlike fatal_error, which every decoder of the
+    * context shares: the generated dispatch absorbs a miss to drop a
+    * reply-less call, and the absorb must not erase an error another
+    * ring's dispatch raised concurrently. */
+   bool handle_miss;
+
    struct npt_cs_decoder_temp_pool temp_pool;
 
    uint64_t lookup_gen;
@@ -235,6 +243,22 @@ static inline bool
 npt_cs_decoder_get_fatal(const struct npt_cs_decoder *dec)
 {
    return *dec->fatal_error;
+}
+
+static inline void
+npt_cs_decoder_note_handle_miss(struct npt_cs_decoder *dec)
+{
+   dec->handle_miss = true;
+}
+
+/* Read-and-clear, so a consumed miss cannot bleed into the next
+ * command dispatched on this decoder. */
+static inline bool
+npt_cs_decoder_take_handle_miss(struct npt_cs_decoder *dec)
+{
+   const bool miss = dec->handle_miss;
+   dec->handle_miss = false;
+   return miss;
 }
 
 static inline void
@@ -392,7 +416,8 @@ npt_object_from_id(npt_object_id id)
 
 /* Implemented in npt_context.c (forward-declared here to avoid a
  * cycle through npt_context.h -> generated dispatch types -> this
- * header). */
+ * header).  A nonzero id it cannot resolve records a handle miss on
+ * the dispatch context's decoder for npt_cs_decoder_take_handle_miss. */
 void *
 npt_cs_handle_lookup(struct npt_dispatch_context *ctx,
                      npt_object_id id,

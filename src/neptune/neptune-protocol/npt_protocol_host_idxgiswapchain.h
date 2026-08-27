@@ -73,11 +73,42 @@ npt_dispatch_IDXGISwapChain_Present(struct npt_dispatch_context *ctx,
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_IDXGISWAPCHAIN);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping IDXGISwapChain_Present on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_IDXGISwapChain_Present_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping IDXGISwapChain_Present: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_IDXGISwapChain_Present _original = NPT_COM_VTBL_FUNC(
         PFN_IDXGISwapChain_Present, npt_com_vtable(args._self),
@@ -186,11 +217,42 @@ npt_dispatch_IDXGISwapChain_GetBuffer(struct npt_dispatch_context *ctx,
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_IDXGISWAPCHAIN);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping IDXGISwapChain_GetBuffer on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_IDXGISwapChain_GetBuffer_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping IDXGISwapChain_GetBuffer: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_IDXGISwapChain_GetBuffer _original = NPT_COM_VTBL_FUNC(
         PFN_IDXGISwapChain_GetBuffer, npt_com_vtable(args._self),
@@ -283,11 +345,42 @@ npt_dispatch_IDXGISwapChain_SetFullscreenState(struct npt_dispatch_context *ctx,
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_IDXGISWAPCHAIN);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping IDXGISwapChain_SetFullscreenState on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_IDXGISwapChain_SetFullscreenState_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping IDXGISwapChain_SetFullscreenState: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_IDXGISwapChain_SetFullscreenState _original = NPT_COM_VTBL_FUNC(
         PFN_IDXGISwapChain_SetFullscreenState, npt_com_vtable(args._self),
@@ -389,11 +482,42 @@ npt_dispatch_IDXGISwapChain_GetFullscreenState(struct npt_dispatch_context *ctx,
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_IDXGISWAPCHAIN);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping IDXGISwapChain_GetFullscreenState on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_IDXGISwapChain_GetFullscreenState_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping IDXGISwapChain_GetFullscreenState: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_IDXGISwapChain_GetFullscreenState _original = NPT_COM_VTBL_FUNC(
         PFN_IDXGISwapChain_GetFullscreenState, npt_com_vtable(args._self),
@@ -483,11 +607,42 @@ npt_dispatch_IDXGISwapChain_GetDesc(struct npt_dispatch_context *ctx,
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_IDXGISWAPCHAIN);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping IDXGISwapChain_GetDesc on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_IDXGISwapChain_GetDesc_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping IDXGISwapChain_GetDesc: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_IDXGISwapChain_GetDesc _original = NPT_COM_VTBL_FUNC(
         PFN_IDXGISwapChain_GetDesc, npt_com_vtable(args._self),
@@ -581,11 +736,42 @@ npt_dispatch_IDXGISwapChain_ResizeBuffers(struct npt_dispatch_context *ctx,
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_IDXGISWAPCHAIN);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping IDXGISwapChain_ResizeBuffers on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_IDXGISwapChain_ResizeBuffers_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping IDXGISwapChain_ResizeBuffers: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_IDXGISwapChain_ResizeBuffers _original = NPT_COM_VTBL_FUNC(
         PFN_IDXGISwapChain_ResizeBuffers, npt_com_vtable(args._self),
@@ -675,11 +861,42 @@ npt_dispatch_IDXGISwapChain_ResizeTarget(struct npt_dispatch_context *ctx,
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_IDXGISWAPCHAIN);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping IDXGISwapChain_ResizeTarget on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_IDXGISwapChain_ResizeTarget_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping IDXGISwapChain_ResizeTarget: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_IDXGISwapChain_ResizeTarget _original = NPT_COM_VTBL_FUNC(
         PFN_IDXGISwapChain_ResizeTarget, npt_com_vtable(args._self),
@@ -774,11 +991,42 @@ npt_dispatch_IDXGISwapChain_GetContainingOutput(struct npt_dispatch_context *ctx
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_IDXGISWAPCHAIN);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping IDXGISwapChain_GetContainingOutput on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_IDXGISwapChain_GetContainingOutput_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping IDXGISwapChain_GetContainingOutput: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_IDXGISwapChain_GetContainingOutput _original = NPT_COM_VTBL_FUNC(
         PFN_IDXGISwapChain_GetContainingOutput, npt_com_vtable(args._self),
@@ -866,11 +1114,42 @@ npt_dispatch_IDXGISwapChain_GetFrameStatistics(struct npt_dispatch_context *ctx,
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_IDXGISWAPCHAIN);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping IDXGISwapChain_GetFrameStatistics on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_IDXGISwapChain_GetFrameStatistics_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping IDXGISwapChain_GetFrameStatistics: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_IDXGISwapChain_GetFrameStatistics _original = NPT_COM_VTBL_FUNC(
         PFN_IDXGISwapChain_GetFrameStatistics, npt_com_vtable(args._self),
@@ -956,11 +1235,42 @@ npt_dispatch_IDXGISwapChain_GetLastPresentCount(struct npt_dispatch_context *ctx
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_IDXGISWAPCHAIN);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping IDXGISwapChain_GetLastPresentCount on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_IDXGISwapChain_GetLastPresentCount_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping IDXGISwapChain_GetLastPresentCount: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_IDXGISwapChain_GetLastPresentCount _original = NPT_COM_VTBL_FUNC(
         PFN_IDXGISwapChain_GetLastPresentCount, npt_com_vtable(args._self),
@@ -1046,11 +1356,42 @@ npt_dispatch_IDXGISwapChain1_GetDesc1(struct npt_dispatch_context *ctx,
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_IDXGISWAPCHAIN1);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping IDXGISwapChain1_GetDesc1 on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_IDXGISwapChain1_GetDesc1_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping IDXGISwapChain1_GetDesc1: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_IDXGISwapChain1_GetDesc1 _original = NPT_COM_VTBL_FUNC(
         PFN_IDXGISwapChain1_GetDesc1, npt_com_vtable(args._self),
@@ -1136,11 +1477,42 @@ npt_dispatch_IDXGISwapChain1_GetFullscreenDesc(struct npt_dispatch_context *ctx,
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_IDXGISWAPCHAIN1);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping IDXGISwapChain1_GetFullscreenDesc on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_IDXGISwapChain1_GetFullscreenDesc_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping IDXGISwapChain1_GetFullscreenDesc: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_IDXGISwapChain1_GetFullscreenDesc _original = NPT_COM_VTBL_FUNC(
         PFN_IDXGISwapChain1_GetFullscreenDesc, npt_com_vtable(args._self),
@@ -1225,11 +1597,42 @@ npt_dispatch_IDXGISwapChain1_GetHwnd(struct npt_dispatch_context *ctx,
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_IDXGISWAPCHAIN1);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping IDXGISwapChain1_GetHwnd on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_IDXGISwapChain1_GetHwnd_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping IDXGISwapChain1_GetHwnd: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_IDXGISwapChain1_GetHwnd _original = NPT_COM_VTBL_FUNC(
         PFN_IDXGISwapChain1_GetHwnd, npt_com_vtable(args._self),
@@ -1335,11 +1738,42 @@ npt_dispatch_IDXGISwapChain1_GetCoreWindow(struct npt_dispatch_context *ctx,
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_IDXGISWAPCHAIN1);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping IDXGISwapChain1_GetCoreWindow on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_IDXGISwapChain1_GetCoreWindow_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping IDXGISwapChain1_GetCoreWindow: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_IDXGISwapChain1_GetCoreWindow _original = NPT_COM_VTBL_FUNC(
         PFN_IDXGISwapChain1_GetCoreWindow, npt_com_vtable(args._self),
@@ -1438,11 +1872,42 @@ npt_dispatch_IDXGISwapChain1_Present1(struct npt_dispatch_context *ctx,
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_IDXGISWAPCHAIN1);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping IDXGISwapChain1_Present1 on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_IDXGISwapChain1_Present1_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping IDXGISwapChain1_Present1: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_IDXGISwapChain1_Present1 _original = NPT_COM_VTBL_FUNC(
         PFN_IDXGISwapChain1_Present1, npt_com_vtable(args._self),
@@ -1521,11 +1986,42 @@ npt_dispatch_IDXGISwapChain1_IsTemporaryMonoSupported(struct npt_dispatch_contex
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_IDXGISWAPCHAIN1);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping IDXGISwapChain1_IsTemporaryMonoSupported on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_IDXGISwapChain1_IsTemporaryMonoSupported_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping IDXGISwapChain1_IsTemporaryMonoSupported: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_IDXGISwapChain1_IsTemporaryMonoSupported _original = NPT_COM_VTBL_FUNC(
         PFN_IDXGISwapChain1_IsTemporaryMonoSupported, npt_com_vtable(args._self),
@@ -1620,11 +2116,42 @@ npt_dispatch_IDXGISwapChain1_GetRestrictToOutput(struct npt_dispatch_context *ct
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_IDXGISWAPCHAIN1);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping IDXGISwapChain1_GetRestrictToOutput on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_IDXGISwapChain1_GetRestrictToOutput_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping IDXGISwapChain1_GetRestrictToOutput: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_IDXGISwapChain1_GetRestrictToOutput _original = NPT_COM_VTBL_FUNC(
         PFN_IDXGISwapChain1_GetRestrictToOutput, npt_com_vtable(args._self),
@@ -1716,11 +2243,42 @@ npt_dispatch_IDXGISwapChain1_SetBackgroundColor(struct npt_dispatch_context *ctx
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_IDXGISWAPCHAIN1);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping IDXGISwapChain1_SetBackgroundColor on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_IDXGISwapChain1_SetBackgroundColor_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping IDXGISwapChain1_SetBackgroundColor: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_IDXGISwapChain1_SetBackgroundColor _original = NPT_COM_VTBL_FUNC(
         PFN_IDXGISwapChain1_SetBackgroundColor, npt_com_vtable(args._self),
@@ -1806,11 +2364,42 @@ npt_dispatch_IDXGISwapChain1_GetBackgroundColor(struct npt_dispatch_context *ctx
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_IDXGISWAPCHAIN1);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping IDXGISwapChain1_GetBackgroundColor on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_IDXGISwapChain1_GetBackgroundColor_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping IDXGISwapChain1_GetBackgroundColor: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_IDXGISwapChain1_GetBackgroundColor _original = NPT_COM_VTBL_FUNC(
         PFN_IDXGISwapChain1_GetBackgroundColor, npt_com_vtable(args._self),
@@ -1892,11 +2481,42 @@ npt_dispatch_IDXGISwapChain1_SetRotation(struct npt_dispatch_context *ctx,
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_IDXGISWAPCHAIN1);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping IDXGISwapChain1_SetRotation on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_IDXGISwapChain1_SetRotation_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping IDXGISwapChain1_SetRotation: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_IDXGISwapChain1_SetRotation _original = NPT_COM_VTBL_FUNC(
         PFN_IDXGISwapChain1_SetRotation, npt_com_vtable(args._self),
@@ -1982,11 +2602,42 @@ npt_dispatch_IDXGISwapChain1_GetRotation(struct npt_dispatch_context *ctx,
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_IDXGISWAPCHAIN1);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping IDXGISwapChain1_GetRotation on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_IDXGISwapChain1_GetRotation_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping IDXGISwapChain1_GetRotation: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_IDXGISwapChain1_GetRotation _original = NPT_COM_VTBL_FUNC(
         PFN_IDXGISwapChain1_GetRotation, npt_com_vtable(args._self),
@@ -2071,11 +2722,42 @@ npt_dispatch_IDXGISwapChain2_SetSourceSize(struct npt_dispatch_context *ctx,
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_IDXGISWAPCHAIN2);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping IDXGISwapChain2_SetSourceSize on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_IDXGISwapChain2_SetSourceSize_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping IDXGISwapChain2_SetSourceSize: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_IDXGISwapChain2_SetSourceSize _original = NPT_COM_VTBL_FUNC(
         PFN_IDXGISwapChain2_SetSourceSize, npt_com_vtable(args._self),
@@ -2168,11 +2850,42 @@ npt_dispatch_IDXGISwapChain2_GetSourceSize(struct npt_dispatch_context *ctx,
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_IDXGISWAPCHAIN2);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping IDXGISwapChain2_GetSourceSize on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_IDXGISwapChain2_GetSourceSize_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping IDXGISwapChain2_GetSourceSize: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_IDXGISwapChain2_GetSourceSize _original = NPT_COM_VTBL_FUNC(
         PFN_IDXGISwapChain2_GetSourceSize, npt_com_vtable(args._self),
@@ -2254,11 +2967,42 @@ npt_dispatch_IDXGISwapChain2_SetMaximumFrameLatency(struct npt_dispatch_context 
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_IDXGISWAPCHAIN2);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping IDXGISwapChain2_SetMaximumFrameLatency on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_IDXGISwapChain2_SetMaximumFrameLatency_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping IDXGISwapChain2_SetMaximumFrameLatency: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_IDXGISwapChain2_SetMaximumFrameLatency _original = NPT_COM_VTBL_FUNC(
         PFN_IDXGISwapChain2_SetMaximumFrameLatency, npt_com_vtable(args._self),
@@ -2344,11 +3088,42 @@ npt_dispatch_IDXGISwapChain2_GetMaximumFrameLatency(struct npt_dispatch_context 
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_IDXGISWAPCHAIN2);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping IDXGISwapChain2_GetMaximumFrameLatency on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_IDXGISwapChain2_GetMaximumFrameLatency_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping IDXGISwapChain2_GetMaximumFrameLatency: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_IDXGISwapChain2_GetMaximumFrameLatency _original = NPT_COM_VTBL_FUNC(
         PFN_IDXGISwapChain2_GetMaximumFrameLatency, npt_com_vtable(args._self),
@@ -2428,11 +3203,42 @@ npt_dispatch_IDXGISwapChain2_GetFrameLatencyWaitableObject(struct npt_dispatch_c
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_IDXGISWAPCHAIN2);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping IDXGISwapChain2_GetFrameLatencyWaitableObject on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_IDXGISwapChain2_GetFrameLatencyWaitableObject_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping IDXGISwapChain2_GetFrameLatencyWaitableObject: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_IDXGISwapChain2_GetFrameLatencyWaitableObject _original = NPT_COM_VTBL_FUNC(
         PFN_IDXGISwapChain2_GetFrameLatencyWaitableObject, npt_com_vtable(args._self),
@@ -2522,11 +3328,42 @@ npt_dispatch_IDXGISwapChain2_SetMatrixTransform(struct npt_dispatch_context *ctx
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_IDXGISWAPCHAIN2);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping IDXGISwapChain2_SetMatrixTransform on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_IDXGISwapChain2_SetMatrixTransform_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping IDXGISwapChain2_SetMatrixTransform: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_IDXGISwapChain2_SetMatrixTransform _original = NPT_COM_VTBL_FUNC(
         PFN_IDXGISwapChain2_SetMatrixTransform, npt_com_vtable(args._self),
@@ -2612,11 +3449,42 @@ npt_dispatch_IDXGISwapChain2_GetMatrixTransform(struct npt_dispatch_context *ctx
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_IDXGISWAPCHAIN2);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping IDXGISwapChain2_GetMatrixTransform on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_IDXGISwapChain2_GetMatrixTransform_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping IDXGISwapChain2_GetMatrixTransform: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_IDXGISwapChain2_GetMatrixTransform _original = NPT_COM_VTBL_FUNC(
         PFN_IDXGISwapChain2_GetMatrixTransform, npt_com_vtable(args._self),
@@ -2695,11 +3563,42 @@ npt_dispatch_IDXGISwapChain3_GetCurrentBackBufferIndex(struct npt_dispatch_conte
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_IDXGISWAPCHAIN3);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping IDXGISwapChain3_GetCurrentBackBufferIndex on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_IDXGISwapChain3_GetCurrentBackBufferIndex_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping IDXGISwapChain3_GetCurrentBackBufferIndex: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_IDXGISwapChain3_GetCurrentBackBufferIndex _original = NPT_COM_VTBL_FUNC(
         PFN_IDXGISwapChain3_GetCurrentBackBufferIndex, npt_com_vtable(args._self),
@@ -2788,11 +3687,42 @@ npt_dispatch_IDXGISwapChain3_CheckColorSpaceSupport(struct npt_dispatch_context 
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_IDXGISWAPCHAIN3);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping IDXGISwapChain3_CheckColorSpaceSupport on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_IDXGISwapChain3_CheckColorSpaceSupport_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping IDXGISwapChain3_CheckColorSpaceSupport: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_IDXGISwapChain3_CheckColorSpaceSupport _original = NPT_COM_VTBL_FUNC(
         PFN_IDXGISwapChain3_CheckColorSpaceSupport, npt_com_vtable(args._self),
@@ -2874,11 +3804,42 @@ npt_dispatch_IDXGISwapChain3_SetColorSpace1(struct npt_dispatch_context *ctx,
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_IDXGISWAPCHAIN3);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping IDXGISwapChain3_SetColorSpace1 on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_IDXGISwapChain3_SetColorSpace1_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping IDXGISwapChain3_SetColorSpace1: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_IDXGISwapChain3_SetColorSpace1 _original = NPT_COM_VTBL_FUNC(
         PFN_IDXGISwapChain3_SetColorSpace1, npt_com_vtable(args._self),
@@ -3012,11 +3973,42 @@ npt_dispatch_IDXGISwapChain3_ResizeBuffers1(struct npt_dispatch_context *ctx,
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_IDXGISWAPCHAIN3);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping IDXGISwapChain3_ResizeBuffers1 on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_IDXGISwapChain3_ResizeBuffers1_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping IDXGISwapChain3_ResizeBuffers1: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_IDXGISwapChain3_ResizeBuffers1 _original = NPT_COM_VTBL_FUNC(
         PFN_IDXGISwapChain3_ResizeBuffers1, npt_com_vtable(args._self),
@@ -3113,11 +4105,42 @@ npt_dispatch_IDXGISwapChain4_SetHDRMetaData(struct npt_dispatch_context *ctx,
     args._self = npt_cs_handle_lookup(ctx, object_id,
                                        NPT_OBJECT_TYPE_IDXGISWAPCHAIN4);
     if (!args._self) {
+        /* The host no longer knows this object -- a guest-side lifetime
+         * bug, or a teardown race between a release and a call already
+         * on the wire.  A reply-less call is dropped: losing one
+         * command on an object that is already gone is a smaller harm
+         * than the context teardown a fatal costs.  A call that owes a
+         * reply still goes fatal; there is no honest answer to encode,
+         * and a silent drop would hang the caller.  Consume the
+         * recorded miss either way so it cannot leak into the next
+         * command. */
+        (void)npt_cs_decoder_take_handle_miss(ctx->decoder);
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping IDXGISwapChain4_SetHDRMetaData on unregistered object "
+                    "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
         npt_cs_decoder_set_fatal(ctx->decoder);
         return;
     }
 
     npt_replace_IDXGISwapChain4_SetHDRMetaData_args_handle(ctx, &args);
+
+    if (npt_cs_decoder_take_handle_miss(ctx->decoder)) {
+        /* An argument handle failed to translate; the backend would
+         * dereference the NULL left in its place.  Same policy as a
+         * missing self: drop when nothing awaits a reply, go fatal
+         * when something does. */
+        if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
+            npt_log("dropping IDXGISwapChain4_SetHDRMetaData: an argument handle is unknown "
+                    "to this context");
+            npt_cs_decoder_reset_temp_pool(ctx->decoder);
+            return;
+        }
+        npt_cs_decoder_set_fatal(ctx->decoder);
+        return;
+    }
 
     PFN_IDXGISwapChain4_SetHDRMetaData _original = NPT_COM_VTBL_FUNC(
         PFN_IDXGISwapChain4_SetHDRMetaData, npt_com_vtable(args._self),

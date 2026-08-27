@@ -119,6 +119,7 @@ npt_cs_decoder_reset(struct npt_cs_decoder *dec)
 
    /* Defensive: an unmatched save would leak state into the next reset. */
    dec->saved_state_valid = false;
+   dec->handle_miss = false;
 
    /* No lock needed: reset() runs only between submissions on the
     * owning ring, with no concurrent reader. */

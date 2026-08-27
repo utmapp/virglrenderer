@@ -28,6 +28,7 @@
  *
  *   -- Decoder --
  *   bool npt_cs_decoder_get_fatal(const struct npt_cs_decoder *dec)
+ *   bool npt_cs_decoder_take_handle_miss(struct npt_cs_decoder *dec)
  *   void *npt_cs_decoder_alloc_temp(struct npt_cs_decoder *dec, size_t size)
  *   void *npt_cs_decoder_alloc_temp_array(struct npt_cs_decoder *dec,
  *                                         size_t element_size, size_t count)
@@ -48,6 +49,14 @@
  *   handle="event" in the overlay): unlike npt_win32_handle_replace, an
  *   unregistered id must map to NULL rather than the identity fallback, so a
  *   guest that skipped REGISTER_EVENT cannot hand a raw token to the backend.
+ *
+ *   A failed npt_cs_handle_lookup of a nonzero id must be recorded on the
+ *   dispatch context's decoder, where npt_cs_decoder_take_handle_miss reads
+ *   and clears it.  The generated dispatch turns the miss into a dropped
+ *   call or a decoder fatal depending on whether the command owes a reply.
+ *   The record must be decoder-private state, not a shared fatal flag:
+ *   dispatch absorbs it when it drops a call, and the absorb must not erase
+ *   an error raised through another decoder.
  *
  *   The host implementation of npt_*_from_id is typically a no-op cast
  *   ((void *)(uintptr_t)id), since the host needs the raw ID stored in
