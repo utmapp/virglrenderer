@@ -333,32 +333,8 @@ proxy_context_submit_fence(struct virgl_context *base,
       .ring_index = ring_idx,
       .seqno = fence->seqno,
    };
-   if (proxy_socket_send_request(&ctx->socket, &req, sizeof(req))) {
-      struct render_context_op_submit_fence_reply reply;
-      int reply_fd = -1;
-      int reply_fd_count = 0;
-      if (!proxy_socket_receive_reply_with_fds(&ctx->socket, &reply,
-                                                sizeof(reply), &reply_fd, 1,
-                                                &reply_fd_count)) {
-         proxy_log("failed to receive submit_fence reply");
-         /* Don't unwind the timeline; the request was sent so the
-          * server may still retire the fence asynchronously.  Just
-          * report success to the caller and let the timeline path
-          * handle eventual retirement. */
-         return 0;
-      }
-
-      if (reply.has_fd && reply_fd >= 0) {
-         /* virgl_fence_set_fd dups internally; we still own reply_fd. */
-         int err = virgl_fence_set_fd(fence_id, reply_fd);
-         if (err)
-            proxy_log("submit_fence: virgl_fence_set_fd(%" PRIu64 ") "
-                      "failed (err=%d)", fence_id, err);
-         close(reply_fd);
-      }
-
+   if (proxy_socket_send_request(&ctx->socket, &req, sizeof(req)))
       return 0;
-   }
 
    /* recover timeline fences and busy_mask on submit_fence request failure */
    if (proxy_renderer.flags & VIRGL_RENDERER_ASYNC_FENCE_CB)

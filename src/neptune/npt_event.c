@@ -356,8 +356,7 @@ event_pair_parked(struct npt_context *ctx,
    const uint64_t fence_id = parked->fence_id;
    free(parked);
 
-   if (!npt_context_pair_event_fence(ctx, ring_idx, fence_id, paired,
-                                     /*register_fd=*/false))
+   if (!npt_context_pair_event_fence(ctx, ring_idx, fence_id, paired))
       npt_log("event: pairing parked fence (ring=%u id=%" PRIu64 ") failed",
               ring_idx, fence_id);
 }

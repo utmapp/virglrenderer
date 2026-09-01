@@ -29,7 +29,6 @@
 #include "util/os_file.h"
 #define XXH_INLINE_ALL
 #include "util/xxhash.h"
-#include "virgl_fence.h"
 
 static uint32_t
 hash_uint32(const void *key)
@@ -956,15 +955,13 @@ npt_context_submit_fence(struct npt_context *ctx,
       return true;
    }
 
-   return npt_context_pair_event_fence(ctx, ring_idx, fence_id,
-                                       &paired, /*register_fd=*/true);
+   return npt_context_pair_event_fence(ctx, ring_idx, fence_id, &paired);
 }
 
 bool
 npt_context_pair_event_fence(struct npt_context *ctx,
                              uint32_t ring_idx, uint64_t fence_id,
-                             const struct npt_event_paired *paired,
-                             bool register_fd)
+                             const struct npt_event_paired *paired)
 {
    int sync_fd = paired->fd;
    /* No vkGetDeviceQueue2 equivalent: create the sync queue on
@@ -987,31 +984,6 @@ npt_context_pair_event_fence(struct npt_context *ctx,
       ctx->sync_queues[ring_idx] = queue;
    }
    mtx_unlock(&ctx->sync_queues_mutex);
-
-   /* Register so render_context_dispatch_submit_fence can retrieve it
-    * via virgl_renderer_get_fence_fd and pass it via SCM_RIGHTS to
-    * the proxy.  virgl_fence_set_fd dups internally, so we still own
-    * sync_fd here.
-    *
-    * Key by the fence's (ring_idx, fence_id) identity: the guest's
-    * seqno is per-ring and repeats across the event rings, so the
-    * render-server table keys by the full pair, matching the lookup in
-    * render_context_dispatch_submit_fence.
-    *
-    * Only on the synchronous submit path: virgl_fence_take_fd runs
-    * right after we return, making the entry a one-shot hand-off.  A
-    * parked fence's consumer replied long ago with has_fd=0, so an entry
-    * registered for it strands -- and virgl_fence_set_fd sweeps every
-    * live entry with a syscall on each call, so strands make every later
-    * arm more expensive for the rest of the run.  Retirement rides the
-    * retire_fence message, not this fd. */
-   if (register_fd) {
-      int err = virgl_fence_set_fd(virgl_fence_ring_key(ring_idx, fence_id),
-                                   sync_fd);
-      if (err)
-         npt_log("pair_event_fence: virgl_fence_set_fd(ring=%u, id=%" PRIu64
-                 ") failed (err=%d)", ring_idx, fence_id, err);
-   }
 
    if (!npt_queue_sync_submit(queue, ring_idx, fence_id, paired)) {
       /* The submit released the paired wait source, so nothing is left

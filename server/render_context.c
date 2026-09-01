@@ -15,7 +15,6 @@
 
 #include "render_socket.h"
 #include "render_state.h"
-#include "virgl_fence.h"
 
 void
 render_context_update_timeline(struct render_context *ctx,
@@ -40,42 +39,11 @@ render_context_dispatch_submit_fence(struct render_context *ctx,
    assert(!(req->flags & ~VIRGL_RENDERER_FENCE_FLAG_MERGEABLE));
    assert(req->ring_index < (uint32_t)ctx->timeline_count);
 
-   bool ok = render_state_submit_fence(ctx->ctx_id,
-                                        VIRGL_RENDERER_FENCE_FLAG_MERGEABLE,
-                                        req->ring_index, req->seqno);
+   if (!render_state_submit_fence(ctx->ctx_id, VIRGL_RENDERER_FENCE_FLAG_MERGEABLE,
+                                  req->ring_index, req->seqno))
+      render_log("submit_fence(ring %u) failed", req->ring_index);
 
-   /* Key by the fence's (ring_index, seqno) identity; the seqno alone repeats
-    * across rings, so it can't distinguish fds registered on different rings.
-    *
-    * TAKE rather than get: in the render server the table is a one-shot
-    * hand-off from the backend's submit, which registers the fd inside
-    * render_state_submit_fence(), to here, its only consumer.  Left behind, an
-    * entry is reaped only by the readable-sweep in virgl_fence_set_fd(), which
-    * never reaches an fd that does not signal.  Taken unconditionally so a
-    * failed submit that registered one before failing does not strand it. */
-   int fence_fd =
-      virgl_fence_take_fd(virgl_fence_ring_key(req->ring_index, req->seqno));
-   if (!ok && fence_fd >= 0) {
-      close(fence_fd);
-      fence_fd = -1;
-   }
-
-   struct render_context_op_submit_fence_reply reply = {
-      .ok = ok,
-      .has_fd = (fence_fd >= 0),
-      .pad = 0,
-   };
-
-   bool sent;
-   if (fence_fd >= 0) {
-      sent = render_socket_send_reply_with_fds(&ctx->socket, &reply,
-                                                sizeof(reply), &fence_fd, 1);
-      close(fence_fd);
-   } else {
-      sent = render_socket_send_reply(&ctx->socket, &reply, sizeof(reply));
-   }
-
-   return sent;
+   return true;
 }
 
 /* Read exactly `size` bytes off a SOCK_STREAM fd.  Returns false on EOF or
@@ -101,8 +69,7 @@ render_context_fence_read_full(int fd, void *data, size_t size)
 
 /* Out-of-band fence channel (see render_protocol.h): registers submit_fence
  * records the moment they arrive, independent of the dispatch thread's
- * backlog.  Only arrival-order-tolerant fences travel here, no replies ever
- * flow back, and any fd the backend registered for the fence is unwanted. */
+ * backlog.  Only arrival-order-tolerant fences travel here. */
 static int
 render_context_fence_thread(void *arg)
 {
@@ -128,13 +95,6 @@ render_context_fence_thread(void *arg)
                                      req.ring_index, req.seqno))
          render_log("fence channel: submit_fence(ring %u) failed",
                     req.ring_index);
-
-      /* One-shot hand-off, same as the dispatch path: take the fd the
-       * backend may have registered so it never strands in the table. */
-      const int fence_fd =
-         virgl_fence_take_fd(virgl_fence_ring_key(req.ring_index, req.seqno));
-      if (fence_fd >= 0)
-         close(fence_fd);
    }
 
    return 0;

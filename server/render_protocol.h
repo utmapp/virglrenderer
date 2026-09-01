@@ -210,9 +210,7 @@ struct render_context_op_submit_cmd_request {
  *
  * This roughly corresponds to virgl_renderer_context_create_fence.
  *
- * The reply may carry a sync_file fd via SCM_RIGHTS, indicated by
- * `has_fd`.  When present, the fd represents the fence registered for
- * `seqno` and the receiver takes ownership.
+ * No reply; retirement rides the shmem timeline and the fence eventfd.
  */
 struct render_context_op_submit_fence_request {
    struct render_context_op_header header;
@@ -220,12 +218,6 @@ struct render_context_op_submit_fence_request {
    /* TODO fix virgl_renderer_context_create_fence to use ring_index */
    uint32_t ring_index;
    uint32_t seqno;
-};
-
-struct render_context_op_submit_fence_reply {
-   bool ok;
-   bool has_fd;       /* if true, one fd follows via SCM_RIGHTS */
-   uint16_t pad;
 };
 
 /* Attach a side channel dedicated to fence submission.
@@ -241,8 +233,6 @@ struct render_context_op_submit_fence_reply {
  * timeline range): the host pairs them with ARM commands and explicitly
  * parks whichever side arrives first.  Low rings retire in dispatch order
  * ("everything before me was consumed") and must stay on the main socket.
- * No replies ever flow on this channel and no fd is exported for these
- * fences; retirement rides the shmem timeline as usual.
  */
 struct render_context_op_attach_fence_socket_request {
    struct render_context_op_header header;

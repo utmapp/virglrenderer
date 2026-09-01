@@ -19,7 +19,6 @@
 #include "npt_event.h"
 #include "npt_profile.h"
 #include "util/u_thread.h"
-#include "virgl_fence.h"
 
 #if defined(__APPLE__)
 #include <pthread.h>
@@ -97,12 +96,6 @@ npt_queue_sync_retire(struct npt_queue *queue, struct npt_queue_sync *sync)
 {
    queue->context->retire_fence(queue->context->ctx_id,
                                  sync->ring_idx, sync->fence_id);
-   /* Belt-and-braces against stranded virgl fence-table entries: the
-    * synchronous submit path's take_fd normally empties the table, but
-    * any entry left behind (e.g. a take that lost a race with a very
-    * fast completion) would otherwise be swept with a syscall by every
-    * later virgl_fence_set_fd, forever.  A no-op on the common path. */
-   virgl_fence_retire(virgl_fence_ring_key(sync->ring_idx, sync->fence_id));
    /* AUTO_RELEASE arm: the proxy reference was transferred to this
     * entry at pairing; the fence has retired (the proxy fired), so the
     * D3D library is done writing the signal handle -- release it. */

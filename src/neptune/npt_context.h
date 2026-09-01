@@ -233,19 +233,12 @@ npt_context_submit_fence(struct npt_context *ctx,
                          uint64_t fence_id);
 
 /* Route a paired (arm wait fd, fence) to the ring's sync queue, taking
- * ownership of the fd.
- *
- * register_fd puts the fd in the virgl fence table for the submit
- * dispatch's virgl_fence_take_fd, and is true ONLY on the synchronous
- * submit_fence path.  The parked-pairing paths pass false: their
- * consumer replied long ago, and a stranded entry is swept with a
- * syscall by every later virgl_fence_set_fd, forever. */
+ * ownership of the fd. */
 struct npt_event_paired;
 bool
 npt_context_pair_event_fence(struct npt_context *ctx,
                              uint32_t ring_idx, uint64_t fence_id,
-                             const struct npt_event_paired *paired,
-                             bool register_fd);
+                             const struct npt_event_paired *paired);
 
 bool
 npt_context_create_resource(struct npt_context *ctx,
