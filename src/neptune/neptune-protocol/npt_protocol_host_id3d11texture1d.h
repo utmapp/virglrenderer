@@ -86,6 +86,7 @@ npt_dispatch_ID3D11Texture1D_GetDesc(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11Texture1D_GetDesc on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -103,6 +104,7 @@ npt_dispatch_ID3D11Texture1D_GetDesc(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11Texture1D_GetDesc: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }

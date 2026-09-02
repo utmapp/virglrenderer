@@ -195,7 +195,74 @@ npt_context_register_object(struct npt_context *ctx,
 
    /* Key points into e->id so the hash key stays valid for e's lifetime. */
    _mesa_hash_table_insert(ctx->object_table, &e->id, e);
+   if (ctx->object_waiters)
+      cnd_broadcast(&ctx->object_cond);
    mtx_unlock(&ctx->object_mutex);
+}
+
+void
+npt_context_register_failed_object(struct npt_context *ctx, uint64_t id)
+{
+   if (!id || !ctx || !ctx->object_table)
+      return;
+
+   mtx_lock(&ctx->object_mutex);
+   if (!_mesa_hash_table_search(ctx->object_table, &id)) {
+      struct npt_object *e = calloc(1, sizeof(*e));
+      if (e) {
+         e->id = id;
+         _mesa_hash_table_insert(ctx->object_table, &e->id, e);
+         if (ctx->object_waiters)
+            cnd_broadcast(&ctx->object_cond);
+      }
+   }
+   mtx_unlock(&ctx->object_mutex);
+   npt_log("object table: Create for id 0x%016" PRIx64 " failed on the "
+           "host; its calls will be dropped", id);
+}
+
+/* Caller holds object_mutex.  Wait (bounded) for `id` to be registered
+ * by another ring: a use decoded here can only have been written after
+ * the guest wrote the Create, so the Create is published on some ring
+ * and will be decoded unless that ring is wedged.  Returns the entry,
+ * or NULL after the timeout / on fatal. */
+static struct npt_object *
+npt_context_await_object_locked(struct npt_context *ctx, uint64_t id)
+{
+   const uint64_t slice_ns = 10ull * 1000 * 1000;
+   /* Longer than any legitimate cross-ring lag by orders of magnitude,
+    * shorter than the guest's GPU timeout, so a ring wedged on a
+    * registration that never comes drops the call before dxgkrnl
+    * declares the device hung. */
+   const uint64_t give_up_ns = 1000ull * 1000 * 1000;
+   uint64_t waited_ns = 0;
+   const struct npt_ring *self = npt_ring_current();
+
+   ctx->object_waiters++;
+   for (;;) {
+      struct hash_entry *entry =
+         _mesa_hash_table_search(ctx->object_table, &id);
+      if (entry || ctx->cs_fatal_error || (self && !self->started)) {
+         ctx->object_waiters--;
+         return entry ? entry->data : NULL;
+      }
+      if (waited_ns >= give_up_ns) {
+         ctx->object_waiters--;
+         npt_log("object table: id 0x%016" PRIx64 " still unregistered "
+                 "after %" PRIu64 " ms; giving up", id,
+                 waited_ns / 1000000);
+         return NULL;
+      }
+      struct timespec ts;
+      timespec_get(&ts, TIME_UTC);
+      ts.tv_nsec += (long)slice_ns;
+      if (ts.tv_nsec >= 1000000000L) {
+         ts.tv_sec += 1;
+         ts.tv_nsec -= 1000000000L;
+      }
+      cnd_timedwait(&ctx->object_cond, &ctx->object_mutex, &ts);
+      waited_ns += slice_ns;
+   }
 }
 
 void
@@ -249,9 +316,12 @@ npt_context_object_is(struct npt_context *ctx, uint64_t id,
    const struct hash_entry *entry =
       _mesa_hash_table_search(ctx->object_table, &id);
    const struct npt_object *obj = entry ? entry->data : NULL;
+   if (!obj && npt_ring_current())
+      obj = npt_context_await_object_locked(ctx, id);
    const npt_object_type actual = obj ? obj->type : (npt_object_type)0;
+   const bool present = obj && obj->host_ptr;
    mtx_unlock(&ctx->object_mutex);
-   return obj && npt_object_type_is_compatible(actual, want);
+   return present && npt_object_type_is_compatible(actual, want);
 }
 
 static inline uint32_t
@@ -299,12 +369,24 @@ npt_context_lookup_object_impl(struct npt_context *ctx,
       }
    }
 
+   /* IUNKNOWN lookups are permissive: COM_RELEASE doesn't deref by type
+    * and can legitimately race a Create that would register the id. */
+   const bool permissive = (expected == NPT_OBJECT_TYPE_IUNKNOWN);
+
    const uint64_t prof_t0 =
       npt_profile_enabled() ? npt_profile_now_ns() : 0;
    mtx_lock(&ctx->object_mutex);
    const struct hash_entry *entry =
       _mesa_hash_table_search(ctx->object_table, &id);
    const struct npt_object *obj = entry ? entry->data : NULL;
+   /* Rings decode in parallel, so a use can reach this ring before the
+    * ring carrying the Create has registered the id.  Wait for it here
+    * rather than have the guest serialise the two rings. */
+   if (!obj && !permissive && npt_ring_current())
+      obj = npt_context_await_object_locked(ctx, id);
+   const bool failed_create = obj && !obj->host_ptr;
+   if (failed_create)
+      obj = NULL;
    const npt_object_type actual = obj ? obj->type : (npt_object_type)0;
    void *host_ptr = obj ? obj->host_ptr : NULL;
    mtx_unlock(&ctx->object_mutex);
@@ -324,13 +406,12 @@ npt_context_lookup_object_impl(struct npt_context *ctx,
    if (likely(obj && npt_object_type_is_compatible(actual, expected)))
       return host_ptr;
 
-   /* IUNKNOWN lookups are permissive: COM_RELEASE doesn't deref by type
-    * and can legitimately race a Create that would register the id. */
-   const bool permissive = (expected == NPT_OBJECT_TYPE_IUNKNOWN);
    if (obj) {
       npt_log("object table: id 0x%016" PRIx64 " type mismatch "
               "(expected %u, registered %u)", id,
               (unsigned)expected, (unsigned)actual);
+   } else if (failed_create) {
+      /* Reported once, at registration. */
    } else if (!permissive) {
       npt_log("object table: unregistered id 0x%016" PRIx64
               " (expected type %u)", id, (unsigned)expected);
@@ -389,6 +470,16 @@ npt_context_query_interface(struct npt_context *ctx,
 {
    void *src = npt_context_lookup_object(ctx, NULL, src_guest_id,
                                          NPT_OBJECT_TYPE_IUNKNOWN);
+   if (!src && src_guest_id && npt_ring_current()) {
+      /* The source may have been created on another ring whose
+       * decoder has not reached the Create yet; IUnknown lookups are
+       * permissive, so wait for it explicitly. */
+      mtx_lock(&ctx->object_mutex);
+      const struct npt_object *obj =
+         npt_context_await_object_locked(ctx, src_guest_id);
+      src = obj ? obj->host_ptr : NULL;
+      mtx_unlock(&ctx->object_mutex);
+   }
    if (!src || !new_guest_id)
       return NPT_E_NOINTERFACE;
 
@@ -432,6 +523,94 @@ npt_cs_handle_register_guest_id(struct npt_dispatch_context *dispatch,
    npt_context_register_object(ctx, guest_id, obj, type);
 }
 
+void
+npt_cs_handle_register_failed_guest_id(struct npt_dispatch_context *dispatch,
+                                       uint64_t guest_id)
+{
+   if (!guest_id)
+      return;
+   npt_context_register_failed_object(npt_context_from_dispatch(dispatch),
+                                      guest_id);
+}
+
+/* ---------------------------------------------------------------------- */
+/* Deferred COM_RELEASE                                                   */
+/* ---------------------------------------------------------------------- */
+
+struct npt_deferred_release {
+   struct list_head head;
+   uint64_t guest_id;
+   _Atomic uint32_t pending;
+   uint32_t count;
+   struct npt_ring_watch watch[];
+};
+
+void
+npt_context_deferred_release_settle(struct npt_context *ctx,
+                                    struct npt_deferred_release *d)
+{
+   if (atomic_fetch_sub_explicit(&d->pending, 1, memory_order_acq_rel) != 1)
+      return;
+
+   mtx_lock(&ctx->deferred_mutex);
+   list_del(&d->head);
+   mtx_unlock(&ctx->deferred_mutex);
+
+   npt_context_release_object(ctx, d->guest_id);
+   free(d);
+}
+
+void
+npt_context_release_object_ordered(struct npt_context *ctx,
+                                   uint64_t guest_id,
+                                   const struct npt_cmd_com_release_wait *wait,
+                                   uint32_t count)
+{
+   if (!guest_id)
+      return;
+
+   /* Each named ring that has not yet decoded past its position gets a
+    * watch; the ring thread that settles the last watch runs the
+    * release.  Rings are resolved under ring_mutex, which keeps them
+    * alive while the watch is placed; one that is gone was drained by
+    * its DESTROY_RING, and one the context path has not registered yet
+    * is waited for, since the guest can name a ring before the host has
+    * seen its CREATE_RING. */
+   mtx_lock(&ctx->ring_mutex);
+   struct npt_deferred_release *d =
+      count ? malloc(sizeof(*d) + count * sizeof(d->watch[0])) : NULL;
+   if (!d) {
+      mtx_unlock(&ctx->ring_mutex);
+      npt_context_release_object(ctx, guest_id);
+      return;
+   }
+   d->guest_id = guest_id;
+   d->count = 0;
+   /* Held by this registration pass, so a watch settled by a fast ring
+    * cannot run the release before every watch is placed. */
+   atomic_store_explicit(&d->pending, 1, memory_order_relaxed);
+   mtx_lock(&ctx->deferred_mutex);
+   list_addtail(&d->head, &ctx->deferred_releases);
+   mtx_unlock(&ctx->deferred_mutex);
+
+   for (uint32_t i = 0; i < count; i++) {
+      /* A ring the guest named but the context path has not registered
+       * yet is waited for (ring_mutex is dropped inside); one that was
+       * destroyed decoded everything it will ever decode. */
+      struct npt_ring *r = npt_ring_lookup_wait_locked(ctx, wait[i].ring_id);
+      if (!r || npt_seqno_ge(npt_ring_load_head(r), wait[i].seqno))
+         continue;
+      struct npt_ring_watch *w = &d->watch[d->count++];
+      w->release = d;
+      w->seqno = wait[i].seqno;
+      atomic_fetch_add_explicit(&d->pending, 1, memory_order_relaxed);
+      npt_ring_watch_add(r, w);
+   }
+   mtx_unlock(&ctx->ring_mutex);
+
+   npt_context_deferred_release_settle(ctx, d);
+}
+
 struct npt_context *
 npt_context_create(uint32_t ctx_id,
                    npt_renderer_retire_fence_callback_type retire_fence,
@@ -461,6 +640,8 @@ npt_context_create(uint32_t ctx_id,
 
    if (mtx_init(&ctx->ring_mutex, mtx_plain) != thrd_success)
       goto err_ring_mutex;
+   if (cnd_init(&ctx->ring_cond) != thrd_success)
+      goto err_ring_cond;
 
    list_inithead(&ctx->rings);
 
@@ -501,7 +682,14 @@ npt_context_create(uint32_t ctx_id,
 
    if (mtx_init(&ctx->object_mutex, mtx_plain) != thrd_success)
       goto err_object_mutex;
+   if (cnd_init(&ctx->object_cond) != thrd_success)
+      goto err_object_cond;
+   ctx->object_waiters = 0;
    atomic_store_explicit(&ctx->object_gen, 0, memory_order_relaxed);
+
+   if (mtx_init(&ctx->deferred_mutex, mtx_plain) != thrd_success)
+      goto err_deferred_mutex;
+   list_inithead(&ctx->deferred_releases);
 
    ctx->object_table =
       _mesa_hash_table_create(NULL, hash_uint64, equal_uint64);
@@ -530,6 +718,10 @@ err_decoder:
 err_encoder:
    _mesa_hash_table_destroy(ctx->object_table, NULL);
 err_object_table:
+   mtx_destroy(&ctx->deferred_mutex);
+err_deferred_mutex:
+   cnd_destroy(&ctx->object_cond);
+err_object_cond:
    mtx_destroy(&ctx->object_mutex);
 err_object_mutex:
    npt_event_fini(ctx);
@@ -552,6 +744,8 @@ err_resource_mutex:
 err_wait_ring_cond:
    mtx_destroy(&ctx->wait_ring.mutex);
 err_wait_ring_mutex:
+   cnd_destroy(&ctx->ring_cond);
+err_ring_cond:
    mtx_destroy(&ctx->ring_mutex);
 err_ring_mutex:
    free(ctx->debug_name);
@@ -588,12 +782,20 @@ npt_context_destroy(struct npt_context *ctx)
    npt_event_drain_parked_fences(ctx);
    npt_event_fini(ctx);
 
+   /* Every ring was destroyed above, which settled every watch and ran
+    * every deferred release. */
+   assert(list_is_empty(&ctx->deferred_releases));
+   cnd_destroy(&ctx->ring_cond);
+   free(ctx->destroyed_ring_ids);
+   mtx_destroy(&ctx->deferred_mutex);
+
    /* Guests are expected to release every COM object before context
     * teardown.  Free any straggler entries to plug a guest leak. */
    hash_table_foreach(ctx->object_table, entry) {
       free(entry->data);
    }
    _mesa_hash_table_destroy(ctx->object_table, NULL);
+   cnd_destroy(&ctx->object_cond);
    mtx_destroy(&ctx->object_mutex);
 
    npt_feedback_fini(ctx);

@@ -119,6 +119,7 @@ npt_dispatch_ID3D12Object_GetPrivateData(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12Object_GetPrivateData on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -136,6 +137,7 @@ npt_dispatch_ID3D12Object_GetPrivateData(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12Object_GetPrivateData: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -259,6 +261,7 @@ npt_dispatch_ID3D12Object_SetPrivateData(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12Object_SetPrivateData on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -276,6 +279,7 @@ npt_dispatch_ID3D12Object_SetPrivateData(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12Object_SetPrivateData: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -392,6 +396,7 @@ npt_dispatch_ID3D12Object_SetPrivateDataInterface(struct npt_dispatch_context *c
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12Object_SetPrivateDataInterface on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -409,6 +414,7 @@ npt_dispatch_ID3D12Object_SetPrivateDataInterface(struct npt_dispatch_context *c
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12Object_SetPrivateDataInterface: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -518,6 +524,7 @@ npt_dispatch_ID3D12Object_SetName(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12Object_SetName on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -535,6 +542,7 @@ npt_dispatch_ID3D12Object_SetName(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12Object_SetName: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }

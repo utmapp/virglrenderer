@@ -10,6 +10,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <time.h>
 #ifndef _WIN32
 #include <sys/resource.h>
@@ -27,6 +28,14 @@
 #include "npt_profile.h"
 #include "npt_dispatch.h"
 #include "neptune-protocol/npt_protocol_host_dispatch.h"
+
+static _Thread_local struct npt_ring *npt_ring_thread_current;
+
+struct npt_ring *
+npt_ring_current(void)
+{
+   return npt_ring_thread_current;
+}
 
 static inline void *
 get_resource_pointer(const struct npt_resource *res, size_t offset)
@@ -82,12 +91,6 @@ static void
 npt_ring_store_head(struct npt_ring *ring, uint32_t ring_head)
 {
    atomic_store_explicit(ring->control.head, ring_head, memory_order_release);
-}
-
-static uint32_t
-npt_ring_load_tail(const struct npt_ring *ring)
-{
-   return atomic_load_explicit(ring->control.tail, memory_order_acquire);
 }
 
 static void
@@ -162,13 +165,24 @@ npt_ring_create(const struct npt_ring_layout *layout,
    if (cnd_init(&ring->cond) != thrd_success)
       goto err_cond_init;
 
+   if (mtx_init(&ring->watch_mutex, mtx_plain) != thrd_success)
+      goto err_watch_mtx_init;
+
    ring->virtqueue_seqno = 0;
+   atomic_store_explicit(&ring->peer_waiters, 0, memory_order_relaxed);
+   atomic_store_explicit(&ring->peer_wake_at, 0, memory_order_relaxed);
+   atomic_store_explicit(&ring->peer_pins, 0, memory_order_relaxed);
+   list_inithead(&ring->peer_waits);
+   list_inithead(&ring->watch);
+   atomic_store_explicit(&ring->watch_pending, false, memory_order_relaxed);
 
    /* Safe to call unconditionally; no-op when profiling is disabled. */
    npt_profile_register_ring(ring);
 
    return ring;
 
+err_watch_mtx_init:
+   cnd_destroy(&ring->cond);
 err_cond_init:
    mtx_destroy(&ring->mutex);
 err_mtx_init:
@@ -192,6 +206,7 @@ npt_ring_destroy(struct npt_ring *ring)
    npt_profile_unregister_ring(ring);
    npt_cs_decoder_fini(&ring->decoder);
    npt_cs_encoder_fini(&ring->encoder);
+   mtx_destroy(&ring->watch_mutex);
    mtx_destroy(&ring->mutex);
    cnd_destroy(&ring->cond);
    free(ring->cmd);
@@ -353,6 +368,23 @@ npt_ring_submit_cmd(struct npt_ring *ring,
       const uint32_t cur_ring_head = ring_head + (dec->cur - buffer);
       npt_ring_store_head(ring, cur_ring_head);
 
+      /* Dekker pairing with npt_ring_wait_peer_seqno: it registers as
+       * a waiter, fences, then reads the head; this side publishes the
+       * head, fences, then reads the waiter count.  One of the two
+       * always sees the other, so a waiter never sleeps on a head that
+       * was published without a broadcast. */
+      atomic_thread_fence(memory_order_seq_cst);
+      if (unlikely(atomic_load_explicit(&ring->peer_waiters,
+                                        memory_order_relaxed)) &&
+          npt_seqno_ge(cur_ring_head,
+                       atomic_load_explicit(&ring->peer_wake_at,
+                                            memory_order_relaxed)))
+         npt_ring_wake(ring);
+
+      if (unlikely(atomic_load_explicit(&ring->watch_pending,
+                                        memory_order_relaxed)))
+         npt_ring_settle_watches(ring, cur_ring_head);
+
       npt_context_on_ring_seqno_update(ring->context, ring->id, cur_ring_head);
 
       /* A sustained batch keeps the ring busy for seconds at a time, so
@@ -377,6 +409,7 @@ npt_ring_thread(void *arg)
 
    snprintf(thread_name, ARRAY_SIZE(thread_name), "npt-ring-%d", ctx->ctx_id);
    u_thread_setname(thread_name);
+   npt_ring_thread_current = ring;
 
 #if defined(__APPLE__)
    /* Darwin has no per-thread nice: setpriority(PRIO_PROCESS, 0, ...)
@@ -462,14 +495,16 @@ npt_ring_thread(void *arg)
                 * spending the yield/10us relax ramp to get there. */
                npt_ring_cond_wait_ns(ring, NPT_FEEDBACK_POLL_INTERVAL_NS);
             } else {
-               /* Bounded backstop rather than an unbounded park: the
-                * blob pages the tail lives in can lag reconciliation
-                * (the page-staleness race the guest-side relax works
-                * around), so a stale tail read despite the ordering
-                * above has to recover by timeout instead of wedging the
-                * ring.  100 ms keeps an idle ring near ~10 wakeups/s,
-                * preserving the point of parking. */
-               npt_ring_cond_wait_ns(ring, 100ull * 1000 * 1000);
+               /* Bounded park rather than an unbounded one: the ring
+                * blob is cached here and uncached in the guest, so the
+                * IDLE bit set above reaches the guest only when this
+                * side's cache line is written back, and until then a
+                * guest submit sees no IDLE and rings no doorbell; the
+                * tail can lag the same way in the other direction.  The
+                * timeout bounds how long published work can sit behind
+                * that, and it is what the guest's ring-space and reply
+                * waits see as latency, so it is short. */
+               npt_ring_cond_wait_ns(ring, 1000ull * 1000);
             }
          }
          npt_ring_unset_status_bits(ring, NPT_RING_STATUS_IDLE_BIT);
@@ -623,6 +658,120 @@ npt_ring_wake(struct npt_ring *ring)
    mtx_unlock(&ring->mutex);
 }
 
+static void
+npt_ring_update_peer_wake_at(struct npt_ring *ring);
+
+
+void
+npt_ring_wait_peer_seqno(struct npt_context *ctx, struct npt_ring *self,
+                         uint64_t target_id, uint32_t seqno)
+{
+   const uint64_t report_ns = 5000000000ull;
+   const uint64_t t0 = npt_ring_now();
+   uint64_t next_report = t0 + report_ns;
+
+   /* Register as a waiter under the list lock: destroy_by_id drops a
+    * ring only once it sees no waiters under that same lock, so from
+    * here until the decrement the target cannot go away. */
+   mtx_lock(&ctx->ring_mutex);
+   struct npt_ring *target = npt_ring_lookup_wait_locked(ctx, target_id);
+   if (target)
+      atomic_fetch_add_explicit(&target->peer_pins, 1, memory_order_relaxed);
+   mtx_unlock(&ctx->ring_mutex);
+   if (!target)
+      return;
+
+   mtx_lock(&target->mutex);
+   struct npt_ring_peer_wait wait = { .seqno = seqno };
+   list_addtail(&wait.head, &target->peer_waits);
+   npt_ring_update_peer_wake_at(target);
+   /* Only now, with the wake position published, announce the waiter:
+    * the decode loop reads the count first and the position second, so
+    * a count it sees always comes with a position that covers this
+    * wait.  The count must then be visible to the loop before this
+    * thread reads the head it might already have published; the loop
+    * pairs the same way (publish head, then read the count). */
+   atomic_fetch_add_explicit(&target->peer_waiters, 1, memory_order_relaxed);
+   atomic_thread_fence(memory_order_seq_cst);
+   while (!npt_seqno_ge(npt_ring_load_head(target), seqno) &&
+          target->started && self->started && !ctx->cs_fatal_error) {
+      npt_ring_cond_wait_ns(target, 10ull * 1000 * 1000);
+      const uint64_t now = npt_ring_now();
+      if (now >= next_report) {
+         npt_log("wait_peer: ring %" PRIu64 " has waited %" PRIu64
+                 " ms for ring %" PRIu64 " to reach %u (head=%u tail=%u)",
+                 self->id, (now - t0) / 1000000, target->id, seqno,
+                 npt_ring_load_head(target), npt_ring_load_tail(target));
+         next_report = now + report_ns;
+      }
+   }
+   list_del(&wait.head);
+   npt_ring_update_peer_wake_at(target);
+   atomic_fetch_sub_explicit(&target->peer_waiters, 1, memory_order_relaxed);
+   mtx_unlock(&target->mutex);
+   atomic_fetch_sub_explicit(&target->peer_pins, 1, memory_order_release);
+}
+
+/* Caller holds ring->mutex. */
+static void
+npt_ring_update_peer_wake_at(struct npt_ring *ring)
+{
+   bool any = false;
+   uint32_t min = 0;
+   list_for_each_entry(struct npt_ring_peer_wait, w, &ring->peer_waits, head) {
+      if (!any || !npt_seqno_ge(w->seqno, min))
+         min = w->seqno;
+      any = true;
+   }
+   atomic_store_explicit(&ring->peer_wake_at, min, memory_order_relaxed);
+}
+
+void
+npt_ring_watch_add(struct npt_ring *ring, struct npt_ring_watch *watch)
+{
+   mtx_lock(&ring->watch_mutex);
+   list_addtail(&watch->head, &ring->watch);
+   atomic_store_explicit(&ring->watch_pending, true, memory_order_release);
+   mtx_unlock(&ring->watch_mutex);
+}
+
+/* Move every watch whose position `head` has reached (all of them when
+ * `all`) onto `settled`. */
+static void
+npt_ring_detach_watches(struct npt_ring *ring, uint32_t head, bool all,
+                        struct list_head *settled)
+{
+   mtx_lock(&ring->watch_mutex);
+   list_for_each_entry_safe(struct npt_ring_watch, w, &ring->watch, head) {
+      if (!all && !npt_seqno_ge(head, w->seqno))
+         break;
+      list_del(&w->head);
+      list_addtail(&w->head, settled);
+   }
+   if (list_is_empty(&ring->watch))
+      atomic_store_explicit(&ring->watch_pending, false,
+                            memory_order_relaxed);
+   mtx_unlock(&ring->watch_mutex);
+}
+
+static void
+npt_ring_settle_list(struct npt_context *ctx, struct list_head *settled)
+{
+   list_for_each_entry_safe(struct npt_ring_watch, w, settled, head) {
+      list_del(&w->head);
+      npt_context_deferred_release_settle(ctx, w->release);
+   }
+}
+
+void
+npt_ring_settle_watches(struct npt_ring *ring, uint32_t head)
+{
+   struct list_head settled;
+   list_inithead(&settled);
+   npt_ring_detach_watches(ring, head, false, &settled);
+   npt_ring_settle_list(ring->context, &settled);
+}
+
 bool
 npt_ring_write_extra(struct npt_ring *ring, size_t offset, uint32_t val)
 {
@@ -715,6 +864,52 @@ npt_ring_find_by_id(struct npt_context *ctx, uint64_t ring_id)
    return ring;
 }
 
+/* Caller holds ctx->ring_mutex, which is dropped while waiting.  Returns
+ * the ring with `ring_id`, waiting for the context path to register it
+ * when the guest named it before its CREATE_RING was decoded (a queue's
+ * instance ring is created asynchronously and referenced by edges and
+ * releases from ring threads that run ahead of the context path).
+ * Returns NULL for a ring already destroyed by DESTROY_RING, or once the
+ * context is fatal. */
+struct npt_ring *
+npt_ring_lookup_wait_locked(struct npt_context *ctx, uint64_t ring_id)
+{
+   const uint64_t report_ns = 5000000000ull;
+   uint64_t next_report = npt_ring_now() + report_ns;
+   for (;;) {
+      list_for_each_entry(struct npt_ring, r, &ctx->rings, head) {
+         if (r->id == ring_id)
+            return r;
+      }
+      for (uint32_t i = 0; i < ctx->destroyed_ring_count; i++) {
+         if (ctx->destroyed_ring_ids[i] == ring_id)
+            return NULL;
+      }
+      if (ctx->cs_fatal_error)
+         return NULL;
+      const struct timespec rel = { .tv_sec = 0, .tv_nsec = 10 * 1000 * 1000 };
+#if defined(__APPLE__)
+      pthread_cond_timedwait_relative_np(&ctx->ring_cond, &ctx->ring_mutex,
+                                         &rel);
+#else
+      struct timespec ts;
+      timespec_get(&ts, TIME_UTC);
+      ts.tv_nsec += rel.tv_nsec;
+      if (ts.tv_nsec >= 1000000000L) {
+         ts.tv_sec += 1;
+         ts.tv_nsec -= 1000000000L;
+      }
+      cnd_timedwait(&ctx->ring_cond, &ctx->ring_mutex, &ts);
+#endif
+      const uint64_t now = npt_ring_now();
+      if (now >= next_report) {
+         npt_log("ring %" PRIu64 " named before its CREATE_RING was decoded; "
+                 "still waiting", ring_id);
+         next_report = now + report_ns;
+      }
+   }
+}
+
 bool
 npt_ring_create_from_cmd(struct npt_context *ctx,
                          const struct npt_cmd_create_ring *cmd)
@@ -778,6 +973,7 @@ npt_ring_create_from_cmd(struct npt_context *ctx,
       npt_ring_set_status_bits(ring, NPT_RING_STATUS_ALIVE_BIT);
    }
    list_addtail(&ring->head, &ctx->rings);
+   cnd_broadcast(&ctx->ring_cond);
    mtx_unlock(&ctx->ring_mutex);
 
    if (cmd->monitor_report_period_us &&
@@ -820,9 +1016,37 @@ npt_ring_destroy_by_id(struct npt_context *ctx, uint64_t ring_id)
       return false;
    }
 
-   /* Re-take for the list_del() inside destroy. */
+   /* Stop broadcast the ring's cond, so peer waiters are on their way
+    * out.  Wait for them under ring_mutex -- a waiter pins the ring
+    * under it -- so none can arrive between the last check and the
+    * destroy. */
    mtx_lock(&ctx->ring_mutex);
+   while (atomic_load_explicit(&ring->peer_pins, memory_order_acquire)) {
+      mtx_unlock(&ctx->ring_mutex);
+      thrd_yield();
+      mtx_lock(&ctx->ring_mutex);
+   }
+   /* Nothing more will ever be decoded here; every deferred release
+    * waiting on this ring has what it needs.  Run them outside
+    * ring_mutex: a release can reach back into ring-level state. */
+   struct list_head settled;
+   list_inithead(&settled);
+   npt_ring_detach_watches(ring, 0, true, &settled);
+   /* Remember the id: a later edge or release naming this ring must not
+    * wait for a CREATE_RING that will never come. */
+   if (ctx->destroyed_ring_count == ctx->destroyed_ring_cap) {
+      const uint32_t cap = ctx->destroyed_ring_cap ? ctx->destroyed_ring_cap * 2 : 16;
+      uint64_t *ids = realloc(ctx->destroyed_ring_ids, cap * sizeof(*ids));
+      if (ids) {
+         ctx->destroyed_ring_ids = ids;
+         ctx->destroyed_ring_cap = cap;
+      }
+   }
+   if (ctx->destroyed_ring_count < ctx->destroyed_ring_cap)
+      ctx->destroyed_ring_ids[ctx->destroyed_ring_count++] = ring_id;
    npt_ring_destroy(ring);
+   cnd_broadcast(&ctx->ring_cond);
    mtx_unlock(&ctx->ring_mutex);
+   npt_ring_settle_list(ctx, &settled);
    return true;
 }

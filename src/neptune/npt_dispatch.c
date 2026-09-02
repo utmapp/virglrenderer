@@ -143,11 +143,27 @@ npt_dispatch_write_ring_extra(struct npt_context *ctx,
 
 static void
 npt_dispatch_com_release(struct npt_context *ctx,
-                         UNUSED struct npt_cs_decoder *dec,
-                         UNUSED struct npt_cs_encoder *enc,
+                         struct npt_cs_decoder *dec,
                          const struct npt_command_header *header)
 {
-   npt_context_release_object(ctx, header->object_id);
+   const uint32_t payload = header->cmd_size - sizeof(*header);
+   const uint32_t count = payload / sizeof(struct npt_cmd_com_release_wait);
+   struct npt_cmd_com_release_wait stack_wait[32];
+   struct npt_cmd_com_release_wait *wait = stack_wait;
+   if (count > ARRAY_SIZE(stack_wait)) {
+      wait = malloc(count * sizeof(*wait));
+      if (!wait) {
+         npt_cs_decoder_set_fatal(dec);
+         return;
+      }
+   }
+   if (count)
+      npt_cs_decoder_read(dec, count * sizeof(*wait), wait,
+                          count * sizeof(*wait));
+   if (!npt_cs_decoder_get_fatal(dec))
+      npt_context_release_object_ordered(ctx, header->object_id, wait, count);
+   if (wait != stack_wait)
+      free(wait);
 }
 
 static void
@@ -457,6 +473,30 @@ npt_dispatch_wait_ring_seqno(struct npt_context *ctx,
       npt_cs_decoder_set_fatal(dec);
 }
 
+/* Ring-origin only (checked by the caller). */
+static void
+npt_dispatch_wait_peer_ring(struct npt_context *ctx,
+                            struct npt_dispatch_context *dispatch,
+                            struct npt_cs_decoder *dec,
+                            const struct npt_command_header *header)
+{
+   struct npt_cmd_wait_peer_ring cmd;
+   cmd.header = *header;
+   npt_cs_decoder_read(dec, sizeof(cmd) - sizeof(cmd.header), &cmd.ring_id,
+                       sizeof(cmd) - sizeof(cmd.header));
+   if (npt_cs_decoder_get_fatal(dec))
+      return;
+
+   struct npt_ring *self = npt_ring_from_dispatch(dispatch);
+   if (unlikely(cmd.ring_id == self->id)) {
+      npt_log("WAIT_PEER: ring %" PRIu64 " waits on itself", self->id);
+      npt_cs_decoder_set_fatal(dec);
+      return;
+   }
+
+   npt_ring_wait_peer_seqno(ctx, self, cmd.ring_id, cmd.seqno);
+}
+
 static void
 npt_dispatch_submit_virtqueue_seqno(struct npt_context *ctx,
                                     struct npt_cs_decoder *dec,
@@ -582,6 +622,15 @@ npt_dispatch_subgroup_ring(struct npt_context *ctx,
       }
       npt_dispatch_wait_virtqueue_seqno(ctx, dec, header);
       return true;
+   case NPT_TRANSPORT_RING_WAIT_PEER:
+      /* Ring-only: blocking the context thread stalls the whole guest. */
+      if (unlikely(!is_ring)) {
+         npt_log("WAIT_PEER must originate from a ring");
+         npt_cs_decoder_set_fatal(dec);
+         return true;
+      }
+      npt_dispatch_wait_peer_ring(ctx, dispatch, dec, header);
+      return true;
    default:
       return false;
    }
@@ -596,7 +645,7 @@ npt_dispatch_subgroup_com(struct npt_context *ctx,
 {
    switch (method) {
    case NPT_TRANSPORT_COM_RELEASE:
-      npt_dispatch_com_release(ctx, dec, enc, header);
+      npt_dispatch_com_release(ctx, dec, header);
       return true;
    case NPT_TRANSPORT_COM_QUERY_INTERFACE:
       npt_dispatch_com_query_interface(ctx, dec, enc, header);

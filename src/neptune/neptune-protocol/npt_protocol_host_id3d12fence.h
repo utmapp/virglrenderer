@@ -81,6 +81,7 @@ npt_dispatch_ID3D12Fence_GetCompletedValue(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12Fence_GetCompletedValue on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -98,6 +99,7 @@ npt_dispatch_ID3D12Fence_GetCompletedValue(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12Fence_GetCompletedValue: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -206,6 +208,7 @@ npt_dispatch_ID3D12Fence_SetEventOnCompletion(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12Fence_SetEventOnCompletion on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -223,6 +226,7 @@ npt_dispatch_ID3D12Fence_SetEventOnCompletion(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12Fence_SetEventOnCompletion: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -323,6 +327,7 @@ npt_dispatch_ID3D12Fence_Signal(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12Fence_Signal on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -340,6 +345,7 @@ npt_dispatch_ID3D12Fence_Signal(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12Fence_Signal: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -437,6 +443,7 @@ npt_dispatch_ID3D12Fence1_GetCreationFlags(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12Fence1_GetCreationFlags on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -454,6 +461,7 @@ npt_dispatch_ID3D12Fence1_GetCreationFlags(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12Fence1_GetCreationFlags: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }

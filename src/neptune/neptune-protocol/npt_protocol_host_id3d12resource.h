@@ -99,6 +99,7 @@ npt_dispatch_ID3D12Resource_Map(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12Resource_Map on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -116,6 +117,7 @@ npt_dispatch_ID3D12Resource_Map(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12Resource_Map: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -224,6 +226,7 @@ npt_dispatch_ID3D12Resource_Unmap(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12Resource_Unmap on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -241,6 +244,7 @@ npt_dispatch_ID3D12Resource_Unmap(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12Resource_Unmap: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -339,6 +343,7 @@ npt_dispatch_ID3D12Resource_GetDesc(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12Resource_GetDesc on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -356,6 +361,7 @@ npt_dispatch_ID3D12Resource_GetDesc(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12Resource_GetDesc: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -456,6 +462,7 @@ npt_dispatch_ID3D12Resource_GetGPUVirtualAddress(struct npt_dispatch_context *ct
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12Resource_GetGPUVirtualAddress on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -473,6 +480,7 @@ npt_dispatch_ID3D12Resource_GetGPUVirtualAddress(struct npt_dispatch_context *ct
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12Resource_GetGPUVirtualAddress: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -592,6 +600,7 @@ npt_dispatch_ID3D12Resource_WriteToSubresource(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12Resource_WriteToSubresource on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -609,6 +618,7 @@ npt_dispatch_ID3D12Resource_WriteToSubresource(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12Resource_WriteToSubresource: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -731,6 +741,7 @@ npt_dispatch_ID3D12Resource_ReadFromSubresource(struct npt_dispatch_context *ctx
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12Resource_ReadFromSubresource on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -748,6 +759,7 @@ npt_dispatch_ID3D12Resource_ReadFromSubresource(struct npt_dispatch_context *ctx
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12Resource_ReadFromSubresource: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -859,6 +871,7 @@ npt_dispatch_ID3D12Resource_GetHeapProperties(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12Resource_GetHeapProperties on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -876,6 +889,7 @@ npt_dispatch_ID3D12Resource_GetHeapProperties(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12Resource_GetHeapProperties: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -1000,6 +1014,7 @@ npt_dispatch_ID3D12Resource1_GetProtectedResourceSession(struct npt_dispatch_con
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12Resource1_GetProtectedResourceSession on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppProtectedSession);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -1017,6 +1032,7 @@ npt_dispatch_ID3D12Resource1_GetProtectedResourceSession(struct npt_dispatch_con
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12Resource1_GetProtectedResourceSession: an argument handle is unknown "
                     "to this context");
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppProtectedSession);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -1041,6 +1057,8 @@ npt_dispatch_ID3D12Resource1_GetProtectedResourceSession(struct npt_dispatch_con
     if (args.ppProtectedSession && *args.ppProtectedSession)
         npt_cs_handle_register_guest_id(ctx, args._guest_id_ppProtectedSession, *args.ppProtectedSession,
             npt_object_type_from_iid(args.riid));
+    else if (args.ppProtectedSession)
+        npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppProtectedSession);
 
     if (cmd_flags & NPT_CMD_FLAG_REPLY) {
         if (!npt_cs_decoder_get_fatal(ctx->decoder)) {
@@ -1118,6 +1136,7 @@ npt_dispatch_ID3D12Resource2_GetDesc1(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12Resource2_GetDesc1 on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -1135,6 +1154,7 @@ npt_dispatch_ID3D12Resource2_GetDesc1(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12Resource2_GetDesc1: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }

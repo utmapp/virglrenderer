@@ -40,6 +40,8 @@
  *   void npt_cs_handle_register_guest_id(struct npt_dispatch_context *ctx,
  *                                        npt_object_id guest_id,
  *                                        void *obj, npt_object_type type)
+ *   void npt_cs_handle_register_failed_guest_id(struct npt_dispatch_context *ctx,
+ *                                               uint64_t guest_id)
  *   void *npt_win32_handle_replace(struct npt_dispatch_context *ctx,
  *                                  npt_object_id id)
  *   void *npt_event_handle_replace(struct npt_dispatch_context *ctx,

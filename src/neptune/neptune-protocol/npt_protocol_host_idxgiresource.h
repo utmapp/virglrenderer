@@ -86,6 +86,7 @@ npt_dispatch_IDXGIResource_GetSharedHandle(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIResource_GetSharedHandle on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -103,6 +104,7 @@ npt_dispatch_IDXGIResource_GetSharedHandle(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIResource_GetSharedHandle: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -207,6 +209,7 @@ npt_dispatch_IDXGIResource_GetUsage(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIResource_GetUsage on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -224,6 +227,7 @@ npt_dispatch_IDXGIResource_GetUsage(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIResource_GetUsage: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -324,6 +328,7 @@ npt_dispatch_IDXGIResource_SetEvictionPriority(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIResource_SetEvictionPriority on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -341,6 +346,7 @@ npt_dispatch_IDXGIResource_SetEvictionPriority(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIResource_SetEvictionPriority: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -445,6 +451,7 @@ npt_dispatch_IDXGIResource_GetEvictionPriority(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIResource_GetEvictionPriority on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -462,6 +469,7 @@ npt_dispatch_IDXGIResource_GetEvictionPriority(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIResource_GetEvictionPriority: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -578,6 +586,7 @@ npt_dispatch_IDXGIResource1_CreateSubresourceSurface(struct npt_dispatch_context
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIResource1_CreateSubresourceSurface on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppSurface);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -595,6 +604,7 @@ npt_dispatch_IDXGIResource1_CreateSubresourceSurface(struct npt_dispatch_context
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIResource1_CreateSubresourceSurface: an argument handle is unknown "
                     "to this context");
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppSurface);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -618,6 +628,8 @@ npt_dispatch_IDXGIResource1_CreateSubresourceSurface(struct npt_dispatch_context
      * whose type is determined by the caller's riid. */
     if (args.ppSurface && *args.ppSurface)
         npt_cs_handle_register_guest_id(ctx, args._guest_id_ppSurface, *args.ppSurface, NPT_OBJECT_TYPE_IDXGISURFACE2);
+    else if (args.ppSurface)
+        npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppSurface);
 
     if (cmd_flags & NPT_CMD_FLAG_REPLY) {
         if (!npt_cs_decoder_get_fatal(ctx->decoder)) {
@@ -718,6 +730,7 @@ npt_dispatch_IDXGIResource1_CreateSharedHandle(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIResource1_CreateSharedHandle on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -735,6 +748,7 @@ npt_dispatch_IDXGIResource1_CreateSharedHandle(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIResource1_CreateSharedHandle: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }

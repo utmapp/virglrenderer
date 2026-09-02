@@ -100,6 +100,7 @@ npt_dispatch_ID3D12PipelineLibrary_StorePipeline(struct npt_dispatch_context *ct
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12PipelineLibrary_StorePipeline on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -117,6 +118,7 @@ npt_dispatch_ID3D12PipelineLibrary_StorePipeline(struct npt_dispatch_context *ct
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12PipelineLibrary_StorePipeline: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -266,6 +268,7 @@ npt_dispatch_ID3D12PipelineLibrary_LoadGraphicsPipeline(struct npt_dispatch_cont
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12PipelineLibrary_LoadGraphicsPipeline on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppPipelineState);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -283,6 +286,7 @@ npt_dispatch_ID3D12PipelineLibrary_LoadGraphicsPipeline(struct npt_dispatch_cont
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12PipelineLibrary_LoadGraphicsPipeline: an argument handle is unknown "
                     "to this context");
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppPipelineState);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -307,6 +311,8 @@ npt_dispatch_ID3D12PipelineLibrary_LoadGraphicsPipeline(struct npt_dispatch_cont
     if (args.ppPipelineState && *args.ppPipelineState)
         npt_cs_handle_register_guest_id(ctx, args._guest_id_ppPipelineState, *args.ppPipelineState,
             npt_object_type_from_iid(args.riid));
+    else if (args.ppPipelineState)
+        npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppPipelineState);
 
     if (cmd_flags & NPT_CMD_FLAG_REPLY) {
         if (!npt_cs_decoder_get_fatal(ctx->decoder)) {
@@ -435,6 +441,7 @@ npt_dispatch_ID3D12PipelineLibrary_LoadComputePipeline(struct npt_dispatch_conte
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12PipelineLibrary_LoadComputePipeline on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppPipelineState);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -452,6 +459,7 @@ npt_dispatch_ID3D12PipelineLibrary_LoadComputePipeline(struct npt_dispatch_conte
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12PipelineLibrary_LoadComputePipeline: an argument handle is unknown "
                     "to this context");
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppPipelineState);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -476,6 +484,8 @@ npt_dispatch_ID3D12PipelineLibrary_LoadComputePipeline(struct npt_dispatch_conte
     if (args.ppPipelineState && *args.ppPipelineState)
         npt_cs_handle_register_guest_id(ctx, args._guest_id_ppPipelineState, *args.ppPipelineState,
             npt_object_type_from_iid(args.riid));
+    else if (args.ppPipelineState)
+        npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppPipelineState);
 
     if (cmd_flags & NPT_CMD_FLAG_REPLY) {
         if (!npt_cs_decoder_get_fatal(ctx->decoder)) {
@@ -553,6 +563,7 @@ npt_dispatch_ID3D12PipelineLibrary_GetSerializedSize(struct npt_dispatch_context
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12PipelineLibrary_GetSerializedSize on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -570,6 +581,7 @@ npt_dispatch_ID3D12PipelineLibrary_GetSerializedSize(struct npt_dispatch_context
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12PipelineLibrary_GetSerializedSize: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -685,6 +697,7 @@ npt_dispatch_ID3D12PipelineLibrary_Serialize(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12PipelineLibrary_Serialize on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -702,6 +715,7 @@ npt_dispatch_ID3D12PipelineLibrary_Serialize(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12PipelineLibrary_Serialize: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -849,6 +863,7 @@ npt_dispatch_ID3D12PipelineLibrary1_LoadPipeline(struct npt_dispatch_context *ct
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12PipelineLibrary1_LoadPipeline on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppPipelineState);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -866,6 +881,7 @@ npt_dispatch_ID3D12PipelineLibrary1_LoadPipeline(struct npt_dispatch_context *ct
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12PipelineLibrary1_LoadPipeline: an argument handle is unknown "
                     "to this context");
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppPipelineState);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -890,6 +906,8 @@ npt_dispatch_ID3D12PipelineLibrary1_LoadPipeline(struct npt_dispatch_context *ct
     if (args.ppPipelineState && *args.ppPipelineState)
         npt_cs_handle_register_guest_id(ctx, args._guest_id_ppPipelineState, *args.ppPipelineState,
             npt_object_type_from_iid(args.riid));
+    else if (args.ppPipelineState)
+        npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppPipelineState);
 
     if (cmd_flags & NPT_CMD_FLAG_REPLY) {
         if (!npt_cs_decoder_get_fatal(ctx->decoder)) {

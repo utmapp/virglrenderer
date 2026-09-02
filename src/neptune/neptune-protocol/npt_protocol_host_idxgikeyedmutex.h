@@ -86,6 +86,7 @@ npt_dispatch_IDXGIKeyedMutex_AcquireSync(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIKeyedMutex_AcquireSync on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -103,6 +104,7 @@ npt_dispatch_IDXGIKeyedMutex_AcquireSync(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIKeyedMutex_AcquireSync: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -203,6 +205,7 @@ npt_dispatch_IDXGIKeyedMutex_ReleaseSync(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIKeyedMutex_ReleaseSync on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -220,6 +223,7 @@ npt_dispatch_IDXGIKeyedMutex_ReleaseSync(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIKeyedMutex_ReleaseSync: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }

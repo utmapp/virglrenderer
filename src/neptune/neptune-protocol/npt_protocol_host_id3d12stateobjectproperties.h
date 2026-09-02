@@ -91,6 +91,7 @@ npt_dispatch_ID3D12StateObjectProperties_GetShaderIdentifier(struct npt_dispatch
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12StateObjectProperties_GetShaderIdentifier on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -108,6 +109,7 @@ npt_dispatch_ID3D12StateObjectProperties_GetShaderIdentifier(struct npt_dispatch
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12StateObjectProperties_GetShaderIdentifier: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -218,6 +220,7 @@ npt_dispatch_ID3D12StateObjectProperties_GetShaderStackSize(struct npt_dispatch_
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12StateObjectProperties_GetShaderStackSize on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -235,6 +238,7 @@ npt_dispatch_ID3D12StateObjectProperties_GetShaderStackSize(struct npt_dispatch_
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12StateObjectProperties_GetShaderStackSize: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -333,6 +337,7 @@ npt_dispatch_ID3D12StateObjectProperties_GetPipelineStackSize(struct npt_dispatc
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12StateObjectProperties_GetPipelineStackSize on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -350,6 +355,7 @@ npt_dispatch_ID3D12StateObjectProperties_GetPipelineStackSize(struct npt_dispatc
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12StateObjectProperties_GetPipelineStackSize: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -449,6 +455,7 @@ npt_dispatch_ID3D12StateObjectProperties_SetPipelineStackSize(struct npt_dispatc
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12StateObjectProperties_SetPipelineStackSize on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -466,6 +473,7 @@ npt_dispatch_ID3D12StateObjectProperties_SetPipelineStackSize(struct npt_dispatc
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12StateObjectProperties_SetPipelineStackSize: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -576,6 +584,7 @@ npt_dispatch_ID3D12StateObjectProperties1_GetProgramIdentifier(struct npt_dispat
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12StateObjectProperties1_GetProgramIdentifier on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -593,6 +602,7 @@ npt_dispatch_ID3D12StateObjectProperties1_GetProgramIdentifier(struct npt_dispat
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12StateObjectProperties1_GetProgramIdentifier: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }

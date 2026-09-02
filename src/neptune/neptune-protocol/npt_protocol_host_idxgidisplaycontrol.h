@@ -80,6 +80,7 @@ npt_dispatch_IDXGIDisplayControl_IsStereoEnabled(struct npt_dispatch_context *ct
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIDisplayControl_IsStereoEnabled on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -97,6 +98,7 @@ npt_dispatch_IDXGIDisplayControl_IsStereoEnabled(struct npt_dispatch_context *ct
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIDisplayControl_IsStereoEnabled: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -196,6 +198,7 @@ npt_dispatch_IDXGIDisplayControl_SetStereoEnabled(struct npt_dispatch_context *c
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIDisplayControl_SetStereoEnabled on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -213,6 +216,7 @@ npt_dispatch_IDXGIDisplayControl_SetStereoEnabled(struct npt_dispatch_context *c
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIDisplayControl_SetStereoEnabled: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }

@@ -104,6 +104,42 @@ struct npt_ring {
 
    /* Guarded by ring->mutex/cond.  64-bit to avoid wraparound. */
    uint64_t virtqueue_seqno;
+
+   /* Ring threads blocked in npt_ring_wait_peer_seqno on THIS ring's
+    * decode position, and the lowest position any of them waits for.
+    * The decode loop reads both (relaxed, ring-private line) after every
+    * head publish and only takes ring->mutex to broadcast once the head
+    * reaches that position, so an unwatched ring pays one load per
+    * command and a watched one one broadcast per satisfied wait.  The
+    * list is guarded by ring->mutex. */
+   atomic_uint peer_waiters;
+   atomic_uint peer_wake_at;
+   struct list_head peer_waits;
+   /* Threads that resolved this ring by id and may still touch it;
+    * taken under ctx->ring_mutex, which destroy_by_id waits out. */
+   atomic_uint peer_pins;
+
+   /* Deferred COM_RELEASEs waiting for THIS ring's head to pass a
+    * position, sorted by that position (snapshots of the tail are taken
+    * in decode order).  The decode loop checks the first entry after
+    * every head publish; guarded by watch_mutex.  A destroyed ring
+    * settles every entry (its bytes were drained by DESTROY_RING). */
+   mtx_t watch_mutex;
+   struct list_head watch;
+   atomic_bool watch_pending;
+};
+
+/* One ring's share of a deferred release: settled once the ring's head
+ * passes seqno (npt_context_deferred_release_settle). */
+struct npt_ring_watch {
+   struct list_head head;
+   struct npt_deferred_release *release;
+   uint32_t seqno;
+};
+
+struct npt_ring_peer_wait {
+   struct list_head head;
+   uint32_t seqno;
 };
 
 /* Caller holds ring->mutex. */
@@ -160,6 +196,9 @@ npt_ring_write_extra(struct npt_ring *ring, size_t offset, uint32_t val);
 struct npt_ring *
 npt_ring_find_by_id(struct npt_context *ctx, uint64_t ring_id);
 
+struct npt_ring *
+npt_ring_lookup_wait_locked(struct npt_context *ctx, uint64_t ring_id);
+
 /* Per-command helpers for multi-step lifecycle ops.  Each takes
  * already-decoded args and returns true on success; false on failure
  * with the reason logged. */
@@ -176,6 +215,49 @@ npt_ring_load_head(const struct npt_ring *ring)
 {
    return atomic_load_explicit(ring->control.head, memory_order_acquire);
 }
+
+static inline uint32_t
+npt_ring_load_tail(const struct npt_ring *ring)
+{
+   return atomic_load_explicit(ring->control.tail, memory_order_acquire);
+}
+
+/* The ring whose thread is decoding `dispatch` (a copy of the context
+ * dispatch rebound to that ring's CS pair). */
+static inline struct npt_ring *
+npt_ring_from_dispatch(struct npt_dispatch_context *dispatch)
+{
+   return (struct npt_ring *)((uint8_t *)dispatch -
+                              offsetof(struct npt_ring, dispatch));
+}
+
+/* The ring whose decode thread this is, or NULL on the context
+ * (virtqueue) thread and everything else.  Waits that may take
+ * arbitrarily long -- a peer ring's decode position, an object another
+ * ring has yet to register -- are allowed only on a ring thread: the
+ * context thread runs inside QEMU's synchronous control-queue handling,
+ * and blocking it stalls every vCPU of the guest.  Such waits also end
+ * when the ring is stopped, so a DESTROY_RING can join it. */
+struct npt_ring *
+npt_ring_current(void);
+
+/* Block the calling ring thread until ring target_id's decode position
+ * reaches seqno.  Returns once satisfied, once the target stops or is
+ * gone (a destroyed ring was drained by its DESTROY_RING, so the edge
+ * is met), or once the context goes fatal.  The target is resolved and
+ * pinned against destruction under ctx->ring_mutex. */
+void
+npt_ring_wait_peer_seqno(struct npt_context *ctx, struct npt_ring *self,
+                         uint64_t target_id, uint32_t seqno);
+
+/* Register a deferred-release watch on `ring` (caller holds
+ * ctx->ring_mutex, which keeps the ring alive). */
+void
+npt_ring_watch_add(struct npt_ring *ring, struct npt_ring_watch *watch);
+
+/* Settle the watches `head` has reached; called by the decode loop. */
+void
+npt_ring_settle_watches(struct npt_ring *ring, uint32_t head);
 
 static inline void
 npt_ring_set_status_bits(struct npt_ring *ring, uint32_t mask)

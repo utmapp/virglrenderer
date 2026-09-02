@@ -99,6 +99,7 @@ npt_dispatch_IDXGIFactory_EnumAdapters(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIFactory_EnumAdapters on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppAdapter);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -116,6 +117,7 @@ npt_dispatch_IDXGIFactory_EnumAdapters(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIFactory_EnumAdapters: an argument handle is unknown "
                     "to this context");
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppAdapter);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -139,6 +141,8 @@ npt_dispatch_IDXGIFactory_EnumAdapters(struct npt_dispatch_context *ctx,
      * whose type is determined by the caller's riid. */
     if (args.ppAdapter && *args.ppAdapter)
         npt_cs_handle_register_guest_id(ctx, args._guest_id_ppAdapter, *args.ppAdapter, NPT_OBJECT_TYPE_IDXGIADAPTER);
+    else if (args.ppAdapter)
+        npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppAdapter);
 
     if (cmd_flags & NPT_CMD_FLAG_REPLY) {
         if (!npt_cs_decoder_get_fatal(ctx->decoder)) {
@@ -226,6 +230,7 @@ npt_dispatch_IDXGIFactory_MakeWindowAssociation(struct npt_dispatch_context *ctx
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIFactory_MakeWindowAssociation on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -243,6 +248,7 @@ npt_dispatch_IDXGIFactory_MakeWindowAssociation(struct npt_dispatch_context *ctx
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIFactory_MakeWindowAssociation: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -346,6 +352,7 @@ npt_dispatch_IDXGIFactory_GetWindowAssociation(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIFactory_GetWindowAssociation on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -363,6 +370,7 @@ npt_dispatch_IDXGIFactory_GetWindowAssociation(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIFactory_GetWindowAssociation: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -497,6 +505,7 @@ npt_dispatch_IDXGIFactory_CreateSwapChain(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIFactory_CreateSwapChain on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppSwapChain);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -514,6 +523,7 @@ npt_dispatch_IDXGIFactory_CreateSwapChain(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIFactory_CreateSwapChain: an argument handle is unknown "
                     "to this context");
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppSwapChain);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -537,6 +547,8 @@ npt_dispatch_IDXGIFactory_CreateSwapChain(struct npt_dispatch_context *ctx,
      * whose type is determined by the caller's riid. */
     if (args.ppSwapChain && *args.ppSwapChain)
         npt_cs_handle_register_guest_id(ctx, args._guest_id_ppSwapChain, *args.ppSwapChain, NPT_OBJECT_TYPE_IDXGISWAPCHAIN);
+    else if (args.ppSwapChain)
+        npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppSwapChain);
 
     if (cmd_flags & NPT_CMD_FLAG_REPLY) {
         if (!npt_cs_decoder_get_fatal(ctx->decoder)) {
@@ -637,6 +649,7 @@ npt_dispatch_IDXGIFactory_CreateSoftwareAdapter(struct npt_dispatch_context *ctx
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIFactory_CreateSoftwareAdapter on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppAdapter);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -654,6 +667,7 @@ npt_dispatch_IDXGIFactory_CreateSoftwareAdapter(struct npt_dispatch_context *ctx
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIFactory_CreateSoftwareAdapter: an argument handle is unknown "
                     "to this context");
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppAdapter);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -677,6 +691,8 @@ npt_dispatch_IDXGIFactory_CreateSoftwareAdapter(struct npt_dispatch_context *ctx
      * whose type is determined by the caller's riid. */
     if (args.ppAdapter && *args.ppAdapter)
         npt_cs_handle_register_guest_id(ctx, args._guest_id_ppAdapter, *args.ppAdapter, NPT_OBJECT_TYPE_IDXGIADAPTER);
+    else if (args.ppAdapter)
+        npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppAdapter);
 
     if (cmd_flags & NPT_CMD_FLAG_REPLY) {
         if (!npt_cs_decoder_get_fatal(ctx->decoder)) {
@@ -772,6 +788,7 @@ npt_dispatch_IDXGIFactory1_EnumAdapters1(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIFactory1_EnumAdapters1 on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppAdapter);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -789,6 +806,7 @@ npt_dispatch_IDXGIFactory1_EnumAdapters1(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIFactory1_EnumAdapters1: an argument handle is unknown "
                     "to this context");
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppAdapter);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -812,6 +830,8 @@ npt_dispatch_IDXGIFactory1_EnumAdapters1(struct npt_dispatch_context *ctx,
      * whose type is determined by the caller's riid. */
     if (args.ppAdapter && *args.ppAdapter)
         npt_cs_handle_register_guest_id(ctx, args._guest_id_ppAdapter, *args.ppAdapter, NPT_OBJECT_TYPE_IDXGIADAPTER1);
+    else if (args.ppAdapter)
+        npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppAdapter);
 
     if (cmd_flags & NPT_CMD_FLAG_REPLY) {
         if (!npt_cs_decoder_get_fatal(ctx->decoder)) {
@@ -888,6 +908,7 @@ npt_dispatch_IDXGIFactory1_IsCurrent(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIFactory1_IsCurrent on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -905,6 +926,7 @@ npt_dispatch_IDXGIFactory1_IsCurrent(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIFactory1_IsCurrent: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -1002,6 +1024,7 @@ npt_dispatch_IDXGIFactory2_IsWindowedStereoEnabled(struct npt_dispatch_context *
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIFactory2_IsWindowedStereoEnabled on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -1019,6 +1042,7 @@ npt_dispatch_IDXGIFactory2_IsWindowedStereoEnabled(struct npt_dispatch_context *
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIFactory2_IsWindowedStereoEnabled: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -1176,6 +1200,7 @@ npt_dispatch_IDXGIFactory2_CreateSwapChainForHwnd(struct npt_dispatch_context *c
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIFactory2_CreateSwapChainForHwnd on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppSwapChain);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -1193,6 +1218,7 @@ npt_dispatch_IDXGIFactory2_CreateSwapChainForHwnd(struct npt_dispatch_context *c
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIFactory2_CreateSwapChainForHwnd: an argument handle is unknown "
                     "to this context");
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppSwapChain);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -1216,6 +1242,8 @@ npt_dispatch_IDXGIFactory2_CreateSwapChainForHwnd(struct npt_dispatch_context *c
      * whose type is determined by the caller's riid. */
     if (args.ppSwapChain && *args.ppSwapChain)
         npt_cs_handle_register_guest_id(ctx, args._guest_id_ppSwapChain, *args.ppSwapChain, NPT_OBJECT_TYPE_IDXGISWAPCHAIN1);
+    else if (args.ppSwapChain)
+        npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppSwapChain);
 
     if (cmd_flags & NPT_CMD_FLAG_REPLY) {
         if (!npt_cs_decoder_get_fatal(ctx->decoder)) {
@@ -1343,6 +1371,7 @@ npt_dispatch_IDXGIFactory2_CreateSwapChainForCoreWindow(struct npt_dispatch_cont
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIFactory2_CreateSwapChainForCoreWindow on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppSwapChain);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -1360,6 +1389,7 @@ npt_dispatch_IDXGIFactory2_CreateSwapChainForCoreWindow(struct npt_dispatch_cont
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIFactory2_CreateSwapChainForCoreWindow: an argument handle is unknown "
                     "to this context");
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppSwapChain);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -1383,6 +1413,8 @@ npt_dispatch_IDXGIFactory2_CreateSwapChainForCoreWindow(struct npt_dispatch_cont
      * whose type is determined by the caller's riid. */
     if (args.ppSwapChain && *args.ppSwapChain)
         npt_cs_handle_register_guest_id(ctx, args._guest_id_ppSwapChain, *args.ppSwapChain, NPT_OBJECT_TYPE_IDXGISWAPCHAIN1);
+    else if (args.ppSwapChain)
+        npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppSwapChain);
 
     if (cmd_flags & NPT_CMD_FLAG_REPLY) {
         if (!npt_cs_decoder_get_fatal(ctx->decoder)) {
@@ -1474,6 +1506,7 @@ npt_dispatch_IDXGIFactory2_GetSharedResourceAdapterLuid(struct npt_dispatch_cont
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIFactory2_GetSharedResourceAdapterLuid on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -1491,6 +1524,7 @@ npt_dispatch_IDXGIFactory2_GetSharedResourceAdapterLuid(struct npt_dispatch_cont
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIFactory2_GetSharedResourceAdapterLuid: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -1606,6 +1640,7 @@ npt_dispatch_IDXGIFactory2_RegisterStereoStatusWindow(struct npt_dispatch_contex
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIFactory2_RegisterStereoStatusWindow on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -1623,6 +1658,7 @@ npt_dispatch_IDXGIFactory2_RegisterStereoStatusWindow(struct npt_dispatch_contex
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIFactory2_RegisterStereoStatusWindow: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -1735,6 +1771,7 @@ npt_dispatch_IDXGIFactory2_RegisterStereoStatusEvent(struct npt_dispatch_context
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIFactory2_RegisterStereoStatusEvent on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -1752,6 +1789,7 @@ npt_dispatch_IDXGIFactory2_RegisterStereoStatusEvent(struct npt_dispatch_context
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIFactory2_RegisterStereoStatusEvent: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -1851,6 +1889,7 @@ npt_dispatch_IDXGIFactory2_UnregisterStereoStatus(struct npt_dispatch_context *c
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIFactory2_UnregisterStereoStatus on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -1868,6 +1907,7 @@ npt_dispatch_IDXGIFactory2_UnregisterStereoStatus(struct npt_dispatch_context *c
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIFactory2_UnregisterStereoStatus: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -1983,6 +2023,7 @@ npt_dispatch_IDXGIFactory2_RegisterOcclusionStatusWindow(struct npt_dispatch_con
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIFactory2_RegisterOcclusionStatusWindow on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -2000,6 +2041,7 @@ npt_dispatch_IDXGIFactory2_RegisterOcclusionStatusWindow(struct npt_dispatch_con
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIFactory2_RegisterOcclusionStatusWindow: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -2112,6 +2154,7 @@ npt_dispatch_IDXGIFactory2_RegisterOcclusionStatusEvent(struct npt_dispatch_cont
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIFactory2_RegisterOcclusionStatusEvent on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -2129,6 +2172,7 @@ npt_dispatch_IDXGIFactory2_RegisterOcclusionStatusEvent(struct npt_dispatch_cont
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIFactory2_RegisterOcclusionStatusEvent: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -2228,6 +2272,7 @@ npt_dispatch_IDXGIFactory2_UnregisterOcclusionStatus(struct npt_dispatch_context
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIFactory2_UnregisterOcclusionStatus on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -2245,6 +2290,7 @@ npt_dispatch_IDXGIFactory2_UnregisterOcclusionStatus(struct npt_dispatch_context
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIFactory2_UnregisterOcclusionStatus: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -2385,6 +2431,7 @@ npt_dispatch_IDXGIFactory2_CreateSwapChainForComposition(struct npt_dispatch_con
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIFactory2_CreateSwapChainForComposition on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppSwapChain);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -2402,6 +2449,7 @@ npt_dispatch_IDXGIFactory2_CreateSwapChainForComposition(struct npt_dispatch_con
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIFactory2_CreateSwapChainForComposition: an argument handle is unknown "
                     "to this context");
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppSwapChain);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -2425,6 +2473,8 @@ npt_dispatch_IDXGIFactory2_CreateSwapChainForComposition(struct npt_dispatch_con
      * whose type is determined by the caller's riid. */
     if (args.ppSwapChain && *args.ppSwapChain)
         npt_cs_handle_register_guest_id(ctx, args._guest_id_ppSwapChain, *args.ppSwapChain, NPT_OBJECT_TYPE_IDXGISWAPCHAIN1);
+    else if (args.ppSwapChain)
+        npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppSwapChain);
 
     if (cmd_flags & NPT_CMD_FLAG_REPLY) {
         if (!npt_cs_decoder_get_fatal(ctx->decoder)) {
@@ -2501,6 +2551,7 @@ npt_dispatch_IDXGIFactory3_GetCreationFlags(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIFactory3_GetCreationFlags on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -2518,6 +2569,7 @@ npt_dispatch_IDXGIFactory3_GetCreationFlags(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIFactory3_GetCreationFlags: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -2645,6 +2697,7 @@ npt_dispatch_IDXGIFactory4_EnumAdapterByLuid(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIFactory4_EnumAdapterByLuid on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppvAdapter);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -2662,6 +2715,7 @@ npt_dispatch_IDXGIFactory4_EnumAdapterByLuid(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIFactory4_EnumAdapterByLuid: an argument handle is unknown "
                     "to this context");
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppvAdapter);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -2686,6 +2740,8 @@ npt_dispatch_IDXGIFactory4_EnumAdapterByLuid(struct npt_dispatch_context *ctx,
     if (args.ppvAdapter && *args.ppvAdapter)
         npt_cs_handle_register_guest_id(ctx, args._guest_id_ppvAdapter, *args.ppvAdapter,
             npt_object_type_from_iid(args.riid));
+    else if (args.ppvAdapter)
+        npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppvAdapter);
 
     if (cmd_flags & NPT_CMD_FLAG_REPLY) {
         if (!npt_cs_decoder_get_fatal(ctx->decoder)) {
@@ -2789,6 +2845,7 @@ npt_dispatch_IDXGIFactory4_EnumWarpAdapter(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIFactory4_EnumWarpAdapter on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppvAdapter);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -2806,6 +2863,7 @@ npt_dispatch_IDXGIFactory4_EnumWarpAdapter(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIFactory4_EnumWarpAdapter: an argument handle is unknown "
                     "to this context");
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppvAdapter);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -2830,6 +2888,8 @@ npt_dispatch_IDXGIFactory4_EnumWarpAdapter(struct npt_dispatch_context *ctx,
     if (args.ppvAdapter && *args.ppvAdapter)
         npt_cs_handle_register_guest_id(ctx, args._guest_id_ppvAdapter, *args.ppvAdapter,
             npt_object_type_from_iid(args.riid));
+    else if (args.ppvAdapter)
+        npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppvAdapter);
 
     if (cmd_flags & NPT_CMD_FLAG_REPLY) {
         if (!npt_cs_decoder_get_fatal(ctx->decoder)) {
@@ -2930,6 +2990,7 @@ npt_dispatch_IDXGIFactory5_CheckFeatureSupport(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIFactory5_CheckFeatureSupport on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -2947,6 +3008,7 @@ npt_dispatch_IDXGIFactory5_CheckFeatureSupport(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIFactory5_CheckFeatureSupport: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -3077,6 +3139,7 @@ npt_dispatch_IDXGIFactory6_EnumAdapterByGpuPreference(struct npt_dispatch_contex
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIFactory6_EnumAdapterByGpuPreference on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppvAdapter);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -3094,6 +3157,7 @@ npt_dispatch_IDXGIFactory6_EnumAdapterByGpuPreference(struct npt_dispatch_contex
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIFactory6_EnumAdapterByGpuPreference: an argument handle is unknown "
                     "to this context");
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppvAdapter);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -3118,6 +3182,8 @@ npt_dispatch_IDXGIFactory6_EnumAdapterByGpuPreference(struct npt_dispatch_contex
     if (args.ppvAdapter && *args.ppvAdapter)
         npt_cs_handle_register_guest_id(ctx, args._guest_id_ppvAdapter, *args.ppvAdapter,
             npt_object_type_from_iid(args.riid));
+    else if (args.ppvAdapter)
+        npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppvAdapter);
 
     if (cmd_flags & NPT_CMD_FLAG_REPLY) {
         if (!npt_cs_decoder_get_fatal(ctx->decoder)) {
@@ -3209,6 +3275,7 @@ npt_dispatch_IDXGIFactory7_RegisterAdaptersChangedEvent(struct npt_dispatch_cont
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIFactory7_RegisterAdaptersChangedEvent on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -3226,6 +3293,7 @@ npt_dispatch_IDXGIFactory7_RegisterAdaptersChangedEvent(struct npt_dispatch_cont
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIFactory7_RegisterAdaptersChangedEvent: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -3326,6 +3394,7 @@ npt_dispatch_IDXGIFactory7_UnregisterAdaptersChangedEvent(struct npt_dispatch_co
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIFactory7_UnregisterAdaptersChangedEvent on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -3343,6 +3412,7 @@ npt_dispatch_IDXGIFactory7_UnregisterAdaptersChangedEvent(struct npt_dispatch_co
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIFactory7_UnregisterAdaptersChangedEvent: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }

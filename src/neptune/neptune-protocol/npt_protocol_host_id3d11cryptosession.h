@@ -86,6 +86,7 @@ npt_dispatch_ID3D11CryptoSession_GetCryptoType(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11CryptoSession_GetCryptoType on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -103,6 +104,7 @@ npt_dispatch_ID3D11CryptoSession_GetCryptoType(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11CryptoSession_GetCryptoType: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -206,6 +208,7 @@ npt_dispatch_ID3D11CryptoSession_GetDecoderProfile(struct npt_dispatch_context *
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11CryptoSession_GetDecoderProfile on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -223,6 +226,7 @@ npt_dispatch_ID3D11CryptoSession_GetDecoderProfile(struct npt_dispatch_context *
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11CryptoSession_GetDecoderProfile: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -327,6 +331,7 @@ npt_dispatch_ID3D11CryptoSession_GetCertificateSize(struct npt_dispatch_context 
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11CryptoSession_GetCertificateSize on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -344,6 +349,7 @@ npt_dispatch_ID3D11CryptoSession_GetCertificateSize(struct npt_dispatch_context 
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11CryptoSession_GetCertificateSize: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -459,6 +465,7 @@ npt_dispatch_ID3D11CryptoSession_GetCertificate(struct npt_dispatch_context *ctx
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11CryptoSession_GetCertificate on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -476,6 +483,7 @@ npt_dispatch_ID3D11CryptoSession_GetCertificate(struct npt_dispatch_context *ctx
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11CryptoSession_GetCertificate: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -578,6 +586,7 @@ npt_dispatch_ID3D11CryptoSession_GetCryptoSessionHandle(struct npt_dispatch_cont
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11CryptoSession_GetCryptoSessionHandle on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -595,6 +604,7 @@ npt_dispatch_ID3D11CryptoSession_GetCryptoSessionHandle(struct npt_dispatch_cont
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11CryptoSession_GetCryptoSessionHandle: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }

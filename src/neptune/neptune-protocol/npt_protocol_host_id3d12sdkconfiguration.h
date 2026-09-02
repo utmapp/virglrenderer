@@ -95,6 +95,7 @@ npt_dispatch_ID3D12SDKConfiguration_SetSDKVersion(struct npt_dispatch_context *c
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12SDKConfiguration_SetSDKVersion on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -112,6 +113,7 @@ npt_dispatch_ID3D12SDKConfiguration_SetSDKVersion(struct npt_dispatch_context *c
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12SDKConfiguration_SetSDKVersion: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -251,6 +253,7 @@ npt_dispatch_ID3D12SDKConfiguration1_CreateDeviceFactory(struct npt_dispatch_con
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12SDKConfiguration1_CreateDeviceFactory on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppvFactory);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -268,6 +271,7 @@ npt_dispatch_ID3D12SDKConfiguration1_CreateDeviceFactory(struct npt_dispatch_con
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12SDKConfiguration1_CreateDeviceFactory: an argument handle is unknown "
                     "to this context");
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppvFactory);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -292,6 +296,8 @@ npt_dispatch_ID3D12SDKConfiguration1_CreateDeviceFactory(struct npt_dispatch_con
     if (args.ppvFactory && *args.ppvFactory)
         npt_cs_handle_register_guest_id(ctx, args._guest_id_ppvFactory, *args.ppvFactory,
             npt_object_type_from_iid(args.riid));
+    else if (args.ppvFactory)
+        npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppvFactory);
 
     if (cmd_flags & NPT_CMD_FLAG_REPLY) {
         if (!npt_cs_decoder_get_fatal(ctx->decoder)) {
@@ -367,6 +373,7 @@ npt_dispatch_ID3D12SDKConfiguration1_FreeUnusedSDKs(struct npt_dispatch_context 
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12SDKConfiguration1_FreeUnusedSDKs on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -384,6 +391,7 @@ npt_dispatch_ID3D12SDKConfiguration1_FreeUnusedSDKs(struct npt_dispatch_context 
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12SDKConfiguration1_FreeUnusedSDKs: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }

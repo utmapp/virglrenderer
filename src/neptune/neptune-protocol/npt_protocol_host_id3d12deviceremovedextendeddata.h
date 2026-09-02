@@ -89,6 +89,7 @@ npt_dispatch_ID3D12DeviceRemovedExtendedData_GetAutoBreadcrumbsOutput(struct npt
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12DeviceRemovedExtendedData_GetAutoBreadcrumbsOutput on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -106,6 +107,7 @@ npt_dispatch_ID3D12DeviceRemovedExtendedData_GetAutoBreadcrumbsOutput(struct npt
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12DeviceRemovedExtendedData_GetAutoBreadcrumbsOutput: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -210,6 +212,7 @@ npt_dispatch_ID3D12DeviceRemovedExtendedData_GetPageFaultAllocationOutput(struct
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12DeviceRemovedExtendedData_GetPageFaultAllocationOutput on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -227,6 +230,7 @@ npt_dispatch_ID3D12DeviceRemovedExtendedData_GetPageFaultAllocationOutput(struct
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12DeviceRemovedExtendedData_GetPageFaultAllocationOutput: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -333,6 +337,7 @@ npt_dispatch_ID3D12DeviceRemovedExtendedData1_GetAutoBreadcrumbsOutput1(struct n
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12DeviceRemovedExtendedData1_GetAutoBreadcrumbsOutput1 on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -350,6 +355,7 @@ npt_dispatch_ID3D12DeviceRemovedExtendedData1_GetAutoBreadcrumbsOutput1(struct n
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12DeviceRemovedExtendedData1_GetAutoBreadcrumbsOutput1: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -456,6 +462,7 @@ npt_dispatch_ID3D12DeviceRemovedExtendedData1_GetPageFaultAllocationOutput1(stru
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12DeviceRemovedExtendedData1_GetPageFaultAllocationOutput1 on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -473,6 +480,7 @@ npt_dispatch_ID3D12DeviceRemovedExtendedData1_GetPageFaultAllocationOutput1(stru
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12DeviceRemovedExtendedData1_GetPageFaultAllocationOutput1: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -579,6 +587,7 @@ npt_dispatch_ID3D12DeviceRemovedExtendedData2_GetPageFaultAllocationOutput2(stru
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12DeviceRemovedExtendedData2_GetPageFaultAllocationOutput2 on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -596,6 +605,7 @@ npt_dispatch_ID3D12DeviceRemovedExtendedData2_GetPageFaultAllocationOutput2(stru
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12DeviceRemovedExtendedData2_GetPageFaultAllocationOutput2: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -693,6 +703,7 @@ npt_dispatch_ID3D12DeviceRemovedExtendedData2_GetDeviceState(struct npt_dispatch
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12DeviceRemovedExtendedData2_GetDeviceState on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -710,6 +721,7 @@ npt_dispatch_ID3D12DeviceRemovedExtendedData2_GetDeviceState(struct npt_dispatch
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12DeviceRemovedExtendedData2_GetDeviceState: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }

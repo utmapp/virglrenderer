@@ -107,6 +107,7 @@ npt_dispatch_IDXGIDeviceSubObject_GetDevice(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIDeviceSubObject_GetDevice on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppDevice);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -124,6 +125,7 @@ npt_dispatch_IDXGIDeviceSubObject_GetDevice(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIDeviceSubObject_GetDevice: an argument handle is unknown "
                     "to this context");
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppDevice);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -148,6 +150,8 @@ npt_dispatch_IDXGIDeviceSubObject_GetDevice(struct npt_dispatch_context *ctx,
     if (args.ppDevice && *args.ppDevice)
         npt_cs_handle_register_guest_id(ctx, args._guest_id_ppDevice, *args.ppDevice,
             npt_object_type_from_iid(args.riid));
+    else if (args.ppDevice)
+        npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppDevice);
 
     if (cmd_flags & NPT_CMD_FLAG_REPLY) {
         if (!npt_cs_decoder_get_fatal(ctx->decoder)) {

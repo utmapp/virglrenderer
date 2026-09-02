@@ -430,6 +430,12 @@ npt_cs_handle_register_guest_id(struct npt_dispatch_context *ctx,
                                 void *obj,
                                 npt_object_type type);
 
+/* The Create for guest_id failed on the host: see
+ * npt_context_register_failed_object. */
+void
+npt_cs_handle_register_failed_guest_id(struct npt_dispatch_context *ctx,
+                                       uint64_t guest_id);
+
 /* Win32 handles are opaque on the wire: identity pass-through.  Identity
  * preserves the KMT-vs-NT high-bit dispatch host D3D libraries use to
  * route OpenSharedResource. */

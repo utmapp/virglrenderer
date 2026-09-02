@@ -131,6 +131,7 @@ npt_dispatch_IDXGIFactoryMedia_CreateSwapChainForCompositionSurfaceHandle(struct
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIFactoryMedia_CreateSwapChainForCompositionSurfaceHandle on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppSwapChain);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -148,6 +149,7 @@ npt_dispatch_IDXGIFactoryMedia_CreateSwapChainForCompositionSurfaceHandle(struct
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIFactoryMedia_CreateSwapChainForCompositionSurfaceHandle: an argument handle is unknown "
                     "to this context");
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppSwapChain);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -171,6 +173,8 @@ npt_dispatch_IDXGIFactoryMedia_CreateSwapChainForCompositionSurfaceHandle(struct
      * whose type is determined by the caller's riid. */
     if (args.ppSwapChain && *args.ppSwapChain)
         npt_cs_handle_register_guest_id(ctx, args._guest_id_ppSwapChain, *args.ppSwapChain, NPT_OBJECT_TYPE_IDXGISWAPCHAIN1);
+    else if (args.ppSwapChain)
+        npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppSwapChain);
 
     if (cmd_flags & NPT_CMD_FLAG_REPLY) {
         if (!npt_cs_decoder_get_fatal(ctx->decoder)) {
@@ -306,6 +310,7 @@ npt_dispatch_IDXGIFactoryMedia_CreateDecodeSwapChainForCompositionSurfaceHandle(
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIFactoryMedia_CreateDecodeSwapChainForCompositionSurfaceHandle on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppSwapChain);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -323,6 +328,7 @@ npt_dispatch_IDXGIFactoryMedia_CreateDecodeSwapChainForCompositionSurfaceHandle(
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIFactoryMedia_CreateDecodeSwapChainForCompositionSurfaceHandle: an argument handle is unknown "
                     "to this context");
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppSwapChain);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -346,6 +352,8 @@ npt_dispatch_IDXGIFactoryMedia_CreateDecodeSwapChainForCompositionSurfaceHandle(
      * whose type is determined by the caller's riid. */
     if (args.ppSwapChain && *args.ppSwapChain)
         npt_cs_handle_register_guest_id(ctx, args._guest_id_ppSwapChain, *args.ppSwapChain, NPT_OBJECT_TYPE_IDXGIDECODESWAPCHAIN);
+    else if (args.ppSwapChain)
+        npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppSwapChain);
 
     if (cmd_flags & NPT_CMD_FLAG_REPLY) {
         if (!npt_cs_decoder_get_fatal(ctx->decoder)) {

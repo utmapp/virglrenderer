@@ -106,6 +106,7 @@ npt_dispatch_IDXGIObject_SetPrivateData(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIObject_SetPrivateData on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -123,6 +124,7 @@ npt_dispatch_IDXGIObject_SetPrivateData(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIObject_SetPrivateData: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -239,6 +241,7 @@ npt_dispatch_IDXGIObject_SetPrivateDataInterface(struct npt_dispatch_context *ct
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIObject_SetPrivateDataInterface on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -256,6 +259,7 @@ npt_dispatch_IDXGIObject_SetPrivateDataInterface(struct npt_dispatch_context *ct
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIObject_SetPrivateDataInterface: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -392,6 +396,7 @@ npt_dispatch_IDXGIObject_GetPrivateData(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIObject_GetPrivateData on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -409,6 +414,7 @@ npt_dispatch_IDXGIObject_GetPrivateData(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIObject_GetPrivateData: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -533,6 +539,7 @@ npt_dispatch_IDXGIObject_GetParent(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIObject_GetParent on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppParent);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -550,6 +557,7 @@ npt_dispatch_IDXGIObject_GetParent(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIObject_GetParent: an argument handle is unknown "
                     "to this context");
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppParent);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -574,6 +582,8 @@ npt_dispatch_IDXGIObject_GetParent(struct npt_dispatch_context *ctx,
     if (args.ppParent && *args.ppParent)
         npt_cs_handle_register_guest_id(ctx, args._guest_id_ppParent, *args.ppParent,
             npt_object_type_from_iid(args.riid));
+    else if (args.ppParent)
+        npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppParent);
 
     if (cmd_flags & NPT_CMD_FLAG_REPLY) {
         if (!npt_cs_decoder_get_fatal(ctx->decoder)) {

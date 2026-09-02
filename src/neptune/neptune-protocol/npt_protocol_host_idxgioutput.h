@@ -87,6 +87,7 @@ npt_dispatch_IDXGIOutput_GetDesc(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIOutput_GetDesc on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -104,6 +105,7 @@ npt_dispatch_IDXGIOutput_GetDesc(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIOutput_GetDesc: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -243,6 +245,7 @@ npt_dispatch_IDXGIOutput_GetDisplayModeList(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIOutput_GetDisplayModeList on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -260,6 +263,7 @@ npt_dispatch_IDXGIOutput_GetDisplayModeList(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIOutput_GetDisplayModeList: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -383,6 +387,7 @@ npt_dispatch_IDXGIOutput_FindClosestMatchingMode(struct npt_dispatch_context *ct
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIOutput_FindClosestMatchingMode on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -400,6 +405,7 @@ npt_dispatch_IDXGIOutput_FindClosestMatchingMode(struct npt_dispatch_context *ct
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIOutput_FindClosestMatchingMode: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -497,6 +503,7 @@ npt_dispatch_IDXGIOutput_WaitForVBlank(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIOutput_WaitForVBlank on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -514,6 +521,7 @@ npt_dispatch_IDXGIOutput_WaitForVBlank(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIOutput_WaitForVBlank: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -622,6 +630,7 @@ npt_dispatch_IDXGIOutput_TakeOwnership(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIOutput_TakeOwnership on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -639,6 +648,7 @@ npt_dispatch_IDXGIOutput_TakeOwnership(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIOutput_TakeOwnership: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -735,6 +745,7 @@ npt_dispatch_IDXGIOutput_ReleaseOwnership(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIOutput_ReleaseOwnership on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -752,6 +763,7 @@ npt_dispatch_IDXGIOutput_ReleaseOwnership(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIOutput_ReleaseOwnership: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -856,6 +868,7 @@ npt_dispatch_IDXGIOutput_GetGammaControlCapabilities(struct npt_dispatch_context
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIOutput_GetGammaControlCapabilities on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -873,6 +886,7 @@ npt_dispatch_IDXGIOutput_GetGammaControlCapabilities(struct npt_dispatch_context
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIOutput_GetGammaControlCapabilities: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -981,6 +995,7 @@ npt_dispatch_IDXGIOutput_SetGammaControl(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIOutput_SetGammaControl on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -998,6 +1013,7 @@ npt_dispatch_IDXGIOutput_SetGammaControl(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIOutput_SetGammaControl: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -1102,6 +1118,7 @@ npt_dispatch_IDXGIOutput_GetGammaControl(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIOutput_GetGammaControl on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -1119,6 +1136,7 @@ npt_dispatch_IDXGIOutput_GetGammaControl(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIOutput_GetGammaControl: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -1224,6 +1242,7 @@ npt_dispatch_IDXGIOutput_SetDisplaySurface(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIOutput_SetDisplaySurface on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -1241,6 +1260,7 @@ npt_dispatch_IDXGIOutput_SetDisplaySurface(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIOutput_SetDisplaySurface: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -1346,6 +1366,7 @@ npt_dispatch_IDXGIOutput_GetDisplaySurfaceData(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIOutput_GetDisplaySurfaceData on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -1363,6 +1384,7 @@ npt_dispatch_IDXGIOutput_GetDisplaySurfaceData(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIOutput_GetDisplaySurfaceData: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -1467,6 +1489,7 @@ npt_dispatch_IDXGIOutput_GetFrameStatistics(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIOutput_GetFrameStatistics on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -1484,6 +1507,7 @@ npt_dispatch_IDXGIOutput_GetFrameStatistics(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIOutput_GetFrameStatistics: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -1623,6 +1647,7 @@ npt_dispatch_IDXGIOutput1_GetDisplayModeList1(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIOutput1_GetDisplayModeList1 on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -1640,6 +1665,7 @@ npt_dispatch_IDXGIOutput1_GetDisplayModeList1(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIOutput1_GetDisplayModeList1: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -1763,6 +1789,7 @@ npt_dispatch_IDXGIOutput1_FindClosestMatchingMode1(struct npt_dispatch_context *
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIOutput1_FindClosestMatchingMode1 on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -1780,6 +1807,7 @@ npt_dispatch_IDXGIOutput1_FindClosestMatchingMode1(struct npt_dispatch_context *
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIOutput1_FindClosestMatchingMode1: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -1885,6 +1913,7 @@ npt_dispatch_IDXGIOutput1_GetDisplaySurfaceData1(struct npt_dispatch_context *ct
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIOutput1_GetDisplaySurfaceData1 on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -1902,6 +1931,7 @@ npt_dispatch_IDXGIOutput1_GetDisplaySurfaceData1(struct npt_dispatch_context *ct
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIOutput1_GetDisplaySurfaceData1: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -2023,6 +2053,7 @@ npt_dispatch_IDXGIOutput1_DuplicateOutput(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIOutput1_DuplicateOutput on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppOutputDuplication);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -2040,6 +2071,7 @@ npt_dispatch_IDXGIOutput1_DuplicateOutput(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIOutput1_DuplicateOutput: an argument handle is unknown "
                     "to this context");
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppOutputDuplication);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -2063,6 +2095,8 @@ npt_dispatch_IDXGIOutput1_DuplicateOutput(struct npt_dispatch_context *ctx,
      * whose type is determined by the caller's riid. */
     if (args.ppOutputDuplication && *args.ppOutputDuplication)
         npt_cs_handle_register_guest_id(ctx, args._guest_id_ppOutputDuplication, *args.ppOutputDuplication, NPT_OBJECT_TYPE_IDXGIOUTPUTDUPLICATION);
+    else if (args.ppOutputDuplication)
+        npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppOutputDuplication);
 
     if (cmd_flags & NPT_CMD_FLAG_REPLY) {
         if (!npt_cs_decoder_get_fatal(ctx->decoder)) {
@@ -2139,6 +2173,7 @@ npt_dispatch_IDXGIOutput2_SupportsOverlays(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIOutput2_SupportsOverlays on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -2156,6 +2191,7 @@ npt_dispatch_IDXGIOutput2_SupportsOverlays(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIOutput2_SupportsOverlays: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -2271,6 +2307,7 @@ npt_dispatch_IDXGIOutput3_CheckOverlaySupport(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIOutput3_CheckOverlaySupport on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -2288,6 +2325,7 @@ npt_dispatch_IDXGIOutput3_CheckOverlaySupport(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIOutput3_CheckOverlaySupport: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -2406,6 +2444,7 @@ npt_dispatch_IDXGIOutput4_CheckOverlayColorSpaceSupport(struct npt_dispatch_cont
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIOutput4_CheckOverlayColorSpaceSupport on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -2423,6 +2462,7 @@ npt_dispatch_IDXGIOutput4_CheckOverlayColorSpaceSupport(struct npt_dispatch_cont
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIOutput4_CheckOverlayColorSpaceSupport: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -2567,6 +2607,7 @@ npt_dispatch_IDXGIOutput5_DuplicateOutput1(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIOutput5_DuplicateOutput1 on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppOutputDuplication);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -2584,6 +2625,7 @@ npt_dispatch_IDXGIOutput5_DuplicateOutput1(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIOutput5_DuplicateOutput1: an argument handle is unknown "
                     "to this context");
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppOutputDuplication);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -2607,6 +2649,8 @@ npt_dispatch_IDXGIOutput5_DuplicateOutput1(struct npt_dispatch_context *ctx,
      * whose type is determined by the caller's riid. */
     if (args.ppOutputDuplication && *args.ppOutputDuplication)
         npt_cs_handle_register_guest_id(ctx, args._guest_id_ppOutputDuplication, *args.ppOutputDuplication, NPT_OBJECT_TYPE_IDXGIOUTPUTDUPLICATION);
+    else if (args.ppOutputDuplication)
+        npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppOutputDuplication);
 
     if (cmd_flags & NPT_CMD_FLAG_REPLY) {
         if (!npt_cs_decoder_get_fatal(ctx->decoder)) {
@@ -2690,6 +2734,7 @@ npt_dispatch_IDXGIOutput6_GetDesc1(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIOutput6_GetDesc1 on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -2707,6 +2752,7 @@ npt_dispatch_IDXGIOutput6_GetDesc1(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIOutput6_GetDesc1: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -2811,6 +2857,7 @@ npt_dispatch_IDXGIOutput6_CheckHardwareCompositionSupport(struct npt_dispatch_co
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIOutput6_CheckHardwareCompositionSupport on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -2828,6 +2875,7 @@ npt_dispatch_IDXGIOutput6_CheckHardwareCompositionSupport(struct npt_dispatch_co
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIOutput6_CheckHardwareCompositionSupport: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }

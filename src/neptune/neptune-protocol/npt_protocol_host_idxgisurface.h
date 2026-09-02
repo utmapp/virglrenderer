@@ -87,6 +87,7 @@ npt_dispatch_IDXGISurface_GetDesc(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGISurface_GetDesc on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -104,6 +105,7 @@ npt_dispatch_IDXGISurface_GetDesc(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGISurface_GetDesc: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -211,6 +213,7 @@ npt_dispatch_IDXGISurface_Map(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGISurface_Map on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -228,6 +231,7 @@ npt_dispatch_IDXGISurface_Map(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGISurface_Map: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -325,6 +329,7 @@ npt_dispatch_IDXGISurface_Unmap(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGISurface_Unmap on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -342,6 +347,7 @@ npt_dispatch_IDXGISurface_Unmap(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGISurface_Unmap: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -449,6 +455,7 @@ npt_dispatch_IDXGISurface1_GetDC(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGISurface1_GetDC on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -466,6 +473,7 @@ npt_dispatch_IDXGISurface1_GetDC(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGISurface1_GetDC: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -572,6 +580,7 @@ npt_dispatch_IDXGISurface1_ReleaseDC(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGISurface1_ReleaseDC on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -589,6 +598,7 @@ npt_dispatch_IDXGISurface1_ReleaseDC(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGISurface1_ReleaseDC: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -720,6 +730,7 @@ npt_dispatch_IDXGISurface2_GetResource(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGISurface2_GetResource on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppParentResource);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -737,6 +748,7 @@ npt_dispatch_IDXGISurface2_GetResource(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGISurface2_GetResource: an argument handle is unknown "
                     "to this context");
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppParentResource);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -761,6 +773,8 @@ npt_dispatch_IDXGISurface2_GetResource(struct npt_dispatch_context *ctx,
     if (args.ppParentResource && *args.ppParentResource)
         npt_cs_handle_register_guest_id(ctx, args._guest_id_ppParentResource, *args.ppParentResource,
             npt_object_type_from_iid(args.riid));
+    else if (args.ppParentResource)
+        npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppParentResource);
 
     if (cmd_flags & NPT_CMD_FLAG_REPLY) {
         if (!npt_cs_decoder_get_fatal(ctx->decoder)) {

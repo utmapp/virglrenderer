@@ -94,6 +94,7 @@ npt_dispatch_CreateDXGIFactory(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping CreateDXGIFactory: an argument handle is unknown "
                     "to this context");
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppFactory);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -115,6 +116,8 @@ npt_dispatch_CreateDXGIFactory(struct npt_dispatch_context *ctx,
     if (args.ppFactory && *args.ppFactory)
         npt_cs_handle_register_guest_id(ctx, args._guest_id_ppFactory, *args.ppFactory,
             npt_object_type_from_iid(args.riid));
+    else if (args.ppFactory)
+        npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppFactory);
 
     if (cmd_flags & NPT_CMD_FLAG_REPLY) {
         if (!npt_cs_decoder_get_fatal(ctx->decoder)) {
@@ -205,6 +208,7 @@ npt_dispatch_CreateDXGIFactory1(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping CreateDXGIFactory1: an argument handle is unknown "
                     "to this context");
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppFactory);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -226,6 +230,8 @@ npt_dispatch_CreateDXGIFactory1(struct npt_dispatch_context *ctx,
     if (args.ppFactory && *args.ppFactory)
         npt_cs_handle_register_guest_id(ctx, args._guest_id_ppFactory, *args.ppFactory,
             npt_object_type_from_iid(args.riid));
+    else if (args.ppFactory)
+        npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppFactory);
 
     if (cmd_flags & NPT_CMD_FLAG_REPLY) {
         if (!npt_cs_decoder_get_fatal(ctx->decoder)) {
@@ -319,6 +325,7 @@ npt_dispatch_CreateDXGIFactory2(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping CreateDXGIFactory2: an argument handle is unknown "
                     "to this context");
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppFactory);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -340,6 +347,8 @@ npt_dispatch_CreateDXGIFactory2(struct npt_dispatch_context *ctx,
     if (args.ppFactory && *args.ppFactory)
         npt_cs_handle_register_guest_id(ctx, args._guest_id_ppFactory, *args.ppFactory,
             npt_object_type_from_iid(args.riid));
+    else if (args.ppFactory)
+        npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppFactory);
 
     if (cmd_flags & NPT_CMD_FLAG_REPLY) {
         if (!npt_cs_decoder_get_fatal(ctx->decoder)) {
@@ -406,6 +415,7 @@ npt_dispatch_DXGIDeclareAdapterRemovalSupport(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping DXGIDeclareAdapterRemovalSupport: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -568,6 +578,8 @@ npt_dispatch_D3D11CreateDevice(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping D3D11CreateDevice: an argument handle is unknown "
                     "to this context");
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppDevice);
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppImmediateContext);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -588,8 +600,12 @@ npt_dispatch_D3D11CreateDevice(struct npt_dispatch_context *ctx,
      * get runtime type resolution via npt_object_type_from_iid. */
     if (args.ppDevice && *args.ppDevice)
         npt_cs_handle_register_guest_id(ctx, args._guest_id_ppDevice, *args.ppDevice, NPT_OBJECT_TYPE_ID3D11DEVICE);
+    else if (args.ppDevice)
+        npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppDevice);
     if (args.ppImmediateContext && *args.ppImmediateContext)
         npt_cs_handle_register_guest_id(ctx, args._guest_id_ppImmediateContext, *args.ppImmediateContext, NPT_OBJECT_TYPE_ID3D11DEVICECONTEXT);
+    else if (args.ppImmediateContext)
+        npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppImmediateContext);
 
     if (cmd_flags & NPT_CMD_FLAG_REPLY) {
         if (!npt_cs_decoder_get_fatal(ctx->decoder)) {
@@ -758,6 +774,9 @@ npt_dispatch_D3D11CreateDeviceAndSwapChain(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping D3D11CreateDeviceAndSwapChain: an argument handle is unknown "
                     "to this context");
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppSwapChain);
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppDevice);
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppImmediateContext);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -778,10 +797,16 @@ npt_dispatch_D3D11CreateDeviceAndSwapChain(struct npt_dispatch_context *ctx,
      * get runtime type resolution via npt_object_type_from_iid. */
     if (args.ppSwapChain && *args.ppSwapChain)
         npt_cs_handle_register_guest_id(ctx, args._guest_id_ppSwapChain, *args.ppSwapChain, NPT_OBJECT_TYPE_IDXGISWAPCHAIN);
+    else if (args.ppSwapChain)
+        npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppSwapChain);
     if (args.ppDevice && *args.ppDevice)
         npt_cs_handle_register_guest_id(ctx, args._guest_id_ppDevice, *args.ppDevice, NPT_OBJECT_TYPE_ID3D11DEVICE);
+    else if (args.ppDevice)
+        npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppDevice);
     if (args.ppImmediateContext && *args.ppImmediateContext)
         npt_cs_handle_register_guest_id(ctx, args._guest_id_ppImmediateContext, *args.ppImmediateContext, NPT_OBJECT_TYPE_ID3D11DEVICECONTEXT);
+    else if (args.ppImmediateContext)
+        npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppImmediateContext);
 
     if (cmd_flags & NPT_CMD_FLAG_REPLY) {
         if (!npt_cs_decoder_get_fatal(ctx->decoder)) {
@@ -941,6 +966,8 @@ npt_dispatch_D3D11On12CreateDevice(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping D3D11On12CreateDevice: an argument handle is unknown "
                     "to this context");
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppDevice);
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppImmediateContext);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -961,8 +988,12 @@ npt_dispatch_D3D11On12CreateDevice(struct npt_dispatch_context *ctx,
      * get runtime type resolution via npt_object_type_from_iid. */
     if (args.ppDevice && *args.ppDevice)
         npt_cs_handle_register_guest_id(ctx, args._guest_id_ppDevice, *args.ppDevice, NPT_OBJECT_TYPE_ID3D11DEVICE);
+    else if (args.ppDevice)
+        npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppDevice);
     if (args.ppImmediateContext && *args.ppImmediateContext)
         npt_cs_handle_register_guest_id(ctx, args._guest_id_ppImmediateContext, *args.ppImmediateContext, NPT_OBJECT_TYPE_ID3D11DEVICECONTEXT);
+    else if (args.ppImmediateContext)
+        npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppImmediateContext);
 
     if (cmd_flags & NPT_CMD_FLAG_REPLY) {
         if (!npt_cs_decoder_get_fatal(ctx->decoder)) {
@@ -1064,6 +1095,7 @@ npt_dispatch_D3D12CreateDevice(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping D3D12CreateDevice: an argument handle is unknown "
                     "to this context");
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppDevice);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -1085,6 +1117,8 @@ npt_dispatch_D3D12CreateDevice(struct npt_dispatch_context *ctx,
     if (args.ppDevice && *args.ppDevice)
         npt_cs_handle_register_guest_id(ctx, args._guest_id_ppDevice, *args.ppDevice,
             npt_object_type_from_iid(args.riid));
+    else if (args.ppDevice)
+        npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppDevice);
 
     if (cmd_flags & NPT_CMD_FLAG_REPLY) {
         if (!npt_cs_decoder_get_fatal(ctx->decoder)) {
@@ -1184,6 +1218,7 @@ npt_dispatch_D3D12CreateRootSignatureDeserializer(struct npt_dispatch_context *c
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping D3D12CreateRootSignatureDeserializer: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -1301,6 +1336,7 @@ npt_dispatch_D3D12CreateVersionedRootSignatureDeserializer(struct npt_dispatch_c
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping D3D12CreateVersionedRootSignatureDeserializer: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -1455,6 +1491,7 @@ npt_dispatch_D3D12SerializeRootSignature(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping D3D12SerializeRootSignature: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -1606,6 +1643,7 @@ npt_dispatch_D3D12SerializeVersionedRootSignature(struct npt_dispatch_context *c
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping D3D12SerializeVersionedRootSignature: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }

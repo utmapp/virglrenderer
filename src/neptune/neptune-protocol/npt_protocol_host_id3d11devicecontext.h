@@ -109,6 +109,7 @@ npt_dispatch_ID3D11DeviceContext_VSSetConstantBuffers(struct npt_dispatch_contex
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_VSSetConstantBuffers on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -126,6 +127,7 @@ npt_dispatch_ID3D11DeviceContext_VSSetConstantBuffers(struct npt_dispatch_contex
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_VSSetConstantBuffers: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -252,6 +254,7 @@ npt_dispatch_ID3D11DeviceContext_PSSetShaderResources(struct npt_dispatch_contex
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_PSSetShaderResources on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -269,6 +272,7 @@ npt_dispatch_ID3D11DeviceContext_PSSetShaderResources(struct npt_dispatch_contex
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_PSSetShaderResources: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -400,6 +404,7 @@ npt_dispatch_ID3D11DeviceContext_PSSetShader(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_PSSetShader on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -417,6 +422,7 @@ npt_dispatch_ID3D11DeviceContext_PSSetShader(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_PSSetShader: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -543,6 +549,7 @@ npt_dispatch_ID3D11DeviceContext_PSSetSamplers(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_PSSetSamplers on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -560,6 +567,7 @@ npt_dispatch_ID3D11DeviceContext_PSSetSamplers(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_PSSetSamplers: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -691,6 +699,7 @@ npt_dispatch_ID3D11DeviceContext_VSSetShader(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_VSSetShader on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -708,6 +717,7 @@ npt_dispatch_ID3D11DeviceContext_VSSetShader(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_VSSetShader: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -813,6 +823,7 @@ npt_dispatch_ID3D11DeviceContext_DrawIndexed(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_DrawIndexed on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -830,6 +841,7 @@ npt_dispatch_ID3D11DeviceContext_DrawIndexed(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_DrawIndexed: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -932,6 +944,7 @@ npt_dispatch_ID3D11DeviceContext_Draw(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_Draw on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -949,6 +962,7 @@ npt_dispatch_ID3D11DeviceContext_Draw(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_Draw: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -1070,6 +1084,7 @@ npt_dispatch_ID3D11DeviceContext_Map(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_Map on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -1087,6 +1102,7 @@ npt_dispatch_ID3D11DeviceContext_Map(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_Map: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -1194,6 +1210,7 @@ npt_dispatch_ID3D11DeviceContext_Unmap(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_Unmap on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -1211,6 +1228,7 @@ npt_dispatch_ID3D11DeviceContext_Unmap(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_Unmap: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -1337,6 +1355,7 @@ npt_dispatch_ID3D11DeviceContext_PSSetConstantBuffers(struct npt_dispatch_contex
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_PSSetConstantBuffers on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -1354,6 +1373,7 @@ npt_dispatch_ID3D11DeviceContext_PSSetConstantBuffers(struct npt_dispatch_contex
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_PSSetConstantBuffers: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -1458,6 +1478,7 @@ npt_dispatch_ID3D11DeviceContext_IASetInputLayout(struct npt_dispatch_context *c
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_IASetInputLayout on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -1475,6 +1496,7 @@ npt_dispatch_ID3D11DeviceContext_IASetInputLayout(struct npt_dispatch_context *c
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_IASetInputLayout: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -1633,6 +1655,7 @@ npt_dispatch_ID3D11DeviceContext_IASetVertexBuffers(struct npt_dispatch_context 
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_IASetVertexBuffers on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -1650,6 +1673,7 @@ npt_dispatch_ID3D11DeviceContext_IASetVertexBuffers(struct npt_dispatch_context 
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_IASetVertexBuffers: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -1760,6 +1784,7 @@ npt_dispatch_ID3D11DeviceContext_IASetIndexBuffer(struct npt_dispatch_context *c
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_IASetIndexBuffer on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -1777,6 +1802,7 @@ npt_dispatch_ID3D11DeviceContext_IASetIndexBuffer(struct npt_dispatch_context *c
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_IASetIndexBuffer: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -1888,6 +1914,7 @@ npt_dispatch_ID3D11DeviceContext_DrawIndexedInstanced(struct npt_dispatch_contex
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_DrawIndexedInstanced on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -1905,6 +1932,7 @@ npt_dispatch_ID3D11DeviceContext_DrawIndexedInstanced(struct npt_dispatch_contex
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_DrawIndexedInstanced: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -2013,6 +2041,7 @@ npt_dispatch_ID3D11DeviceContext_DrawInstanced(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_DrawInstanced on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -2030,6 +2059,7 @@ npt_dispatch_ID3D11DeviceContext_DrawInstanced(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_DrawInstanced: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -2156,6 +2186,7 @@ npt_dispatch_ID3D11DeviceContext_GSSetConstantBuffers(struct npt_dispatch_contex
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_GSSetConstantBuffers on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -2173,6 +2204,7 @@ npt_dispatch_ID3D11DeviceContext_GSSetConstantBuffers(struct npt_dispatch_contex
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_GSSetConstantBuffers: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -2304,6 +2336,7 @@ npt_dispatch_ID3D11DeviceContext_GSSetShader(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_GSSetShader on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -2321,6 +2354,7 @@ npt_dispatch_ID3D11DeviceContext_GSSetShader(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_GSSetShader: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -2420,6 +2454,7 @@ npt_dispatch_ID3D11DeviceContext_IASetPrimitiveTopology(struct npt_dispatch_cont
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_IASetPrimitiveTopology on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -2437,6 +2472,7 @@ npt_dispatch_ID3D11DeviceContext_IASetPrimitiveTopology(struct npt_dispatch_cont
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_IASetPrimitiveTopology: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -2563,6 +2599,7 @@ npt_dispatch_ID3D11DeviceContext_VSSetShaderResources(struct npt_dispatch_contex
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_VSSetShaderResources on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -2580,6 +2617,7 @@ npt_dispatch_ID3D11DeviceContext_VSSetShaderResources(struct npt_dispatch_contex
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_VSSetShaderResources: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -2706,6 +2744,7 @@ npt_dispatch_ID3D11DeviceContext_VSSetSamplers(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_VSSetSamplers on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -2723,6 +2762,7 @@ npt_dispatch_ID3D11DeviceContext_VSSetSamplers(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_VSSetSamplers: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -2827,6 +2867,7 @@ npt_dispatch_ID3D11DeviceContext_Begin(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_Begin on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -2844,6 +2885,7 @@ npt_dispatch_ID3D11DeviceContext_Begin(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_Begin: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -2948,6 +2990,7 @@ npt_dispatch_ID3D11DeviceContext_End(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_End on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -2965,6 +3008,7 @@ npt_dispatch_ID3D11DeviceContext_End(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_End: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -3091,6 +3135,7 @@ npt_dispatch_ID3D11DeviceContext_GetData(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_GetData on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -3108,6 +3153,7 @@ npt_dispatch_ID3D11DeviceContext_GetData(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_GetData: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -3215,6 +3261,7 @@ npt_dispatch_ID3D11DeviceContext_SetPredication(struct npt_dispatch_context *ctx
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_SetPredication on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -3232,6 +3279,7 @@ npt_dispatch_ID3D11DeviceContext_SetPredication(struct npt_dispatch_context *ctx
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_SetPredication: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -3358,6 +3406,7 @@ npt_dispatch_ID3D11DeviceContext_GSSetShaderResources(struct npt_dispatch_contex
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_GSSetShaderResources on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -3375,6 +3424,7 @@ npt_dispatch_ID3D11DeviceContext_GSSetShaderResources(struct npt_dispatch_contex
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_GSSetShaderResources: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -3501,6 +3551,7 @@ npt_dispatch_ID3D11DeviceContext_GSSetSamplers(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_GSSetSamplers on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -3518,6 +3569,7 @@ npt_dispatch_ID3D11DeviceContext_GSSetSamplers(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_GSSetSamplers: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -3649,6 +3701,7 @@ npt_dispatch_ID3D11DeviceContext_OMSetRenderTargets(struct npt_dispatch_context 
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_OMSetRenderTargets on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -3666,6 +3719,7 @@ npt_dispatch_ID3D11DeviceContext_OMSetRenderTargets(struct npt_dispatch_context 
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_OMSetRenderTargets: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -3842,6 +3896,7 @@ npt_dispatch_ID3D11DeviceContext_OMSetRenderTargetsAndUnorderedAccessViews(struc
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_OMSetRenderTargetsAndUnorderedAccessViews on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -3859,6 +3914,7 @@ npt_dispatch_ID3D11DeviceContext_OMSetRenderTargetsAndUnorderedAccessViews(struc
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_OMSetRenderTargetsAndUnorderedAccessViews: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -3979,6 +4035,7 @@ npt_dispatch_ID3D11DeviceContext_OMSetBlendState(struct npt_dispatch_context *ct
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_OMSetBlendState on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -3996,6 +4053,7 @@ npt_dispatch_ID3D11DeviceContext_OMSetBlendState(struct npt_dispatch_context *ct
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_OMSetBlendState: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -4103,6 +4161,7 @@ npt_dispatch_ID3D11DeviceContext_OMSetDepthStencilState(struct npt_dispatch_cont
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_OMSetDepthStencilState on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -4120,6 +4179,7 @@ npt_dispatch_ID3D11DeviceContext_OMSetDepthStencilState(struct npt_dispatch_cont
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_OMSetDepthStencilState: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -4259,6 +4319,7 @@ npt_dispatch_ID3D11DeviceContext_SOSetTargets(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_SOSetTargets on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -4276,6 +4337,7 @@ npt_dispatch_ID3D11DeviceContext_SOSetTargets(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_SOSetTargets: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -4372,6 +4434,7 @@ npt_dispatch_ID3D11DeviceContext_DrawAuto(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_DrawAuto on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -4389,6 +4452,7 @@ npt_dispatch_ID3D11DeviceContext_DrawAuto(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_DrawAuto: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -4496,6 +4560,7 @@ npt_dispatch_ID3D11DeviceContext_DrawIndexedInstancedIndirect(struct npt_dispatc
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_DrawIndexedInstancedIndirect on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -4513,6 +4578,7 @@ npt_dispatch_ID3D11DeviceContext_DrawIndexedInstancedIndirect(struct npt_dispatc
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_DrawIndexedInstancedIndirect: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -4620,6 +4686,7 @@ npt_dispatch_ID3D11DeviceContext_DrawInstancedIndirect(struct npt_dispatch_conte
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_DrawInstancedIndirect on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -4637,6 +4704,7 @@ npt_dispatch_ID3D11DeviceContext_DrawInstancedIndirect(struct npt_dispatch_conte
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_DrawInstancedIndirect: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -4742,6 +4810,7 @@ npt_dispatch_ID3D11DeviceContext_Dispatch(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_Dispatch on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -4759,6 +4828,7 @@ npt_dispatch_ID3D11DeviceContext_Dispatch(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_Dispatch: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -4866,6 +4936,7 @@ npt_dispatch_ID3D11DeviceContext_DispatchIndirect(struct npt_dispatch_context *c
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_DispatchIndirect on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -4883,6 +4954,7 @@ npt_dispatch_ID3D11DeviceContext_DispatchIndirect(struct npt_dispatch_context *c
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_DispatchIndirect: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -4987,6 +5059,7 @@ npt_dispatch_ID3D11DeviceContext_RSSetState(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_RSSetState on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -5004,6 +5077,7 @@ npt_dispatch_ID3D11DeviceContext_RSSetState(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_RSSetState: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -5121,6 +5195,7 @@ npt_dispatch_ID3D11DeviceContext_RSSetViewports(struct npt_dispatch_context *ctx
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_RSSetViewports on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -5138,6 +5213,7 @@ npt_dispatch_ID3D11DeviceContext_RSSetViewports(struct npt_dispatch_context *ctx
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_RSSetViewports: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -5255,6 +5331,7 @@ npt_dispatch_ID3D11DeviceContext_RSSetScissorRects(struct npt_dispatch_context *
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_RSSetScissorRects on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -5272,6 +5349,7 @@ npt_dispatch_ID3D11DeviceContext_RSSetScissorRects(struct npt_dispatch_context *
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_RSSetScissorRects: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -5408,6 +5486,7 @@ npt_dispatch_ID3D11DeviceContext_CopySubresourceRegion(struct npt_dispatch_conte
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_CopySubresourceRegion on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -5425,6 +5504,7 @@ npt_dispatch_ID3D11DeviceContext_CopySubresourceRegion(struct npt_dispatch_conte
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_CopySubresourceRegion: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -5537,6 +5617,7 @@ npt_dispatch_ID3D11DeviceContext_CopyResource(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_CopyResource on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -5554,6 +5635,7 @@ npt_dispatch_ID3D11DeviceContext_CopyResource(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_CopyResource: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -5680,6 +5762,7 @@ npt_dispatch_ID3D11DeviceContext_UpdateSubresource(struct npt_dispatch_context *
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_UpdateSubresource on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -5697,6 +5780,7 @@ npt_dispatch_ID3D11DeviceContext_UpdateSubresource(struct npt_dispatch_context *
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_UpdateSubresource: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -5812,6 +5896,7 @@ npt_dispatch_ID3D11DeviceContext_CopyStructureCount(struct npt_dispatch_context 
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_CopyStructureCount on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -5829,6 +5914,7 @@ npt_dispatch_ID3D11DeviceContext_CopyStructureCount(struct npt_dispatch_context 
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_CopyStructureCount: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -5939,6 +6025,7 @@ npt_dispatch_ID3D11DeviceContext_ClearRenderTargetView(struct npt_dispatch_conte
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_ClearRenderTargetView on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -5956,6 +6043,7 @@ npt_dispatch_ID3D11DeviceContext_ClearRenderTargetView(struct npt_dispatch_conte
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_ClearRenderTargetView: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -6066,6 +6154,7 @@ npt_dispatch_ID3D11DeviceContext_ClearUnorderedAccessViewUint(struct npt_dispatc
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_ClearUnorderedAccessViewUint on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -6083,6 +6172,7 @@ npt_dispatch_ID3D11DeviceContext_ClearUnorderedAccessViewUint(struct npt_dispatc
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_ClearUnorderedAccessViewUint: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -6193,6 +6283,7 @@ npt_dispatch_ID3D11DeviceContext_ClearUnorderedAccessViewFloat(struct npt_dispat
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_ClearUnorderedAccessViewFloat on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -6210,6 +6301,7 @@ npt_dispatch_ID3D11DeviceContext_ClearUnorderedAccessViewFloat(struct npt_dispat
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_ClearUnorderedAccessViewFloat: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -6323,6 +6415,7 @@ npt_dispatch_ID3D11DeviceContext_ClearDepthStencilView(struct npt_dispatch_conte
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_ClearDepthStencilView on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -6340,6 +6433,7 @@ npt_dispatch_ID3D11DeviceContext_ClearDepthStencilView(struct npt_dispatch_conte
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_ClearDepthStencilView: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -6444,6 +6538,7 @@ npt_dispatch_ID3D11DeviceContext_GenerateMips(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_GenerateMips on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -6461,6 +6556,7 @@ npt_dispatch_ID3D11DeviceContext_GenerateMips(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_GenerateMips: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -6568,6 +6664,7 @@ npt_dispatch_ID3D11DeviceContext_SetResourceMinLOD(struct npt_dispatch_context *
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_SetResourceMinLOD on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -6585,6 +6682,7 @@ npt_dispatch_ID3D11DeviceContext_SetResourceMinLOD(struct npt_dispatch_context *
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_SetResourceMinLOD: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -6690,6 +6788,7 @@ npt_dispatch_ID3D11DeviceContext_GetResourceMinLOD(struct npt_dispatch_context *
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_GetResourceMinLOD on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -6707,6 +6806,7 @@ npt_dispatch_ID3D11DeviceContext_GetResourceMinLOD(struct npt_dispatch_context *
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_GetResourceMinLOD: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -6828,6 +6928,7 @@ npt_dispatch_ID3D11DeviceContext_ResolveSubresource(struct npt_dispatch_context 
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_ResolveSubresource on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -6845,6 +6946,7 @@ npt_dispatch_ID3D11DeviceContext_ResolveSubresource(struct npt_dispatch_context 
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_ResolveSubresource: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -6952,6 +7054,7 @@ npt_dispatch_ID3D11DeviceContext_ExecuteCommandList(struct npt_dispatch_context 
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_ExecuteCommandList on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -6969,6 +7072,7 @@ npt_dispatch_ID3D11DeviceContext_ExecuteCommandList(struct npt_dispatch_context 
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_ExecuteCommandList: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -7095,6 +7199,7 @@ npt_dispatch_ID3D11DeviceContext_HSSetShaderResources(struct npt_dispatch_contex
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_HSSetShaderResources on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -7112,6 +7217,7 @@ npt_dispatch_ID3D11DeviceContext_HSSetShaderResources(struct npt_dispatch_contex
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_HSSetShaderResources: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -7243,6 +7349,7 @@ npt_dispatch_ID3D11DeviceContext_HSSetShader(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_HSSetShader on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -7260,6 +7367,7 @@ npt_dispatch_ID3D11DeviceContext_HSSetShader(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_HSSetShader: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -7386,6 +7494,7 @@ npt_dispatch_ID3D11DeviceContext_HSSetSamplers(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_HSSetSamplers on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -7403,6 +7512,7 @@ npt_dispatch_ID3D11DeviceContext_HSSetSamplers(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_HSSetSamplers: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -7529,6 +7639,7 @@ npt_dispatch_ID3D11DeviceContext_HSSetConstantBuffers(struct npt_dispatch_contex
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_HSSetConstantBuffers on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -7546,6 +7657,7 @@ npt_dispatch_ID3D11DeviceContext_HSSetConstantBuffers(struct npt_dispatch_contex
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_HSSetConstantBuffers: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -7672,6 +7784,7 @@ npt_dispatch_ID3D11DeviceContext_DSSetShaderResources(struct npt_dispatch_contex
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_DSSetShaderResources on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -7689,6 +7802,7 @@ npt_dispatch_ID3D11DeviceContext_DSSetShaderResources(struct npt_dispatch_contex
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_DSSetShaderResources: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -7820,6 +7934,7 @@ npt_dispatch_ID3D11DeviceContext_DSSetShader(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_DSSetShader on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -7837,6 +7952,7 @@ npt_dispatch_ID3D11DeviceContext_DSSetShader(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_DSSetShader: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -7963,6 +8079,7 @@ npt_dispatch_ID3D11DeviceContext_DSSetSamplers(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_DSSetSamplers on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -7980,6 +8097,7 @@ npt_dispatch_ID3D11DeviceContext_DSSetSamplers(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_DSSetSamplers: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -8106,6 +8224,7 @@ npt_dispatch_ID3D11DeviceContext_DSSetConstantBuffers(struct npt_dispatch_contex
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_DSSetConstantBuffers on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -8123,6 +8242,7 @@ npt_dispatch_ID3D11DeviceContext_DSSetConstantBuffers(struct npt_dispatch_contex
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_DSSetConstantBuffers: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -8249,6 +8369,7 @@ npt_dispatch_ID3D11DeviceContext_CSSetShaderResources(struct npt_dispatch_contex
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_CSSetShaderResources on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -8266,6 +8387,7 @@ npt_dispatch_ID3D11DeviceContext_CSSetShaderResources(struct npt_dispatch_contex
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_CSSetShaderResources: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -8408,6 +8530,7 @@ npt_dispatch_ID3D11DeviceContext_CSSetUnorderedAccessViews(struct npt_dispatch_c
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_CSSetUnorderedAccessViews on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -8425,6 +8548,7 @@ npt_dispatch_ID3D11DeviceContext_CSSetUnorderedAccessViews(struct npt_dispatch_c
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_CSSetUnorderedAccessViews: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -8556,6 +8680,7 @@ npt_dispatch_ID3D11DeviceContext_CSSetShader(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_CSSetShader on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -8573,6 +8698,7 @@ npt_dispatch_ID3D11DeviceContext_CSSetShader(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_CSSetShader: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -8699,6 +8825,7 @@ npt_dispatch_ID3D11DeviceContext_CSSetSamplers(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_CSSetSamplers on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -8716,6 +8843,7 @@ npt_dispatch_ID3D11DeviceContext_CSSetSamplers(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_CSSetSamplers: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -8842,6 +8970,7 @@ npt_dispatch_ID3D11DeviceContext_CSSetConstantBuffers(struct npt_dispatch_contex
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_CSSetConstantBuffers on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -8859,6 +8988,7 @@ npt_dispatch_ID3D11DeviceContext_CSSetConstantBuffers(struct npt_dispatch_contex
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_CSSetConstantBuffers: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -8982,6 +9112,7 @@ npt_dispatch_ID3D11DeviceContext_VSGetConstantBuffers(struct npt_dispatch_contex
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_VSGetConstantBuffers on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -8999,6 +9130,7 @@ npt_dispatch_ID3D11DeviceContext_VSGetConstantBuffers(struct npt_dispatch_contex
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_VSGetConstantBuffers: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -9128,6 +9260,7 @@ npt_dispatch_ID3D11DeviceContext_PSGetShaderResources(struct npt_dispatch_contex
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_PSGetShaderResources on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -9145,6 +9278,7 @@ npt_dispatch_ID3D11DeviceContext_PSGetShaderResources(struct npt_dispatch_contex
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_PSGetShaderResources: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -9295,6 +9429,7 @@ npt_dispatch_ID3D11DeviceContext_PSGetShader(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_PSGetShader on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppPixelShader);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -9312,6 +9447,7 @@ npt_dispatch_ID3D11DeviceContext_PSGetShader(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_PSGetShader: an argument handle is unknown "
                     "to this context");
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppPixelShader);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -9335,6 +9471,8 @@ npt_dispatch_ID3D11DeviceContext_PSGetShader(struct npt_dispatch_context *ctx,
      * whose type is determined by the caller's riid. */
     if (args.ppPixelShader && *args.ppPixelShader)
         npt_cs_handle_register_guest_id(ctx, args._guest_id_ppPixelShader, *args.ppPixelShader, NPT_OBJECT_TYPE_ID3D11PIXELSHADER);
+    else if (args.ppPixelShader)
+        npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppPixelShader);
     if (args.ppClassInstances && args._guest_ids_ppClassInstances) {
         const uint32_t _n = args._guest_id_count_ppClassInstances;
         for (uint32_t _i = 0; _i < _n; _i++)
@@ -9443,6 +9581,7 @@ npt_dispatch_ID3D11DeviceContext_PSGetSamplers(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_PSGetSamplers on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -9460,6 +9599,7 @@ npt_dispatch_ID3D11DeviceContext_PSGetSamplers(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_PSGetSamplers: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -9610,6 +9750,7 @@ npt_dispatch_ID3D11DeviceContext_VSGetShader(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_VSGetShader on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppVertexShader);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -9627,6 +9768,7 @@ npt_dispatch_ID3D11DeviceContext_VSGetShader(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_VSGetShader: an argument handle is unknown "
                     "to this context");
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppVertexShader);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -9650,6 +9792,8 @@ npt_dispatch_ID3D11DeviceContext_VSGetShader(struct npt_dispatch_context *ctx,
      * whose type is determined by the caller's riid. */
     if (args.ppVertexShader && *args.ppVertexShader)
         npt_cs_handle_register_guest_id(ctx, args._guest_id_ppVertexShader, *args.ppVertexShader, NPT_OBJECT_TYPE_ID3D11VERTEXSHADER);
+    else if (args.ppVertexShader)
+        npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppVertexShader);
     if (args.ppClassInstances && args._guest_ids_ppClassInstances) {
         const uint32_t _n = args._guest_id_count_ppClassInstances;
         for (uint32_t _i = 0; _i < _n; _i++)
@@ -9758,6 +9902,7 @@ npt_dispatch_ID3D11DeviceContext_PSGetConstantBuffers(struct npt_dispatch_contex
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_PSGetConstantBuffers on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -9775,6 +9920,7 @@ npt_dispatch_ID3D11DeviceContext_PSGetConstantBuffers(struct npt_dispatch_contex
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_PSGetConstantBuffers: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -9893,6 +10039,7 @@ npt_dispatch_ID3D11DeviceContext_IAGetInputLayout(struct npt_dispatch_context *c
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_IAGetInputLayout on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppInputLayout);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -9910,6 +10057,7 @@ npt_dispatch_ID3D11DeviceContext_IAGetInputLayout(struct npt_dispatch_context *c
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_IAGetInputLayout: an argument handle is unknown "
                     "to this context");
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppInputLayout);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -9933,6 +10081,8 @@ npt_dispatch_ID3D11DeviceContext_IAGetInputLayout(struct npt_dispatch_context *c
      * whose type is determined by the caller's riid. */
     if (args.ppInputLayout && *args.ppInputLayout)
         npt_cs_handle_register_guest_id(ctx, args._guest_id_ppInputLayout, *args.ppInputLayout, NPT_OBJECT_TYPE_ID3D11INPUTLAYOUT);
+    else if (args.ppInputLayout)
+        npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppInputLayout);
 
     if (cmd_flags & NPT_CMD_FLAG_REPLY) {
         if (!npt_cs_decoder_get_fatal(ctx->decoder)) {
@@ -10065,6 +10215,7 @@ npt_dispatch_ID3D11DeviceContext_IAGetVertexBuffers(struct npt_dispatch_context 
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_IAGetVertexBuffers on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -10082,6 +10233,7 @@ npt_dispatch_ID3D11DeviceContext_IAGetVertexBuffers(struct npt_dispatch_context 
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_IAGetVertexBuffers: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -10214,6 +10366,7 @@ npt_dispatch_ID3D11DeviceContext_IAGetIndexBuffer(struct npt_dispatch_context *c
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_IAGetIndexBuffer on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_pIndexBuffer);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -10231,6 +10384,7 @@ npt_dispatch_ID3D11DeviceContext_IAGetIndexBuffer(struct npt_dispatch_context *c
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_IAGetIndexBuffer: an argument handle is unknown "
                     "to this context");
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_pIndexBuffer);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -10254,6 +10408,8 @@ npt_dispatch_ID3D11DeviceContext_IAGetIndexBuffer(struct npt_dispatch_context *c
      * whose type is determined by the caller's riid. */
     if (args.pIndexBuffer && *args.pIndexBuffer)
         npt_cs_handle_register_guest_id(ctx, args._guest_id_pIndexBuffer, *args.pIndexBuffer, NPT_OBJECT_TYPE_ID3D11BUFFER);
+    else if (args.pIndexBuffer)
+        npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_pIndexBuffer);
 
     if (cmd_flags & NPT_CMD_FLAG_REPLY) {
         if (!npt_cs_decoder_get_fatal(ctx->decoder)) {
@@ -10356,6 +10512,7 @@ npt_dispatch_ID3D11DeviceContext_GSGetConstantBuffers(struct npt_dispatch_contex
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_GSGetConstantBuffers on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -10373,6 +10530,7 @@ npt_dispatch_ID3D11DeviceContext_GSGetConstantBuffers(struct npt_dispatch_contex
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_GSGetConstantBuffers: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -10523,6 +10681,7 @@ npt_dispatch_ID3D11DeviceContext_GSGetShader(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_GSGetShader on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppGeometryShader);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -10540,6 +10699,7 @@ npt_dispatch_ID3D11DeviceContext_GSGetShader(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_GSGetShader: an argument handle is unknown "
                     "to this context");
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppGeometryShader);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -10563,6 +10723,8 @@ npt_dispatch_ID3D11DeviceContext_GSGetShader(struct npt_dispatch_context *ctx,
      * whose type is determined by the caller's riid. */
     if (args.ppGeometryShader && *args.ppGeometryShader)
         npt_cs_handle_register_guest_id(ctx, args._guest_id_ppGeometryShader, *args.ppGeometryShader, NPT_OBJECT_TYPE_ID3D11GEOMETRYSHADER);
+    else if (args.ppGeometryShader)
+        npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppGeometryShader);
     if (args.ppClassInstances && args._guest_ids_ppClassInstances) {
         const uint32_t _n = args._guest_id_count_ppClassInstances;
         for (uint32_t _i = 0; _i < _n; _i++)
@@ -10651,6 +10813,7 @@ npt_dispatch_ID3D11DeviceContext_IAGetPrimitiveTopology(struct npt_dispatch_cont
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_IAGetPrimitiveTopology on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -10668,6 +10831,7 @@ npt_dispatch_ID3D11DeviceContext_IAGetPrimitiveTopology(struct npt_dispatch_cont
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_IAGetPrimitiveTopology: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -10791,6 +10955,7 @@ npt_dispatch_ID3D11DeviceContext_VSGetShaderResources(struct npt_dispatch_contex
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_VSGetShaderResources on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -10808,6 +10973,7 @@ npt_dispatch_ID3D11DeviceContext_VSGetShaderResources(struct npt_dispatch_contex
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_VSGetShaderResources: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -10937,6 +11103,7 @@ npt_dispatch_ID3D11DeviceContext_VSGetSamplers(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_VSGetSamplers on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -10954,6 +11121,7 @@ npt_dispatch_ID3D11DeviceContext_VSGetSamplers(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_VSGetSamplers: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -11079,6 +11247,7 @@ npt_dispatch_ID3D11DeviceContext_GetPredication(struct npt_dispatch_context *ctx
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_GetPredication on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppPredicate);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -11096,6 +11265,7 @@ npt_dispatch_ID3D11DeviceContext_GetPredication(struct npt_dispatch_context *ctx
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_GetPredication: an argument handle is unknown "
                     "to this context");
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppPredicate);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -11119,6 +11289,8 @@ npt_dispatch_ID3D11DeviceContext_GetPredication(struct npt_dispatch_context *ctx
      * whose type is determined by the caller's riid. */
     if (args.ppPredicate && *args.ppPredicate)
         npt_cs_handle_register_guest_id(ctx, args._guest_id_ppPredicate, *args.ppPredicate, NPT_OBJECT_TYPE_ID3D11PREDICATE);
+    else if (args.ppPredicate)
+        npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppPredicate);
 
     if (cmd_flags & NPT_CMD_FLAG_REPLY) {
         if (!npt_cs_decoder_get_fatal(ctx->decoder)) {
@@ -11221,6 +11393,7 @@ npt_dispatch_ID3D11DeviceContext_GSGetShaderResources(struct npt_dispatch_contex
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_GSGetShaderResources on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -11238,6 +11411,7 @@ npt_dispatch_ID3D11DeviceContext_GSGetShaderResources(struct npt_dispatch_contex
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_GSGetShaderResources: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -11367,6 +11541,7 @@ npt_dispatch_ID3D11DeviceContext_GSGetSamplers(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_GSGetSamplers on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -11384,6 +11559,7 @@ npt_dispatch_ID3D11DeviceContext_GSGetSamplers(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_GSGetSamplers: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -11526,6 +11702,7 @@ npt_dispatch_ID3D11DeviceContext_OMGetRenderTargets(struct npt_dispatch_context 
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_OMGetRenderTargets on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppDepthStencilView);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -11543,6 +11720,7 @@ npt_dispatch_ID3D11DeviceContext_OMGetRenderTargets(struct npt_dispatch_context 
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_OMGetRenderTargets: an argument handle is unknown "
                     "to this context");
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppDepthStencilView);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -11572,6 +11750,8 @@ npt_dispatch_ID3D11DeviceContext_OMGetRenderTargets(struct npt_dispatch_context 
     }
     if (args.ppDepthStencilView && *args.ppDepthStencilView)
         npt_cs_handle_register_guest_id(ctx, args._guest_id_ppDepthStencilView, *args.ppDepthStencilView, NPT_OBJECT_TYPE_ID3D11DEPTHSTENCILVIEW);
+    else if (args.ppDepthStencilView)
+        npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppDepthStencilView);
 
     if (cmd_flags & NPT_CMD_FLAG_REPLY) {
         if (!npt_cs_decoder_get_fatal(ctx->decoder)) {
@@ -11714,6 +11894,7 @@ npt_dispatch_ID3D11DeviceContext_OMGetRenderTargetsAndUnorderedAccessViews(struc
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_OMGetRenderTargetsAndUnorderedAccessViews on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppDepthStencilView);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -11731,6 +11912,7 @@ npt_dispatch_ID3D11DeviceContext_OMGetRenderTargetsAndUnorderedAccessViews(struc
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_OMGetRenderTargetsAndUnorderedAccessViews: an argument handle is unknown "
                     "to this context");
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppDepthStencilView);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -11760,6 +11942,8 @@ npt_dispatch_ID3D11DeviceContext_OMGetRenderTargetsAndUnorderedAccessViews(struc
     }
     if (args.ppDepthStencilView && *args.ppDepthStencilView)
         npt_cs_handle_register_guest_id(ctx, args._guest_id_ppDepthStencilView, *args.ppDepthStencilView, NPT_OBJECT_TYPE_ID3D11DEPTHSTENCILVIEW);
+    else if (args.ppDepthStencilView)
+        npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppDepthStencilView);
     if (args.ppUnorderedAccessViews && args._guest_ids_ppUnorderedAccessViews) {
         const uint32_t _n = args._guest_id_count_ppUnorderedAccessViews;
         for (uint32_t _i = 0; _i < _n; _i++)
@@ -11875,6 +12059,7 @@ npt_dispatch_ID3D11DeviceContext_OMGetBlendState(struct npt_dispatch_context *ct
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_OMGetBlendState on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppBlendState);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -11892,6 +12077,7 @@ npt_dispatch_ID3D11DeviceContext_OMGetBlendState(struct npt_dispatch_context *ct
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_OMGetBlendState: an argument handle is unknown "
                     "to this context");
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppBlendState);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -11915,6 +12101,8 @@ npt_dispatch_ID3D11DeviceContext_OMGetBlendState(struct npt_dispatch_context *ct
      * whose type is determined by the caller's riid. */
     if (args.ppBlendState && *args.ppBlendState)
         npt_cs_handle_register_guest_id(ctx, args._guest_id_ppBlendState, *args.ppBlendState, NPT_OBJECT_TYPE_ID3D11BLENDSTATE);
+    else if (args.ppBlendState)
+        npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppBlendState);
 
     if (cmd_flags & NPT_CMD_FLAG_REPLY) {
         if (!npt_cs_decoder_get_fatal(ctx->decoder)) {
@@ -12013,6 +12201,7 @@ npt_dispatch_ID3D11DeviceContext_OMGetDepthStencilState(struct npt_dispatch_cont
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_OMGetDepthStencilState on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppDepthStencilState);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -12030,6 +12219,7 @@ npt_dispatch_ID3D11DeviceContext_OMGetDepthStencilState(struct npt_dispatch_cont
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_OMGetDepthStencilState: an argument handle is unknown "
                     "to this context");
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppDepthStencilState);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -12053,6 +12243,8 @@ npt_dispatch_ID3D11DeviceContext_OMGetDepthStencilState(struct npt_dispatch_cont
      * whose type is determined by the caller's riid. */
     if (args.ppDepthStencilState && *args.ppDepthStencilState)
         npt_cs_handle_register_guest_id(ctx, args._guest_id_ppDepthStencilState, *args.ppDepthStencilState, NPT_OBJECT_TYPE_ID3D11DEPTHSTENCILSTATE);
+    else if (args.ppDepthStencilState)
+        npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppDepthStencilState);
 
     if (cmd_flags & NPT_CMD_FLAG_REPLY) {
         if (!npt_cs_decoder_get_fatal(ctx->decoder)) {
@@ -12152,6 +12344,7 @@ npt_dispatch_ID3D11DeviceContext_SOGetTargets(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_SOGetTargets on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -12169,6 +12362,7 @@ npt_dispatch_ID3D11DeviceContext_SOGetTargets(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_SOGetTargets: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -12287,6 +12481,7 @@ npt_dispatch_ID3D11DeviceContext_RSGetState(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_RSGetState on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppRasterizerState);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -12304,6 +12499,7 @@ npt_dispatch_ID3D11DeviceContext_RSGetState(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_RSGetState: an argument handle is unknown "
                     "to this context");
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppRasterizerState);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -12327,6 +12523,8 @@ npt_dispatch_ID3D11DeviceContext_RSGetState(struct npt_dispatch_context *ctx,
      * whose type is determined by the caller's riid. */
     if (args.ppRasterizerState && *args.ppRasterizerState)
         npt_cs_handle_register_guest_id(ctx, args._guest_id_ppRasterizerState, *args.ppRasterizerState, NPT_OBJECT_TYPE_ID3D11RASTERIZERSTATE);
+    else if (args.ppRasterizerState)
+        npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppRasterizerState);
 
     if (cmd_flags & NPT_CMD_FLAG_REPLY) {
         if (!npt_cs_decoder_get_fatal(ctx->decoder)) {
@@ -12431,6 +12629,7 @@ npt_dispatch_ID3D11DeviceContext_RSGetViewports(struct npt_dispatch_context *ctx
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_RSGetViewports on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -12448,6 +12647,7 @@ npt_dispatch_ID3D11DeviceContext_RSGetViewports(struct npt_dispatch_context *ctx
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_RSGetViewports: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -12573,6 +12773,7 @@ npt_dispatch_ID3D11DeviceContext_RSGetScissorRects(struct npt_dispatch_context *
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_RSGetScissorRects on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -12590,6 +12791,7 @@ npt_dispatch_ID3D11DeviceContext_RSGetScissorRects(struct npt_dispatch_context *
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_RSGetScissorRects: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -12713,6 +12915,7 @@ npt_dispatch_ID3D11DeviceContext_HSGetShaderResources(struct npt_dispatch_contex
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_HSGetShaderResources on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -12730,6 +12933,7 @@ npt_dispatch_ID3D11DeviceContext_HSGetShaderResources(struct npt_dispatch_contex
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_HSGetShaderResources: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -12880,6 +13084,7 @@ npt_dispatch_ID3D11DeviceContext_HSGetShader(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_HSGetShader on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppHullShader);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -12897,6 +13102,7 @@ npt_dispatch_ID3D11DeviceContext_HSGetShader(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_HSGetShader: an argument handle is unknown "
                     "to this context");
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppHullShader);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -12920,6 +13126,8 @@ npt_dispatch_ID3D11DeviceContext_HSGetShader(struct npt_dispatch_context *ctx,
      * whose type is determined by the caller's riid. */
     if (args.ppHullShader && *args.ppHullShader)
         npt_cs_handle_register_guest_id(ctx, args._guest_id_ppHullShader, *args.ppHullShader, NPT_OBJECT_TYPE_ID3D11HULLSHADER);
+    else if (args.ppHullShader)
+        npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppHullShader);
     if (args.ppClassInstances && args._guest_ids_ppClassInstances) {
         const uint32_t _n = args._guest_id_count_ppClassInstances;
         for (uint32_t _i = 0; _i < _n; _i++)
@@ -13028,6 +13236,7 @@ npt_dispatch_ID3D11DeviceContext_HSGetSamplers(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_HSGetSamplers on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -13045,6 +13254,7 @@ npt_dispatch_ID3D11DeviceContext_HSGetSamplers(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_HSGetSamplers: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -13174,6 +13384,7 @@ npt_dispatch_ID3D11DeviceContext_HSGetConstantBuffers(struct npt_dispatch_contex
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_HSGetConstantBuffers on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -13191,6 +13402,7 @@ npt_dispatch_ID3D11DeviceContext_HSGetConstantBuffers(struct npt_dispatch_contex
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_HSGetConstantBuffers: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -13320,6 +13532,7 @@ npt_dispatch_ID3D11DeviceContext_DSGetShaderResources(struct npt_dispatch_contex
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_DSGetShaderResources on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -13337,6 +13550,7 @@ npt_dispatch_ID3D11DeviceContext_DSGetShaderResources(struct npt_dispatch_contex
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_DSGetShaderResources: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -13487,6 +13701,7 @@ npt_dispatch_ID3D11DeviceContext_DSGetShader(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_DSGetShader on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppDomainShader);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -13504,6 +13719,7 @@ npt_dispatch_ID3D11DeviceContext_DSGetShader(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_DSGetShader: an argument handle is unknown "
                     "to this context");
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppDomainShader);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -13527,6 +13743,8 @@ npt_dispatch_ID3D11DeviceContext_DSGetShader(struct npt_dispatch_context *ctx,
      * whose type is determined by the caller's riid. */
     if (args.ppDomainShader && *args.ppDomainShader)
         npt_cs_handle_register_guest_id(ctx, args._guest_id_ppDomainShader, *args.ppDomainShader, NPT_OBJECT_TYPE_ID3D11DOMAINSHADER);
+    else if (args.ppDomainShader)
+        npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppDomainShader);
     if (args.ppClassInstances && args._guest_ids_ppClassInstances) {
         const uint32_t _n = args._guest_id_count_ppClassInstances;
         for (uint32_t _i = 0; _i < _n; _i++)
@@ -13635,6 +13853,7 @@ npt_dispatch_ID3D11DeviceContext_DSGetSamplers(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_DSGetSamplers on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -13652,6 +13871,7 @@ npt_dispatch_ID3D11DeviceContext_DSGetSamplers(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_DSGetSamplers: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -13781,6 +14001,7 @@ npt_dispatch_ID3D11DeviceContext_DSGetConstantBuffers(struct npt_dispatch_contex
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_DSGetConstantBuffers on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -13798,6 +14019,7 @@ npt_dispatch_ID3D11DeviceContext_DSGetConstantBuffers(struct npt_dispatch_contex
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_DSGetConstantBuffers: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -13927,6 +14149,7 @@ npt_dispatch_ID3D11DeviceContext_CSGetShaderResources(struct npt_dispatch_contex
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_CSGetShaderResources on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -13944,6 +14167,7 @@ npt_dispatch_ID3D11DeviceContext_CSGetShaderResources(struct npt_dispatch_contex
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_CSGetShaderResources: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -14073,6 +14297,7 @@ npt_dispatch_ID3D11DeviceContext_CSGetUnorderedAccessViews(struct npt_dispatch_c
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_CSGetUnorderedAccessViews on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -14090,6 +14315,7 @@ npt_dispatch_ID3D11DeviceContext_CSGetUnorderedAccessViews(struct npt_dispatch_c
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_CSGetUnorderedAccessViews: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -14240,6 +14466,7 @@ npt_dispatch_ID3D11DeviceContext_CSGetShader(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_CSGetShader on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppComputeShader);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -14257,6 +14484,7 @@ npt_dispatch_ID3D11DeviceContext_CSGetShader(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_CSGetShader: an argument handle is unknown "
                     "to this context");
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppComputeShader);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -14280,6 +14508,8 @@ npt_dispatch_ID3D11DeviceContext_CSGetShader(struct npt_dispatch_context *ctx,
      * whose type is determined by the caller's riid. */
     if (args.ppComputeShader && *args.ppComputeShader)
         npt_cs_handle_register_guest_id(ctx, args._guest_id_ppComputeShader, *args.ppComputeShader, NPT_OBJECT_TYPE_ID3D11COMPUTESHADER);
+    else if (args.ppComputeShader)
+        npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppComputeShader);
     if (args.ppClassInstances && args._guest_ids_ppClassInstances) {
         const uint32_t _n = args._guest_id_count_ppClassInstances;
         for (uint32_t _i = 0; _i < _n; _i++)
@@ -14388,6 +14618,7 @@ npt_dispatch_ID3D11DeviceContext_CSGetSamplers(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_CSGetSamplers on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -14405,6 +14636,7 @@ npt_dispatch_ID3D11DeviceContext_CSGetSamplers(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_CSGetSamplers: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -14534,6 +14766,7 @@ npt_dispatch_ID3D11DeviceContext_CSGetConstantBuffers(struct npt_dispatch_contex
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_CSGetConstantBuffers on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -14551,6 +14784,7 @@ npt_dispatch_ID3D11DeviceContext_CSGetConstantBuffers(struct npt_dispatch_contex
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_CSGetConstantBuffers: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -14653,6 +14887,7 @@ npt_dispatch_ID3D11DeviceContext_ClearState(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_ClearState on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -14670,6 +14905,7 @@ npt_dispatch_ID3D11DeviceContext_ClearState(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_ClearState: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -14766,6 +15002,7 @@ npt_dispatch_ID3D11DeviceContext_Flush(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_Flush on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -14783,6 +15020,7 @@ npt_dispatch_ID3D11DeviceContext_Flush(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_Flush: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -14880,6 +15118,7 @@ npt_dispatch_ID3D11DeviceContext_GetType(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_GetType on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -14897,6 +15136,7 @@ npt_dispatch_ID3D11DeviceContext_GetType(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_GetType: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -14994,6 +15234,7 @@ npt_dispatch_ID3D11DeviceContext_GetContextFlags(struct npt_dispatch_context *ct
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_GetContextFlags on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -15011,6 +15252,7 @@ npt_dispatch_ID3D11DeviceContext_GetContextFlags(struct npt_dispatch_context *ct
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_GetContextFlags: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -15127,6 +15369,7 @@ npt_dispatch_ID3D11DeviceContext_FinishCommandList(struct npt_dispatch_context *
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_FinishCommandList on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppCommandList);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -15144,6 +15387,7 @@ npt_dispatch_ID3D11DeviceContext_FinishCommandList(struct npt_dispatch_context *
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext_FinishCommandList: an argument handle is unknown "
                     "to this context");
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppCommandList);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -15167,6 +15411,8 @@ npt_dispatch_ID3D11DeviceContext_FinishCommandList(struct npt_dispatch_context *
      * whose type is determined by the caller's riid. */
     if (args.ppCommandList && *args.ppCommandList)
         npt_cs_handle_register_guest_id(ctx, args._guest_id_ppCommandList, *args.ppCommandList, NPT_OBJECT_TYPE_ID3D11COMMANDLIST);
+    else if (args.ppCommandList)
+        npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppCommandList);
 
     if (cmd_flags & NPT_CMD_FLAG_REPLY) {
         if (!npt_cs_decoder_get_fatal(ctx->decoder)) {
@@ -15285,6 +15531,7 @@ npt_dispatch_ID3D11DeviceContext1_CopySubresourceRegion1(struct npt_dispatch_con
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext1_CopySubresourceRegion1 on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -15302,6 +15549,7 @@ npt_dispatch_ID3D11DeviceContext1_CopySubresourceRegion1(struct npt_dispatch_con
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext1_CopySubresourceRegion1: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -15431,6 +15679,7 @@ npt_dispatch_ID3D11DeviceContext1_UpdateSubresource1(struct npt_dispatch_context
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext1_UpdateSubresource1 on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -15448,6 +15697,7 @@ npt_dispatch_ID3D11DeviceContext1_UpdateSubresource1(struct npt_dispatch_context
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext1_UpdateSubresource1: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -15552,6 +15802,7 @@ npt_dispatch_ID3D11DeviceContext1_DiscardResource(struct npt_dispatch_context *c
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext1_DiscardResource on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -15569,6 +15820,7 @@ npt_dispatch_ID3D11DeviceContext1_DiscardResource(struct npt_dispatch_context *c
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext1_DiscardResource: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -15673,6 +15925,7 @@ npt_dispatch_ID3D11DeviceContext1_DiscardView(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext1_DiscardView on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -15690,6 +15943,7 @@ npt_dispatch_ID3D11DeviceContext1_DiscardView(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext1_DiscardView: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -15848,6 +16102,7 @@ npt_dispatch_ID3D11DeviceContext1_VSSetConstantBuffers1(struct npt_dispatch_cont
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext1_VSSetConstantBuffers1 on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -15865,6 +16120,7 @@ npt_dispatch_ID3D11DeviceContext1_VSSetConstantBuffers1(struct npt_dispatch_cont
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext1_VSSetConstantBuffers1: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -16023,6 +16279,7 @@ npt_dispatch_ID3D11DeviceContext1_HSSetConstantBuffers1(struct npt_dispatch_cont
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext1_HSSetConstantBuffers1 on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -16040,6 +16297,7 @@ npt_dispatch_ID3D11DeviceContext1_HSSetConstantBuffers1(struct npt_dispatch_cont
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext1_HSSetConstantBuffers1: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -16198,6 +16456,7 @@ npt_dispatch_ID3D11DeviceContext1_DSSetConstantBuffers1(struct npt_dispatch_cont
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext1_DSSetConstantBuffers1 on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -16215,6 +16474,7 @@ npt_dispatch_ID3D11DeviceContext1_DSSetConstantBuffers1(struct npt_dispatch_cont
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext1_DSSetConstantBuffers1: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -16373,6 +16633,7 @@ npt_dispatch_ID3D11DeviceContext1_GSSetConstantBuffers1(struct npt_dispatch_cont
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext1_GSSetConstantBuffers1 on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -16390,6 +16651,7 @@ npt_dispatch_ID3D11DeviceContext1_GSSetConstantBuffers1(struct npt_dispatch_cont
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext1_GSSetConstantBuffers1: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -16548,6 +16810,7 @@ npt_dispatch_ID3D11DeviceContext1_PSSetConstantBuffers1(struct npt_dispatch_cont
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext1_PSSetConstantBuffers1 on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -16565,6 +16828,7 @@ npt_dispatch_ID3D11DeviceContext1_PSSetConstantBuffers1(struct npt_dispatch_cont
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext1_PSSetConstantBuffers1: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -16723,6 +16987,7 @@ npt_dispatch_ID3D11DeviceContext1_CSSetConstantBuffers1(struct npt_dispatch_cont
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext1_CSSetConstantBuffers1 on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -16740,6 +17005,7 @@ npt_dispatch_ID3D11DeviceContext1_CSSetConstantBuffers1(struct npt_dispatch_cont
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext1_CSSetConstantBuffers1: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -16893,6 +17159,7 @@ npt_dispatch_ID3D11DeviceContext1_VSGetConstantBuffers1(struct npt_dispatch_cont
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext1_VSGetConstantBuffers1 on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -16910,6 +17177,7 @@ npt_dispatch_ID3D11DeviceContext1_VSGetConstantBuffers1(struct npt_dispatch_cont
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext1_VSGetConstantBuffers1: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -17069,6 +17337,7 @@ npt_dispatch_ID3D11DeviceContext1_HSGetConstantBuffers1(struct npt_dispatch_cont
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext1_HSGetConstantBuffers1 on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -17086,6 +17355,7 @@ npt_dispatch_ID3D11DeviceContext1_HSGetConstantBuffers1(struct npt_dispatch_cont
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext1_HSGetConstantBuffers1: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -17245,6 +17515,7 @@ npt_dispatch_ID3D11DeviceContext1_DSGetConstantBuffers1(struct npt_dispatch_cont
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext1_DSGetConstantBuffers1 on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -17262,6 +17533,7 @@ npt_dispatch_ID3D11DeviceContext1_DSGetConstantBuffers1(struct npt_dispatch_cont
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext1_DSGetConstantBuffers1: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -17421,6 +17693,7 @@ npt_dispatch_ID3D11DeviceContext1_GSGetConstantBuffers1(struct npt_dispatch_cont
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext1_GSGetConstantBuffers1 on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -17438,6 +17711,7 @@ npt_dispatch_ID3D11DeviceContext1_GSGetConstantBuffers1(struct npt_dispatch_cont
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext1_GSGetConstantBuffers1: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -17597,6 +17871,7 @@ npt_dispatch_ID3D11DeviceContext1_PSGetConstantBuffers1(struct npt_dispatch_cont
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext1_PSGetConstantBuffers1 on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -17614,6 +17889,7 @@ npt_dispatch_ID3D11DeviceContext1_PSGetConstantBuffers1(struct npt_dispatch_cont
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext1_PSGetConstantBuffers1: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -17773,6 +18049,7 @@ npt_dispatch_ID3D11DeviceContext1_CSGetConstantBuffers1(struct npt_dispatch_cont
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext1_CSGetConstantBuffers1 on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -17790,6 +18067,7 @@ npt_dispatch_ID3D11DeviceContext1_CSGetConstantBuffers1(struct npt_dispatch_cont
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext1_CSGetConstantBuffers1: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -17916,6 +18194,7 @@ npt_dispatch_ID3D11DeviceContext1_SwapDeviceContextState(struct npt_dispatch_con
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext1_SwapDeviceContextState on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppPreviousState);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -17933,6 +18212,7 @@ npt_dispatch_ID3D11DeviceContext1_SwapDeviceContextState(struct npt_dispatch_con
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext1_SwapDeviceContextState: an argument handle is unknown "
                     "to this context");
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppPreviousState);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -17956,6 +18236,8 @@ npt_dispatch_ID3D11DeviceContext1_SwapDeviceContextState(struct npt_dispatch_con
      * whose type is determined by the caller's riid. */
     if (args.ppPreviousState && *args.ppPreviousState)
         npt_cs_handle_register_guest_id(ctx, args._guest_id_ppPreviousState, *args.ppPreviousState, NPT_OBJECT_TYPE_ID3DDEVICECONTEXTSTATE);
+    else if (args.ppPreviousState)
+        npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppPreviousState);
 
     if (cmd_flags & NPT_CMD_FLAG_REPLY) {
         if (!npt_cs_decoder_get_fatal(ctx->decoder)) {
@@ -18066,6 +18348,7 @@ npt_dispatch_ID3D11DeviceContext1_ClearView(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext1_ClearView on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -18083,6 +18366,7 @@ npt_dispatch_ID3D11DeviceContext1_ClearView(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext1_ClearView: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -18208,6 +18492,7 @@ npt_dispatch_ID3D11DeviceContext1_DiscardView1(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext1_DiscardView1 on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -18225,6 +18510,7 @@ npt_dispatch_ID3D11DeviceContext1_DiscardView1(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext1_DiscardView1: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -18430,6 +18716,7 @@ npt_dispatch_ID3D11DeviceContext2_UpdateTileMappings(struct npt_dispatch_context
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext2_UpdateTileMappings on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -18447,6 +18734,7 @@ npt_dispatch_ID3D11DeviceContext2_UpdateTileMappings(struct npt_dispatch_context
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext2_UpdateTileMappings: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -18596,6 +18884,7 @@ npt_dispatch_ID3D11DeviceContext2_CopyTileMappings(struct npt_dispatch_context *
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext2_CopyTileMappings on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -18613,6 +18902,7 @@ npt_dispatch_ID3D11DeviceContext2_CopyTileMappings(struct npt_dispatch_context *
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext2_CopyTileMappings: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -18753,6 +19043,7 @@ npt_dispatch_ID3D11DeviceContext2_CopyTiles(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext2_CopyTiles on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -18770,6 +19061,7 @@ npt_dispatch_ID3D11DeviceContext2_CopyTiles(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext2_CopyTiles: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -18903,6 +19195,7 @@ npt_dispatch_ID3D11DeviceContext2_UpdateTiles(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext2_UpdateTiles on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -18920,6 +19213,7 @@ npt_dispatch_ID3D11DeviceContext2_UpdateTiles(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext2_UpdateTiles: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -19028,6 +19322,7 @@ npt_dispatch_ID3D11DeviceContext2_ResizeTilePool(struct npt_dispatch_context *ct
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext2_ResizeTilePool on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -19045,6 +19340,7 @@ npt_dispatch_ID3D11DeviceContext2_ResizeTilePool(struct npt_dispatch_context *ct
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext2_ResizeTilePool: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -19157,6 +19453,7 @@ npt_dispatch_ID3D11DeviceContext2_TiledResourceBarrier(struct npt_dispatch_conte
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext2_TiledResourceBarrier on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -19174,6 +19471,7 @@ npt_dispatch_ID3D11DeviceContext2_TiledResourceBarrier(struct npt_dispatch_conte
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext2_TiledResourceBarrier: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -19271,6 +19569,7 @@ npt_dispatch_ID3D11DeviceContext2_IsAnnotationEnabled(struct npt_dispatch_contex
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext2_IsAnnotationEnabled on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -19288,6 +19587,7 @@ npt_dispatch_ID3D11DeviceContext2_IsAnnotationEnabled(struct npt_dispatch_contex
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext2_IsAnnotationEnabled: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -19399,6 +19699,7 @@ npt_dispatch_ID3D11DeviceContext2_SetMarkerInt(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext2_SetMarkerInt on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -19416,6 +19717,7 @@ npt_dispatch_ID3D11DeviceContext2_SetMarkerInt(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext2_SetMarkerInt: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -19527,6 +19829,7 @@ npt_dispatch_ID3D11DeviceContext2_BeginEventInt(struct npt_dispatch_context *ctx
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext2_BeginEventInt on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -19544,6 +19847,7 @@ npt_dispatch_ID3D11DeviceContext2_BeginEventInt(struct npt_dispatch_context *ctx
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext2_BeginEventInt: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -19640,6 +19944,7 @@ npt_dispatch_ID3D11DeviceContext2_EndEvent(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext2_EndEvent on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -19657,6 +19962,7 @@ npt_dispatch_ID3D11DeviceContext2_EndEvent(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext2_EndEvent: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -19764,6 +20070,7 @@ npt_dispatch_ID3D11DeviceContext3_Flush1(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext3_Flush1 on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -19781,6 +20088,7 @@ npt_dispatch_ID3D11DeviceContext3_Flush1(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext3_Flush1: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -19880,6 +20188,7 @@ npt_dispatch_ID3D11DeviceContext3_SetHardwareProtectionState(struct npt_dispatch
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext3_SetHardwareProtectionState on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -19897,6 +20206,7 @@ npt_dispatch_ID3D11DeviceContext3_SetHardwareProtectionState(struct npt_dispatch
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext3_SetHardwareProtectionState: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -20000,6 +20310,7 @@ npt_dispatch_ID3D11DeviceContext3_GetHardwareProtectionState(struct npt_dispatch
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext3_GetHardwareProtectionState on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -20017,6 +20328,7 @@ npt_dispatch_ID3D11DeviceContext3_GetHardwareProtectionState(struct npt_dispatch
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext3_GetHardwareProtectionState: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -20125,6 +20437,7 @@ npt_dispatch_ID3D11DeviceContext4_Signal(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext4_Signal on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -20142,6 +20455,7 @@ npt_dispatch_ID3D11DeviceContext4_Signal(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext4_Signal: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -20250,6 +20564,7 @@ npt_dispatch_ID3D11DeviceContext4_Wait(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext4_Wait on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -20267,6 +20582,7 @@ npt_dispatch_ID3D11DeviceContext4_Wait(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11DeviceContext4_Wait: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }

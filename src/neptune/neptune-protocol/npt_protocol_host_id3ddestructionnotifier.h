@@ -95,6 +95,7 @@ npt_dispatch_ID3DDestructionNotifier_RegisterDestructionCallback(struct npt_disp
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3DDestructionNotifier_RegisterDestructionCallback on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -112,6 +113,7 @@ npt_dispatch_ID3DDestructionNotifier_RegisterDestructionCallback(struct npt_disp
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3DDestructionNotifier_RegisterDestructionCallback: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -212,6 +214,7 @@ npt_dispatch_ID3DDestructionNotifier_UnregisterDestructionCallback(struct npt_di
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3DDestructionNotifier_UnregisterDestructionCallback on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -229,6 +232,7 @@ npt_dispatch_ID3DDestructionNotifier_UnregisterDestructionCallback(struct npt_di
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3DDestructionNotifier_UnregisterDestructionCallback: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }

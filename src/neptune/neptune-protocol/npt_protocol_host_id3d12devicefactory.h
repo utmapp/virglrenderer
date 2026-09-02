@@ -80,6 +80,7 @@ npt_dispatch_ID3D12DeviceFactory_InitializeFromGlobalState(struct npt_dispatch_c
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12DeviceFactory_InitializeFromGlobalState on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -97,6 +98,7 @@ npt_dispatch_ID3D12DeviceFactory_InitializeFromGlobalState(struct npt_dispatch_c
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12DeviceFactory_InitializeFromGlobalState: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -194,6 +196,7 @@ npt_dispatch_ID3D12DeviceFactory_ApplyToGlobalState(struct npt_dispatch_context 
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12DeviceFactory_ApplyToGlobalState on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -211,6 +214,7 @@ npt_dispatch_ID3D12DeviceFactory_ApplyToGlobalState(struct npt_dispatch_context 
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12DeviceFactory_ApplyToGlobalState: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -311,6 +315,7 @@ npt_dispatch_ID3D12DeviceFactory_SetFlags(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12DeviceFactory_SetFlags on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -328,6 +333,7 @@ npt_dispatch_ID3D12DeviceFactory_SetFlags(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12DeviceFactory_SetFlags: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -425,6 +431,7 @@ npt_dispatch_ID3D12DeviceFactory_GetFlags(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12DeviceFactory_GetFlags on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -442,6 +449,7 @@ npt_dispatch_ID3D12DeviceFactory_GetFlags(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12DeviceFactory_GetFlags: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -577,6 +585,7 @@ npt_dispatch_ID3D12DeviceFactory_GetConfigurationInterface(struct npt_dispatch_c
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12DeviceFactory_GetConfigurationInterface on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppv);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -594,6 +603,7 @@ npt_dispatch_ID3D12DeviceFactory_GetConfigurationInterface(struct npt_dispatch_c
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12DeviceFactory_GetConfigurationInterface: an argument handle is unknown "
                     "to this context");
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppv);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -618,6 +628,8 @@ npt_dispatch_ID3D12DeviceFactory_GetConfigurationInterface(struct npt_dispatch_c
     if (args.ppv && *args.ppv)
         npt_cs_handle_register_guest_id(ctx, args._guest_id_ppv, *args.ppv,
             npt_object_type_from_iid(args.iid));
+    else if (args.ppv)
+        npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppv);
 
     if (cmd_flags & NPT_CMD_FLAG_REPLY) {
         if (!npt_cs_decoder_get_fatal(ctx->decoder)) {
@@ -743,6 +755,7 @@ npt_dispatch_ID3D12DeviceFactory_EnableExperimentalFeatures(struct npt_dispatch_
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12DeviceFactory_EnableExperimentalFeatures on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -760,6 +773,7 @@ npt_dispatch_ID3D12DeviceFactory_EnableExperimentalFeatures(struct npt_dispatch_
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12DeviceFactory_EnableExperimentalFeatures: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -895,6 +909,7 @@ npt_dispatch_ID3D12DeviceFactory_CreateDevice(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12DeviceFactory_CreateDevice on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppvDevice);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -912,6 +927,7 @@ npt_dispatch_ID3D12DeviceFactory_CreateDevice(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12DeviceFactory_CreateDevice: an argument handle is unknown "
                     "to this context");
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppvDevice);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -936,6 +952,8 @@ npt_dispatch_ID3D12DeviceFactory_CreateDevice(struct npt_dispatch_context *ctx,
     if (args.ppvDevice && *args.ppvDevice)
         npt_cs_handle_register_guest_id(ctx, args._guest_id_ppvDevice, *args.ppvDevice,
             npt_object_type_from_iid(args.riid));
+    else if (args.ppvDevice)
+        npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppvDevice);
 
     if (cmd_flags & NPT_CMD_FLAG_REPLY) {
         if (!npt_cs_decoder_get_fatal(ctx->decoder)) {

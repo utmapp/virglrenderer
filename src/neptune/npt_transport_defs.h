@@ -67,6 +67,7 @@ struct npt_cmd_set_reply_stream {
 #define NPT_TRANSPORT_RING_WAIT_SEQNO      4u
 #define NPT_TRANSPORT_RING_SUBMIT_VQ_SEQNO 5u
 #define NPT_TRANSPORT_RING_WAIT_VQ_SEQNO   6u
+#define NPT_TRANSPORT_RING_WAIT_PEER       7u
 
 /* Ring status bits (host writes, guest reads).  ALIVE is OR-set by
  * the ring-monitor thread on opted-in rings; the guest watchdog
@@ -128,6 +129,20 @@ struct npt_cmd_wait_ring_seqno {
    uint32_t pad;
 };
 
+/* Ring -> ring ordering edge.  Ring-origin only: the decoding ring
+ * blocks until ring_id's published decode position (its head) reaches
+ * seqno, then continues.  The guest emits it only for a seqno that was
+ * already published on ring_id (its tail) when the edge was written,
+ * which is what keeps every such wait satisfiable and the edge graph
+ * acyclic: an edge can only point at bytes that were written before
+ * it.  ring_id == the decoding ring is a guest bug (self-wait). */
+struct npt_cmd_wait_peer_ring {
+   struct npt_command_header header;
+   uint64_t ring_id;
+   uint32_t seqno;
+   uint32_t pad;
+};
+
 /* Context → ring ordering primitive.  A submit_cmd-originated
  * command and a ring-originated command run on different host
  * threads, so "C_ring observes C_submit's effect" needs explicit
@@ -162,10 +177,25 @@ struct npt_cmd_wait_virtqueue_seqno {
 #define NPT_TRANSPORT_COM_RELEASE         0u
 #define NPT_TRANSPORT_COM_QUERY_INTERFACE 1u
 
-/* Sent when the guest wrapper refcount hits zero.  object_id lives
- * in header.object_id; no extra payload. */
+/* Sent when the guest wrapper refcount hits zero.  object_id lives in
+ * header.object_id.  The payload names, for every OTHER ring of the
+ * device, the position that ring had published when the release was
+ * sent: uses of the object still undecoded on those rings sit at or
+ * below it, and the host runs the release only once each ring has
+ * decoded past its entry.  The guest supplies these because it reads
+ * its own ring tails exactly, whereas the host sees them through its
+ * cache with a lag.  Entries for a ring the host no longer has are
+ * satisfied.  count is derived from cmd_size. */
+struct npt_cmd_com_release_wait {
+   uint64_t ring_id;
+   uint32_t seqno;
+   uint32_t pad;
+};
+
 struct npt_cmd_com_release {
    struct npt_command_header header;
+   /* Followed by (cmd_size - sizeof(header)) / sizeof(struct
+    * npt_cmd_com_release_wait) entries. */
 };
 
 /* Synchronous: the caller branches on E_NOINTERFACE to decide

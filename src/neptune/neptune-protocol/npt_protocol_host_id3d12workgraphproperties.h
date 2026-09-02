@@ -80,6 +80,7 @@ npt_dispatch_ID3D12WorkGraphProperties_GetNumWorkGraphs(struct npt_dispatch_cont
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12WorkGraphProperties_GetNumWorkGraphs on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -97,6 +98,7 @@ npt_dispatch_ID3D12WorkGraphProperties_GetNumWorkGraphs(struct npt_dispatch_cont
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12WorkGraphProperties_GetNumWorkGraphs: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -197,6 +199,7 @@ npt_dispatch_ID3D12WorkGraphProperties_GetProgramName(struct npt_dispatch_contex
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12WorkGraphProperties_GetProgramName on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -214,6 +217,7 @@ npt_dispatch_ID3D12WorkGraphProperties_GetProgramName(struct npt_dispatch_contex
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12WorkGraphProperties_GetProgramName: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -323,6 +327,7 @@ npt_dispatch_ID3D12WorkGraphProperties_GetWorkGraphIndex(struct npt_dispatch_con
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12WorkGraphProperties_GetWorkGraphIndex on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -340,6 +345,7 @@ npt_dispatch_ID3D12WorkGraphProperties_GetWorkGraphIndex(struct npt_dispatch_con
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12WorkGraphProperties_GetWorkGraphIndex: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -440,6 +446,7 @@ npt_dispatch_ID3D12WorkGraphProperties_GetNumNodes(struct npt_dispatch_context *
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12WorkGraphProperties_GetNumNodes on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -457,6 +464,7 @@ npt_dispatch_ID3D12WorkGraphProperties_GetNumNodes(struct npt_dispatch_context *
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12WorkGraphProperties_GetNumNodes: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -562,6 +570,7 @@ npt_dispatch_ID3D12WorkGraphProperties_GetNodeID(struct npt_dispatch_context *ct
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12WorkGraphProperties_GetNodeID on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -579,6 +588,7 @@ npt_dispatch_ID3D12WorkGraphProperties_GetNodeID(struct npt_dispatch_context *ct
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12WorkGraphProperties_GetNodeID: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -684,6 +694,7 @@ npt_dispatch_ID3D12WorkGraphProperties_GetNodeIndex(struct npt_dispatch_context 
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12WorkGraphProperties_GetNodeIndex on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -701,6 +712,7 @@ npt_dispatch_ID3D12WorkGraphProperties_GetNodeIndex(struct npt_dispatch_context 
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12WorkGraphProperties_GetNodeIndex: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -804,6 +816,7 @@ npt_dispatch_ID3D12WorkGraphProperties_GetNodeLocalRootArgumentsTableIndex(struc
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12WorkGraphProperties_GetNodeLocalRootArgumentsTableIndex on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -821,6 +834,7 @@ npt_dispatch_ID3D12WorkGraphProperties_GetNodeLocalRootArgumentsTableIndex(struc
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12WorkGraphProperties_GetNodeLocalRootArgumentsTableIndex: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -921,6 +935,7 @@ npt_dispatch_ID3D12WorkGraphProperties_GetNumEntrypoints(struct npt_dispatch_con
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12WorkGraphProperties_GetNumEntrypoints on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -938,6 +953,7 @@ npt_dispatch_ID3D12WorkGraphProperties_GetNumEntrypoints(struct npt_dispatch_con
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12WorkGraphProperties_GetNumEntrypoints: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -1043,6 +1059,7 @@ npt_dispatch_ID3D12WorkGraphProperties_GetEntrypointID(struct npt_dispatch_conte
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12WorkGraphProperties_GetEntrypointID on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -1060,6 +1077,7 @@ npt_dispatch_ID3D12WorkGraphProperties_GetEntrypointID(struct npt_dispatch_conte
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12WorkGraphProperties_GetEntrypointID: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -1165,6 +1183,7 @@ npt_dispatch_ID3D12WorkGraphProperties_GetEntrypointIndex(struct npt_dispatch_co
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12WorkGraphProperties_GetEntrypointIndex on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -1182,6 +1201,7 @@ npt_dispatch_ID3D12WorkGraphProperties_GetEntrypointIndex(struct npt_dispatch_co
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12WorkGraphProperties_GetEntrypointIndex: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -1285,6 +1305,7 @@ npt_dispatch_ID3D12WorkGraphProperties_GetEntrypointRecordSizeInBytes(struct npt
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12WorkGraphProperties_GetEntrypointRecordSizeInBytes on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -1302,6 +1323,7 @@ npt_dispatch_ID3D12WorkGraphProperties_GetEntrypointRecordSizeInBytes(struct npt
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12WorkGraphProperties_GetEntrypointRecordSizeInBytes: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -1408,6 +1430,7 @@ npt_dispatch_ID3D12WorkGraphProperties_GetWorkGraphMemoryRequirements(struct npt
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12WorkGraphProperties_GetWorkGraphMemoryRequirements on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -1425,6 +1448,7 @@ npt_dispatch_ID3D12WorkGraphProperties_GetWorkGraphMemoryRequirements(struct npt
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12WorkGraphProperties_GetWorkGraphMemoryRequirements: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }

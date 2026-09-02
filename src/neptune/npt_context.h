@@ -86,6 +86,16 @@ struct npt_context {
 
    mtx_t ring_mutex;
    struct list_head rings;
+   /* Broadcast under ring_mutex whenever a ring joins or leaves `rings`,
+    * so a decoder that needs a ring the guest has named but the context
+    * path has not registered yet can wait for it. */
+   cnd_t ring_cond;
+   /* Ids of rings removed by DESTROY_RING, under ring_mutex: a named ring
+    * that is neither listed nor here is one the guest created and the
+    * context path is still about to register. */
+   uint64_t *destroyed_ring_ids;
+   uint32_t destroyed_ring_count;
+   uint32_t destroyed_ring_cap;
 
    /* Watchdog-reporter thread, lazily started by CREATE_RING.  OR-sets
     * NPT_RING_STATUS_ALIVE_BIT on every monitored ring at a period
@@ -130,6 +140,18 @@ struct npt_context {
     * Drained by COM_RELEASE and context_destroy. */
    mtx_t object_mutex;
    struct hash_table *object_table;
+   /* Ring threads blocked in a lookup on an id another ring has yet to
+    * register; registration broadcasts when nonzero.  Both under
+    * object_mutex. */
+   cnd_t object_cond;
+   uint32_t object_waiters;
+
+   /* COM_RELEASEs decoded while another ring still had published-but-
+    * undecoded bytes; each waits, through a watch on every such ring,
+    * for those rings to pass the decode positions snapshotted at decode
+    * time, and runs on the ring thread that settles its last watch. */
+   mtx_t deferred_mutex;
+   struct list_head deferred_releases;
    /* Bumped (release) whenever an id leaves the table or changes type;
     * decoders compare it (acquire) to validate their private lookup
     * cache (npt_cs.h).  Registration of a NEW id never bumps it: a
@@ -283,6 +305,26 @@ npt_context_register_pending_blob(struct npt_context *ctx,
                                   uint64_t size,
                                   uint32_t virgl_format);
 
+struct npt_cmd_com_release_wait;
+
+/* COM_RELEASE.  Runs the release now when every ring named in `wait`
+ * has already decoded past its position; otherwise defers it until they
+ * have, so a use of the object still in flight on another ring is
+ * decoded before the host object goes.  The positions come from the
+ * guest (see struct npt_cmd_com_release). */
+void
+npt_context_release_object_ordered(struct npt_context *ctx,
+                                   uint64_t guest_id,
+                                   const struct npt_cmd_com_release_wait *wait,
+                                   uint32_t count);
+
+/* One of a deferred release's watches was settled; runs the release
+ * once the last one is. */
+struct npt_deferred_release;
+void
+npt_context_deferred_release_settle(struct npt_context *ctx,
+                                    struct npt_deferred_release *d);
+
 /* Wake any wait_ring waiter on \p ring_id whose target seqno is
  * reached.  Called after each dispatched command. */
 void
@@ -341,6 +383,13 @@ npt_context_register_object(struct npt_context *ctx,
                             uint64_t id,
                             void *obj,
                             npt_object_type type);
+
+/* A Create whose host call failed leaves its guest-minted id with no
+ * object.  Record that, so a ring waiting for the id to appear is
+ * answered (with a miss) instead of waiting out its timeout; the
+ * guest's eventual COM_RELEASE of the id drops the record. */
+void
+npt_context_register_failed_object(struct npt_context *ctx, uint64_t id);
 
 void
 npt_context_unregister_object(struct npt_context *ctx, uint64_t id);

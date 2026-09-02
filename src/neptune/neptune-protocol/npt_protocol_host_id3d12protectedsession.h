@@ -107,6 +107,7 @@ npt_dispatch_ID3D12ProtectedSession_GetStatusFence(struct npt_dispatch_context *
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12ProtectedSession_GetStatusFence on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppFence);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -124,6 +125,7 @@ npt_dispatch_ID3D12ProtectedSession_GetStatusFence(struct npt_dispatch_context *
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12ProtectedSession_GetStatusFence: an argument handle is unknown "
                     "to this context");
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppFence);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -148,6 +150,8 @@ npt_dispatch_ID3D12ProtectedSession_GetStatusFence(struct npt_dispatch_context *
     if (args.ppFence && *args.ppFence)
         npt_cs_handle_register_guest_id(ctx, args._guest_id_ppFence, *args.ppFence,
             npt_object_type_from_iid(args.riid));
+    else if (args.ppFence)
+        npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppFence);
 
     if (cmd_flags & NPT_CMD_FLAG_REPLY) {
         if (!npt_cs_decoder_get_fatal(ctx->decoder)) {
@@ -224,6 +228,7 @@ npt_dispatch_ID3D12ProtectedSession_GetSessionStatus(struct npt_dispatch_context
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12ProtectedSession_GetSessionStatus on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -241,6 +246,7 @@ npt_dispatch_ID3D12ProtectedSession_GetSessionStatus(struct npt_dispatch_context
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12ProtectedSession_GetSessionStatus: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }

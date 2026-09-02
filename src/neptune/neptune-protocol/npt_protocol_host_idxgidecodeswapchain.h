@@ -89,6 +89,7 @@ npt_dispatch_IDXGIDecodeSwapChain_PresentBuffer(struct npt_dispatch_context *ctx
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIDecodeSwapChain_PresentBuffer on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -106,6 +107,7 @@ npt_dispatch_IDXGIDecodeSwapChain_PresentBuffer(struct npt_dispatch_context *ctx
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIDecodeSwapChain_PresentBuffer: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -214,6 +216,7 @@ npt_dispatch_IDXGIDecodeSwapChain_SetSourceRect(struct npt_dispatch_context *ctx
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIDecodeSwapChain_SetSourceRect on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -231,6 +234,7 @@ npt_dispatch_IDXGIDecodeSwapChain_SetSourceRect(struct npt_dispatch_context *ctx
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIDecodeSwapChain_SetSourceRect: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -339,6 +343,7 @@ npt_dispatch_IDXGIDecodeSwapChain_SetTargetRect(struct npt_dispatch_context *ctx
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIDecodeSwapChain_SetTargetRect on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -356,6 +361,7 @@ npt_dispatch_IDXGIDecodeSwapChain_SetTargetRect(struct npt_dispatch_context *ctx
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIDecodeSwapChain_SetTargetRect: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -459,6 +465,7 @@ npt_dispatch_IDXGIDecodeSwapChain_SetDestSize(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIDecodeSwapChain_SetDestSize on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -476,6 +483,7 @@ npt_dispatch_IDXGIDecodeSwapChain_SetDestSize(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIDecodeSwapChain_SetDestSize: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -580,6 +588,7 @@ npt_dispatch_IDXGIDecodeSwapChain_GetSourceRect(struct npt_dispatch_context *ctx
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIDecodeSwapChain_GetSourceRect on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -597,6 +606,7 @@ npt_dispatch_IDXGIDecodeSwapChain_GetSourceRect(struct npt_dispatch_context *ctx
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIDecodeSwapChain_GetSourceRect: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -701,6 +711,7 @@ npt_dispatch_IDXGIDecodeSwapChain_GetTargetRect(struct npt_dispatch_context *ctx
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIDecodeSwapChain_GetTargetRect on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -718,6 +729,7 @@ npt_dispatch_IDXGIDecodeSwapChain_GetTargetRect(struct npt_dispatch_context *ctx
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIDecodeSwapChain_GetTargetRect: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -829,6 +841,7 @@ npt_dispatch_IDXGIDecodeSwapChain_GetDestSize(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIDecodeSwapChain_GetDestSize on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -846,6 +859,7 @@ npt_dispatch_IDXGIDecodeSwapChain_GetDestSize(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIDecodeSwapChain_GetDestSize: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -946,6 +960,7 @@ npt_dispatch_IDXGIDecodeSwapChain_SetColorSpace(struct npt_dispatch_context *ctx
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIDecodeSwapChain_SetColorSpace on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -963,6 +978,7 @@ npt_dispatch_IDXGIDecodeSwapChain_SetColorSpace(struct npt_dispatch_context *ctx
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIDecodeSwapChain_SetColorSpace: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -1060,6 +1076,7 @@ npt_dispatch_IDXGIDecodeSwapChain_GetColorSpace(struct npt_dispatch_context *ctx
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIDecodeSwapChain_GetColorSpace on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -1077,6 +1094,7 @@ npt_dispatch_IDXGIDecodeSwapChain_GetColorSpace(struct npt_dispatch_context *ctx
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIDecodeSwapChain_GetColorSpace: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }

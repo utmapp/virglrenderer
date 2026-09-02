@@ -87,6 +87,7 @@ npt_dispatch_ID3D11VideoProcessorEnumerator_GetVideoProcessorContentDesc(struct 
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11VideoProcessorEnumerator_GetVideoProcessorContentDesc on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -104,6 +105,7 @@ npt_dispatch_ID3D11VideoProcessorEnumerator_GetVideoProcessorContentDesc(struct 
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11VideoProcessorEnumerator_GetVideoProcessorContentDesc: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -211,6 +213,7 @@ npt_dispatch_ID3D11VideoProcessorEnumerator_CheckVideoProcessorFormat(struct npt
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11VideoProcessorEnumerator_CheckVideoProcessorFormat on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -228,6 +231,7 @@ npt_dispatch_ID3D11VideoProcessorEnumerator_CheckVideoProcessorFormat(struct npt
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11VideoProcessorEnumerator_CheckVideoProcessorFormat: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -332,6 +336,7 @@ npt_dispatch_ID3D11VideoProcessorEnumerator_GetVideoProcessorCaps(struct npt_dis
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11VideoProcessorEnumerator_GetVideoProcessorCaps on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -349,6 +354,7 @@ npt_dispatch_ID3D11VideoProcessorEnumerator_GetVideoProcessorCaps(struct npt_dis
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11VideoProcessorEnumerator_GetVideoProcessorCaps: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -456,6 +462,7 @@ npt_dispatch_ID3D11VideoProcessorEnumerator_GetVideoProcessorRateConversionCaps(
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11VideoProcessorEnumerator_GetVideoProcessorRateConversionCaps on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -473,6 +480,7 @@ npt_dispatch_ID3D11VideoProcessorEnumerator_GetVideoProcessorRateConversionCaps(
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11VideoProcessorEnumerator_GetVideoProcessorRateConversionCaps: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -583,6 +591,7 @@ npt_dispatch_ID3D11VideoProcessorEnumerator_GetVideoProcessorCustomRate(struct n
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11VideoProcessorEnumerator_GetVideoProcessorCustomRate on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -600,6 +609,7 @@ npt_dispatch_ID3D11VideoProcessorEnumerator_GetVideoProcessorCustomRate(struct n
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11VideoProcessorEnumerator_GetVideoProcessorCustomRate: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -707,6 +717,7 @@ npt_dispatch_ID3D11VideoProcessorEnumerator_GetVideoProcessorFilterRange(struct 
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11VideoProcessorEnumerator_GetVideoProcessorFilterRange on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -724,6 +735,7 @@ npt_dispatch_ID3D11VideoProcessorEnumerator_GetVideoProcessorFilterRange(struct 
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11VideoProcessorEnumerator_GetVideoProcessorFilterRange: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -840,6 +852,7 @@ npt_dispatch_ID3D11VideoProcessorEnumerator1_CheckVideoProcessorFormatConversion
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11VideoProcessorEnumerator1_CheckVideoProcessorFormatConversion on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -857,6 +870,7 @@ npt_dispatch_ID3D11VideoProcessorEnumerator1_CheckVideoProcessorFormatConversion
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11VideoProcessorEnumerator1_CheckVideoProcessorFormatConversion: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }

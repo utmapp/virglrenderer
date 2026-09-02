@@ -96,6 +96,7 @@ npt_dispatch_IDXGIDevice_GetAdapter(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIDevice_GetAdapter on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_pAdapter);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -113,6 +114,7 @@ npt_dispatch_IDXGIDevice_GetAdapter(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIDevice_GetAdapter: an argument handle is unknown "
                     "to this context");
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_pAdapter);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -136,6 +138,8 @@ npt_dispatch_IDXGIDevice_GetAdapter(struct npt_dispatch_context *ctx,
      * whose type is determined by the caller's riid. */
     if (args.pAdapter && *args.pAdapter)
         npt_cs_handle_register_guest_id(ctx, args._guest_id_pAdapter, *args.pAdapter, NPT_OBJECT_TYPE_IDXGIADAPTER);
+    else if (args.pAdapter)
+        npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_pAdapter);
 
     if (cmd_flags & NPT_CMD_FLAG_REPLY) {
         if (!npt_cs_decoder_get_fatal(ctx->decoder)) {
@@ -261,6 +265,7 @@ npt_dispatch_IDXGIDevice_CreateSurface(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIDevice_CreateSurface on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -278,6 +283,7 @@ npt_dispatch_IDXGIDevice_CreateSurface(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIDevice_CreateSurface: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -423,6 +429,7 @@ npt_dispatch_IDXGIDevice_QueryResourceResidency(struct npt_dispatch_context *ctx
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIDevice_QueryResourceResidency on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -440,6 +447,7 @@ npt_dispatch_IDXGIDevice_QueryResourceResidency(struct npt_dispatch_context *ctx
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIDevice_QueryResourceResidency: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -540,6 +548,7 @@ npt_dispatch_IDXGIDevice_SetGPUThreadPriority(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIDevice_SetGPUThreadPriority on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -557,6 +566,7 @@ npt_dispatch_IDXGIDevice_SetGPUThreadPriority(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIDevice_SetGPUThreadPriority: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -661,6 +671,7 @@ npt_dispatch_IDXGIDevice_GetGPUThreadPriority(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIDevice_GetGPUThreadPriority on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -678,6 +689,7 @@ npt_dispatch_IDXGIDevice_GetGPUThreadPriority(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIDevice_GetGPUThreadPriority: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -778,6 +790,7 @@ npt_dispatch_IDXGIDevice1_SetMaximumFrameLatency(struct npt_dispatch_context *ct
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIDevice1_SetMaximumFrameLatency on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -795,6 +808,7 @@ npt_dispatch_IDXGIDevice1_SetMaximumFrameLatency(struct npt_dispatch_context *ct
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIDevice1_SetMaximumFrameLatency: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -899,6 +913,7 @@ npt_dispatch_IDXGIDevice1_GetMaximumFrameLatency(struct npt_dispatch_context *ct
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIDevice1_GetMaximumFrameLatency on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -916,6 +931,7 @@ npt_dispatch_IDXGIDevice1_GetMaximumFrameLatency(struct npt_dispatch_context *ct
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIDevice1_GetMaximumFrameLatency: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -1043,6 +1059,7 @@ npt_dispatch_IDXGIDevice2_OfferResources(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIDevice2_OfferResources on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -1060,6 +1077,7 @@ npt_dispatch_IDXGIDevice2_OfferResources(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIDevice2_OfferResources: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -1199,6 +1217,7 @@ npt_dispatch_IDXGIDevice2_ReclaimResources(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIDevice2_ReclaimResources on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -1216,6 +1235,7 @@ npt_dispatch_IDXGIDevice2_ReclaimResources(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIDevice2_ReclaimResources: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -1321,6 +1341,7 @@ npt_dispatch_IDXGIDevice2_EnqueueSetEvent(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIDevice2_EnqueueSetEvent on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -1338,6 +1359,7 @@ npt_dispatch_IDXGIDevice2_EnqueueSetEvent(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIDevice2_EnqueueSetEvent: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -1434,6 +1456,7 @@ npt_dispatch_IDXGIDevice3_Trim(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIDevice3_Trim on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -1451,6 +1474,7 @@ npt_dispatch_IDXGIDevice3_Trim(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIDevice3_Trim: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -1581,6 +1605,7 @@ npt_dispatch_IDXGIDevice4_OfferResources1(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIDevice4_OfferResources1 on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -1598,6 +1623,7 @@ npt_dispatch_IDXGIDevice4_OfferResources1(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIDevice4_OfferResources1: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -1737,6 +1763,7 @@ npt_dispatch_IDXGIDevice4_ReclaimResources1(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIDevice4_ReclaimResources1 on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -1754,6 +1781,7 @@ npt_dispatch_IDXGIDevice4_ReclaimResources1(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGIDevice4_ReclaimResources1: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }

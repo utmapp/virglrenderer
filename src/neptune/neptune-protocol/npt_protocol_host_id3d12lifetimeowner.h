@@ -82,6 +82,7 @@ npt_dispatch_ID3D12LifetimeOwner_LifetimeStateUpdated(struct npt_dispatch_contex
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12LifetimeOwner_LifetimeStateUpdated on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -99,6 +100,7 @@ npt_dispatch_ID3D12LifetimeOwner_LifetimeStateUpdated(struct npt_dispatch_contex
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12LifetimeOwner_LifetimeStateUpdated: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }

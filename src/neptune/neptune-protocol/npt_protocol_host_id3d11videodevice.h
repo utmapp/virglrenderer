@@ -118,6 +118,7 @@ npt_dispatch_ID3D11VideoDevice_CreateVideoDecoder(struct npt_dispatch_context *c
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11VideoDevice_CreateVideoDecoder on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppDecoder);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -135,6 +136,7 @@ npt_dispatch_ID3D11VideoDevice_CreateVideoDecoder(struct npt_dispatch_context *c
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11VideoDevice_CreateVideoDecoder: an argument handle is unknown "
                     "to this context");
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppDecoder);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -158,6 +160,8 @@ npt_dispatch_ID3D11VideoDevice_CreateVideoDecoder(struct npt_dispatch_context *c
      * whose type is determined by the caller's riid. */
     if (args.ppDecoder && *args.ppDecoder)
         npt_cs_handle_register_guest_id(ctx, args._guest_id_ppDecoder, *args.ppDecoder, NPT_OBJECT_TYPE_ID3D11VIDEODECODER);
+    else if (args.ppDecoder)
+        npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppDecoder);
 
     if (cmd_flags & NPT_CMD_FLAG_REPLY) {
         if (!npt_cs_decoder_get_fatal(ctx->decoder)) {
@@ -261,6 +265,7 @@ npt_dispatch_ID3D11VideoDevice_CreateVideoProcessor(struct npt_dispatch_context 
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11VideoDevice_CreateVideoProcessor on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppVideoProcessor);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -278,6 +283,7 @@ npt_dispatch_ID3D11VideoDevice_CreateVideoProcessor(struct npt_dispatch_context 
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11VideoDevice_CreateVideoProcessor: an argument handle is unknown "
                     "to this context");
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppVideoProcessor);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -301,6 +307,8 @@ npt_dispatch_ID3D11VideoDevice_CreateVideoProcessor(struct npt_dispatch_context 
      * whose type is determined by the caller's riid. */
     if (args.ppVideoProcessor && *args.ppVideoProcessor)
         npt_cs_handle_register_guest_id(ctx, args._guest_id_ppVideoProcessor, *args.ppVideoProcessor, NPT_OBJECT_TYPE_ID3D11VIDEOPROCESSOR);
+    else if (args.ppVideoProcessor)
+        npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppVideoProcessor);
 
     if (cmd_flags & NPT_CMD_FLAG_REPLY) {
         if (!npt_cs_decoder_get_fatal(ctx->decoder)) {
@@ -396,6 +404,7 @@ npt_dispatch_ID3D11VideoDevice_CreateAuthenticatedChannel(struct npt_dispatch_co
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11VideoDevice_CreateAuthenticatedChannel on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppAuthenticatedChannel);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -413,6 +422,7 @@ npt_dispatch_ID3D11VideoDevice_CreateAuthenticatedChannel(struct npt_dispatch_co
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11VideoDevice_CreateAuthenticatedChannel: an argument handle is unknown "
                     "to this context");
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppAuthenticatedChannel);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -436,6 +446,8 @@ npt_dispatch_ID3D11VideoDevice_CreateAuthenticatedChannel(struct npt_dispatch_co
      * whose type is determined by the caller's riid. */
     if (args.ppAuthenticatedChannel && *args.ppAuthenticatedChannel)
         npt_cs_handle_register_guest_id(ctx, args._guest_id_ppAuthenticatedChannel, *args.ppAuthenticatedChannel, NPT_OBJECT_TYPE_ID3D11AUTHENTICATEDCHANNEL);
+    else if (args.ppAuthenticatedChannel)
+        npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppAuthenticatedChannel);
 
     if (cmd_flags & NPT_CMD_FLAG_REPLY) {
         if (!npt_cs_decoder_get_fatal(ctx->decoder)) {
@@ -559,6 +571,7 @@ npt_dispatch_ID3D11VideoDevice_CreateCryptoSession(struct npt_dispatch_context *
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11VideoDevice_CreateCryptoSession on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppCryptoSession);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -576,6 +589,7 @@ npt_dispatch_ID3D11VideoDevice_CreateCryptoSession(struct npt_dispatch_context *
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11VideoDevice_CreateCryptoSession: an argument handle is unknown "
                     "to this context");
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppCryptoSession);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -599,6 +613,8 @@ npt_dispatch_ID3D11VideoDevice_CreateCryptoSession(struct npt_dispatch_context *
      * whose type is determined by the caller's riid. */
     if (args.ppCryptoSession && *args.ppCryptoSession)
         npt_cs_handle_register_guest_id(ctx, args._guest_id_ppCryptoSession, *args.ppCryptoSession, NPT_OBJECT_TYPE_ID3D11CRYPTOSESSION);
+    else if (args.ppCryptoSession)
+        npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppCryptoSession);
 
     if (cmd_flags & NPT_CMD_FLAG_REPLY) {
         if (!npt_cs_decoder_get_fatal(ctx->decoder)) {
@@ -710,6 +726,7 @@ npt_dispatch_ID3D11VideoDevice_CreateVideoDecoderOutputView(struct npt_dispatch_
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11VideoDevice_CreateVideoDecoderOutputView on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppVDOVView);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -727,6 +744,7 @@ npt_dispatch_ID3D11VideoDevice_CreateVideoDecoderOutputView(struct npt_dispatch_
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11VideoDevice_CreateVideoDecoderOutputView: an argument handle is unknown "
                     "to this context");
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppVDOVView);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -750,6 +768,8 @@ npt_dispatch_ID3D11VideoDevice_CreateVideoDecoderOutputView(struct npt_dispatch_
      * whose type is determined by the caller's riid. */
     if (args.ppVDOVView && *args.ppVDOVView)
         npt_cs_handle_register_guest_id(ctx, args._guest_id_ppVDOVView, *args.ppVDOVView, NPT_OBJECT_TYPE_ID3D11VIDEODECODEROUTPUTVIEW);
+    else if (args.ppVDOVView)
+        npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppVDOVView);
 
     if (cmd_flags & NPT_CMD_FLAG_REPLY) {
         if (!npt_cs_decoder_get_fatal(ctx->decoder)) {
@@ -869,6 +889,7 @@ npt_dispatch_ID3D11VideoDevice_CreateVideoProcessorInputView(struct npt_dispatch
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11VideoDevice_CreateVideoProcessorInputView on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppVPIView);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -886,6 +907,7 @@ npt_dispatch_ID3D11VideoDevice_CreateVideoProcessorInputView(struct npt_dispatch
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11VideoDevice_CreateVideoProcessorInputView: an argument handle is unknown "
                     "to this context");
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppVPIView);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -909,6 +931,8 @@ npt_dispatch_ID3D11VideoDevice_CreateVideoProcessorInputView(struct npt_dispatch
      * whose type is determined by the caller's riid. */
     if (args.ppVPIView && *args.ppVPIView)
         npt_cs_handle_register_guest_id(ctx, args._guest_id_ppVPIView, *args.ppVPIView, NPT_OBJECT_TYPE_ID3D11VIDEOPROCESSORINPUTVIEW);
+    else if (args.ppVPIView)
+        npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppVPIView);
 
     if (cmd_flags & NPT_CMD_FLAG_REPLY) {
         if (!npt_cs_decoder_get_fatal(ctx->decoder)) {
@@ -1028,6 +1052,7 @@ npt_dispatch_ID3D11VideoDevice_CreateVideoProcessorOutputView(struct npt_dispatc
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11VideoDevice_CreateVideoProcessorOutputView on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppVPOView);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -1045,6 +1070,7 @@ npt_dispatch_ID3D11VideoDevice_CreateVideoProcessorOutputView(struct npt_dispatc
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11VideoDevice_CreateVideoProcessorOutputView: an argument handle is unknown "
                     "to this context");
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppVPOView);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -1068,6 +1094,8 @@ npt_dispatch_ID3D11VideoDevice_CreateVideoProcessorOutputView(struct npt_dispatc
      * whose type is determined by the caller's riid. */
     if (args.ppVPOView && *args.ppVPOView)
         npt_cs_handle_register_guest_id(ctx, args._guest_id_ppVPOView, *args.ppVPOView, NPT_OBJECT_TYPE_ID3D11VIDEOPROCESSOROUTPUTVIEW);
+    else if (args.ppVPOView)
+        npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppVPOView);
 
     if (cmd_flags & NPT_CMD_FLAG_REPLY) {
         if (!npt_cs_decoder_get_fatal(ctx->decoder)) {
@@ -1171,6 +1199,7 @@ npt_dispatch_ID3D11VideoDevice_CreateVideoProcessorEnumerator(struct npt_dispatc
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11VideoDevice_CreateVideoProcessorEnumerator on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppEnum);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -1188,6 +1217,7 @@ npt_dispatch_ID3D11VideoDevice_CreateVideoProcessorEnumerator(struct npt_dispatc
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11VideoDevice_CreateVideoProcessorEnumerator: an argument handle is unknown "
                     "to this context");
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppEnum);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -1211,6 +1241,8 @@ npt_dispatch_ID3D11VideoDevice_CreateVideoProcessorEnumerator(struct npt_dispatc
      * whose type is determined by the caller's riid. */
     if (args.ppEnum && *args.ppEnum)
         npt_cs_handle_register_guest_id(ctx, args._guest_id_ppEnum, *args.ppEnum, NPT_OBJECT_TYPE_ID3D11VIDEOPROCESSORENUMERATOR);
+    else if (args.ppEnum)
+        npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppEnum);
 
     if (cmd_flags & NPT_CMD_FLAG_REPLY) {
         if (!npt_cs_decoder_get_fatal(ctx->decoder)) {
@@ -1287,6 +1319,7 @@ npt_dispatch_ID3D11VideoDevice_GetVideoDecoderProfileCount(struct npt_dispatch_c
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11VideoDevice_GetVideoDecoderProfileCount on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -1304,6 +1337,7 @@ npt_dispatch_ID3D11VideoDevice_GetVideoDecoderProfileCount(struct npt_dispatch_c
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11VideoDevice_GetVideoDecoderProfileCount: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -1411,6 +1445,7 @@ npt_dispatch_ID3D11VideoDevice_GetVideoDecoderProfile(struct npt_dispatch_contex
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11VideoDevice_GetVideoDecoderProfile on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -1428,6 +1463,7 @@ npt_dispatch_ID3D11VideoDevice_GetVideoDecoderProfile(struct npt_dispatch_contex
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11VideoDevice_GetVideoDecoderProfile: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -1546,6 +1582,7 @@ npt_dispatch_ID3D11VideoDevice_CheckVideoDecoderFormat(struct npt_dispatch_conte
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11VideoDevice_CheckVideoDecoderFormat on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -1563,6 +1600,7 @@ npt_dispatch_ID3D11VideoDevice_CheckVideoDecoderFormat(struct npt_dispatch_conte
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11VideoDevice_CheckVideoDecoderFormat: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -1678,6 +1716,7 @@ npt_dispatch_ID3D11VideoDevice_GetVideoDecoderConfigCount(struct npt_dispatch_co
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11VideoDevice_GetVideoDecoderConfigCount on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -1695,6 +1734,7 @@ npt_dispatch_ID3D11VideoDevice_GetVideoDecoderConfigCount(struct npt_dispatch_co
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11VideoDevice_GetVideoDecoderConfigCount: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -1813,6 +1853,7 @@ npt_dispatch_ID3D11VideoDevice_GetVideoDecoderConfig(struct npt_dispatch_context
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11VideoDevice_GetVideoDecoderConfig on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -1830,6 +1871,7 @@ npt_dispatch_ID3D11VideoDevice_GetVideoDecoderConfig(struct npt_dispatch_context
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11VideoDevice_GetVideoDecoderConfig: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -1952,6 +1994,7 @@ npt_dispatch_ID3D11VideoDevice_GetContentProtectionCaps(struct npt_dispatch_cont
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11VideoDevice_GetContentProtectionCaps on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -1969,6 +2012,7 @@ npt_dispatch_ID3D11VideoDevice_GetContentProtectionCaps(struct npt_dispatch_cont
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11VideoDevice_GetContentProtectionCaps: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -2096,6 +2140,7 @@ npt_dispatch_ID3D11VideoDevice_CheckCryptoKeyExchange(struct npt_dispatch_contex
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11VideoDevice_CheckCryptoKeyExchange on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -2113,6 +2158,7 @@ npt_dispatch_ID3D11VideoDevice_CheckCryptoKeyExchange(struct npt_dispatch_contex
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11VideoDevice_CheckCryptoKeyExchange: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -2236,6 +2282,7 @@ npt_dispatch_ID3D11VideoDevice_SetPrivateData(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11VideoDevice_SetPrivateData on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -2253,6 +2300,7 @@ npt_dispatch_ID3D11VideoDevice_SetPrivateData(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11VideoDevice_SetPrivateData: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -2369,6 +2417,7 @@ npt_dispatch_ID3D11VideoDevice_SetPrivateDataInterface(struct npt_dispatch_conte
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11VideoDevice_SetPrivateDataInterface on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -2386,6 +2435,7 @@ npt_dispatch_ID3D11VideoDevice_SetPrivateDataInterface(struct npt_dispatch_conte
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11VideoDevice_SetPrivateDataInterface: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -2528,6 +2578,7 @@ npt_dispatch_ID3D11VideoDevice1_GetCryptoSessionPrivateDataSize(struct npt_dispa
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11VideoDevice1_GetCryptoSessionPrivateDataSize on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -2545,6 +2596,7 @@ npt_dispatch_ID3D11VideoDevice1_GetCryptoSessionPrivateDataSize(struct npt_dispa
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11VideoDevice1_GetCryptoSessionPrivateDataSize: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -2689,6 +2741,7 @@ npt_dispatch_ID3D11VideoDevice1_GetVideoDecoderCaps(struct npt_dispatch_context 
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11VideoDevice1_GetVideoDecoderCaps on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -2706,6 +2759,7 @@ npt_dispatch_ID3D11VideoDevice1_GetVideoDecoderCaps(struct npt_dispatch_context 
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11VideoDevice1_GetVideoDecoderCaps: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -2864,6 +2918,7 @@ npt_dispatch_ID3D11VideoDevice1_CheckVideoDecoderDownsampling(struct npt_dispatc
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11VideoDevice1_CheckVideoDecoderDownsampling on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -2881,6 +2936,7 @@ npt_dispatch_ID3D11VideoDevice1_CheckVideoDecoderDownsampling(struct npt_dispatc
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11VideoDevice1_CheckVideoDecoderDownsampling: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -3021,6 +3077,7 @@ npt_dispatch_ID3D11VideoDevice1_RecommendVideoDecoderDownsampleParameters(struct
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11VideoDevice1_RecommendVideoDecoderDownsampleParameters on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -3038,6 +3095,7 @@ npt_dispatch_ID3D11VideoDevice1_RecommendVideoDecoderDownsampleParameters(struct
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11VideoDevice1_RecommendVideoDecoderDownsampleParameters: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -3156,6 +3214,7 @@ npt_dispatch_ID3D11VideoDevice2_CheckFeatureSupport(struct npt_dispatch_context 
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11VideoDevice2_CheckFeatureSupport on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -3173,6 +3232,7 @@ npt_dispatch_ID3D11VideoDevice2_CheckFeatureSupport(struct npt_dispatch_context 
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11VideoDevice2_CheckFeatureSupport: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -3302,6 +3362,7 @@ npt_dispatch_ID3D11VideoDevice2_NegotiateCryptoSessionKeyExchangeMT(struct npt_d
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11VideoDevice2_NegotiateCryptoSessionKeyExchangeMT on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -3319,6 +3380,7 @@ npt_dispatch_ID3D11VideoDevice2_NegotiateCryptoSessionKeyExchangeMT(struct npt_d
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11VideoDevice2_NegotiateCryptoSessionKeyExchangeMT: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }

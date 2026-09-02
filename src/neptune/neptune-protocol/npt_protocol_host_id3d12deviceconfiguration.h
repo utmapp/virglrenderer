@@ -81,6 +81,7 @@ npt_dispatch_ID3D12DeviceConfiguration_GetDesc(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12DeviceConfiguration_GetDesc on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -98,6 +99,7 @@ npt_dispatch_ID3D12DeviceConfiguration_GetDesc(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12DeviceConfiguration_GetDesc: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -216,6 +218,7 @@ npt_dispatch_ID3D12DeviceConfiguration_GetEnabledExperimentalFeatures(struct npt
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12DeviceConfiguration_GetEnabledExperimentalFeatures on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -233,6 +236,7 @@ npt_dispatch_ID3D12DeviceConfiguration_GetEnabledExperimentalFeatures(struct npt
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12DeviceConfiguration_GetEnabledExperimentalFeatures: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -373,6 +377,8 @@ npt_dispatch_ID3D12DeviceConfiguration_SerializeVersionedRootSignature(struct np
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12DeviceConfiguration_SerializeVersionedRootSignature on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppResult);
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppError);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -390,6 +396,8 @@ npt_dispatch_ID3D12DeviceConfiguration_SerializeVersionedRootSignature(struct np
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12DeviceConfiguration_SerializeVersionedRootSignature: an argument handle is unknown "
                     "to this context");
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppResult);
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppError);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -413,8 +421,12 @@ npt_dispatch_ID3D12DeviceConfiguration_SerializeVersionedRootSignature(struct np
      * whose type is determined by the caller's riid. */
     if (args.ppResult && *args.ppResult)
         npt_cs_handle_register_guest_id(ctx, args._guest_id_ppResult, *args.ppResult, NPT_OBJECT_TYPE_ID3D10BLOB);
+    else if (args.ppResult)
+        npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppResult);
     if (args.ppError && *args.ppError)
         npt_cs_handle_register_guest_id(ctx, args._guest_id_ppError, *args.ppError, NPT_OBJECT_TYPE_ID3D10BLOB);
+    else if (args.ppError)
+        npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppError);
 
     if (cmd_flags & NPT_CMD_FLAG_REPLY) {
         if (!npt_cs_decoder_get_fatal(ctx->decoder)) {
@@ -533,6 +545,7 @@ npt_dispatch_ID3D12DeviceConfiguration_CreateVersionedRootSignatureDeserializer(
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12DeviceConfiguration_CreateVersionedRootSignatureDeserializer on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppvDeserializer);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -550,6 +563,7 @@ npt_dispatch_ID3D12DeviceConfiguration_CreateVersionedRootSignatureDeserializer(
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12DeviceConfiguration_CreateVersionedRootSignatureDeserializer: an argument handle is unknown "
                     "to this context");
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppvDeserializer);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -574,6 +588,8 @@ npt_dispatch_ID3D12DeviceConfiguration_CreateVersionedRootSignatureDeserializer(
     if (args.ppvDeserializer && *args.ppvDeserializer)
         npt_cs_handle_register_guest_id(ctx, args._guest_id_ppvDeserializer, *args.ppvDeserializer,
             npt_object_type_from_iid(args.riid));
+    else if (args.ppvDeserializer)
+        npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppvDeserializer);
 
     if (cmd_flags & NPT_CMD_FLAG_REPLY) {
         if (!npt_cs_decoder_get_fatal(ctx->decoder)) {
@@ -704,6 +720,7 @@ npt_dispatch_ID3D12DeviceConfiguration1_CreateVersionedRootSignatureDeserializer
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12DeviceConfiguration1_CreateVersionedRootSignatureDeserializerFromSubobjectInLibrary on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppvDeserializer);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -721,6 +738,7 @@ npt_dispatch_ID3D12DeviceConfiguration1_CreateVersionedRootSignatureDeserializer
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12DeviceConfiguration1_CreateVersionedRootSignatureDeserializerFromSubobjectInLibrary: an argument handle is unknown "
                     "to this context");
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppvDeserializer);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -745,6 +763,8 @@ npt_dispatch_ID3D12DeviceConfiguration1_CreateVersionedRootSignatureDeserializer
     if (args.ppvDeserializer && *args.ppvDeserializer)
         npt_cs_handle_register_guest_id(ctx, args._guest_id_ppvDeserializer, *args.ppvDeserializer,
             npt_object_type_from_iid(args.riid));
+    else if (args.ppvDeserializer)
+        npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppvDeserializer);
 
     if (cmd_flags & NPT_CMD_FLAG_REPLY) {
         if (!npt_cs_decoder_get_fatal(ctx->decoder)) {

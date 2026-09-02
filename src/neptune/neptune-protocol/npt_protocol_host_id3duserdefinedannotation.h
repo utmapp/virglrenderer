@@ -92,6 +92,7 @@ npt_dispatch_ID3DUserDefinedAnnotation_BeginEvent(struct npt_dispatch_context *c
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3DUserDefinedAnnotation_BeginEvent on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -109,6 +110,7 @@ npt_dispatch_ID3DUserDefinedAnnotation_BeginEvent(struct npt_dispatch_context *c
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3DUserDefinedAnnotation_BeginEvent: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -206,6 +208,7 @@ npt_dispatch_ID3DUserDefinedAnnotation_EndEvent(struct npt_dispatch_context *ctx
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3DUserDefinedAnnotation_EndEvent on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -223,6 +226,7 @@ npt_dispatch_ID3DUserDefinedAnnotation_EndEvent(struct npt_dispatch_context *ctx
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3DUserDefinedAnnotation_EndEvent: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -331,6 +335,7 @@ npt_dispatch_ID3DUserDefinedAnnotation_SetMarker(struct npt_dispatch_context *ct
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3DUserDefinedAnnotation_SetMarker on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -348,6 +353,7 @@ npt_dispatch_ID3DUserDefinedAnnotation_SetMarker(struct npt_dispatch_context *ct
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3DUserDefinedAnnotation_SetMarker: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -445,6 +451,7 @@ npt_dispatch_ID3DUserDefinedAnnotation_GetStatus(struct npt_dispatch_context *ct
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3DUserDefinedAnnotation_GetStatus on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -462,6 +469,7 @@ npt_dispatch_ID3DUserDefinedAnnotation_GetStatus(struct npt_dispatch_context *ct
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3DUserDefinedAnnotation_GetStatus: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }

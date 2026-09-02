@@ -81,6 +81,7 @@ npt_dispatch_ID3D12Heap_GetDesc(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12Heap_GetDesc on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -98,6 +99,7 @@ npt_dispatch_ID3D12Heap_GetDesc(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12Heap_GetDesc: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -224,6 +226,7 @@ npt_dispatch_ID3D12Heap1_GetProtectedResourceSession(struct npt_dispatch_context
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12Heap1_GetProtectedResourceSession on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppProtectedSession);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -241,6 +244,7 @@ npt_dispatch_ID3D12Heap1_GetProtectedResourceSession(struct npt_dispatch_context
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12Heap1_GetProtectedResourceSession: an argument handle is unknown "
                     "to this context");
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppProtectedSession);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -265,6 +269,8 @@ npt_dispatch_ID3D12Heap1_GetProtectedResourceSession(struct npt_dispatch_context
     if (args.ppProtectedSession && *args.ppProtectedSession)
         npt_cs_handle_register_guest_id(ctx, args._guest_id_ppProtectedSession, *args.ppProtectedSession,
             npt_object_type_from_iid(args.riid));
+    else if (args.ppProtectedSession)
+        npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppProtectedSession);
 
     if (cmd_flags & NPT_CMD_FLAG_REPLY) {
         if (!npt_cs_decoder_get_fatal(ctx->decoder)) {

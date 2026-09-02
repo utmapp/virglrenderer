@@ -87,6 +87,7 @@ npt_dispatch_IDXGISwapChainMedia_GetFrameStatisticsMedia(struct npt_dispatch_con
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGISwapChainMedia_GetFrameStatisticsMedia on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -104,6 +105,7 @@ npt_dispatch_IDXGISwapChainMedia_GetFrameStatisticsMedia(struct npt_dispatch_con
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGISwapChainMedia_GetFrameStatisticsMedia: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -204,6 +206,7 @@ npt_dispatch_IDXGISwapChainMedia_SetPresentDuration(struct npt_dispatch_context 
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGISwapChainMedia_SetPresentDuration on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -221,6 +224,7 @@ npt_dispatch_IDXGISwapChainMedia_SetPresentDuration(struct npt_dispatch_context 
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGISwapChainMedia_SetPresentDuration: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -335,6 +339,7 @@ npt_dispatch_IDXGISwapChainMedia_CheckPresentDurationSupport(struct npt_dispatch
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGISwapChainMedia_CheckPresentDurationSupport on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -352,6 +357,7 @@ npt_dispatch_IDXGISwapChainMedia_CheckPresentDurationSupport(struct npt_dispatch
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping IDXGISwapChainMedia_CheckPresentDurationSupport: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }

@@ -81,6 +81,7 @@ npt_dispatch_ID3D12SwapChainAssistant_GetLUID(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12SwapChainAssistant_GetLUID on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -98,6 +99,7 @@ npt_dispatch_ID3D12SwapChainAssistant_GetLUID(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12SwapChainAssistant_GetLUID: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -224,6 +226,7 @@ npt_dispatch_ID3D12SwapChainAssistant_GetSwapChainObject(struct npt_dispatch_con
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12SwapChainAssistant_GetSwapChainObject on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppv);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -241,6 +244,7 @@ npt_dispatch_ID3D12SwapChainAssistant_GetSwapChainObject(struct npt_dispatch_con
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12SwapChainAssistant_GetSwapChainObject: an argument handle is unknown "
                     "to this context");
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppv);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -265,6 +269,8 @@ npt_dispatch_ID3D12SwapChainAssistant_GetSwapChainObject(struct npt_dispatch_con
     if (args.ppv && *args.ppv)
         npt_cs_handle_register_guest_id(ctx, args._guest_id_ppv, *args.ppv,
             npt_object_type_from_iid(args.riid));
+    else if (args.ppv)
+        npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppv);
 
     if (cmd_flags & NPT_CMD_FLAG_REPLY) {
         if (!npt_cs_decoder_get_fatal(ctx->decoder)) {
@@ -395,6 +401,8 @@ npt_dispatch_ID3D12SwapChainAssistant_GetCurrentResourceAndCommandQueue(struct n
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12SwapChainAssistant_GetCurrentResourceAndCommandQueue on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppvResource);
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppvQueue);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -412,6 +420,8 @@ npt_dispatch_ID3D12SwapChainAssistant_GetCurrentResourceAndCommandQueue(struct n
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12SwapChainAssistant_GetCurrentResourceAndCommandQueue: an argument handle is unknown "
                     "to this context");
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppvResource);
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppvQueue);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -436,9 +446,13 @@ npt_dispatch_ID3D12SwapChainAssistant_GetCurrentResourceAndCommandQueue(struct n
     if (args.ppvResource && *args.ppvResource)
         npt_cs_handle_register_guest_id(ctx, args._guest_id_ppvResource, *args.ppvResource,
             npt_object_type_from_iid(args.riidResource));
+    else if (args.ppvResource)
+        npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppvResource);
     if (args.ppvQueue && *args.ppvQueue)
         npt_cs_handle_register_guest_id(ctx, args._guest_id_ppvQueue, *args.ppvQueue,
             npt_object_type_from_iid(args.riidResource));
+    else if (args.ppvQueue)
+        npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppvQueue);
 
     if (cmd_flags & NPT_CMD_FLAG_REPLY) {
         if (!npt_cs_decoder_get_fatal(ctx->decoder)) {
@@ -515,6 +529,7 @@ npt_dispatch_ID3D12SwapChainAssistant_InsertImplicitSync(struct npt_dispatch_con
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12SwapChainAssistant_InsertImplicitSync on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -532,6 +547,7 @@ npt_dispatch_ID3D12SwapChainAssistant_InsertImplicitSync(struct npt_dispatch_con
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12SwapChainAssistant_InsertImplicitSync: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }

@@ -87,6 +87,7 @@ npt_dispatch_ID3D11AuthenticatedChannel_GetCertificateSize(struct npt_dispatch_c
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11AuthenticatedChannel_GetCertificateSize on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -104,6 +105,7 @@ npt_dispatch_ID3D11AuthenticatedChannel_GetCertificateSize(struct npt_dispatch_c
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11AuthenticatedChannel_GetCertificateSize: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -219,6 +221,7 @@ npt_dispatch_ID3D11AuthenticatedChannel_GetCertificate(struct npt_dispatch_conte
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11AuthenticatedChannel_GetCertificate on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -236,6 +239,7 @@ npt_dispatch_ID3D11AuthenticatedChannel_GetCertificate(struct npt_dispatch_conte
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11AuthenticatedChannel_GetCertificate: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -338,6 +342,7 @@ npt_dispatch_ID3D11AuthenticatedChannel_GetChannelHandle(struct npt_dispatch_con
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11AuthenticatedChannel_GetChannelHandle on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -355,6 +360,7 @@ npt_dispatch_ID3D11AuthenticatedChannel_GetChannelHandle(struct npt_dispatch_con
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11AuthenticatedChannel_GetChannelHandle: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }

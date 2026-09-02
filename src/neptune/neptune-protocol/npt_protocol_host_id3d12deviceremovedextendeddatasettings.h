@@ -82,6 +82,7 @@ npt_dispatch_ID3D12DeviceRemovedExtendedDataSettings_SetAutoBreadcrumbsEnablemen
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12DeviceRemovedExtendedDataSettings_SetAutoBreadcrumbsEnablement on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -99,6 +100,7 @@ npt_dispatch_ID3D12DeviceRemovedExtendedDataSettings_SetAutoBreadcrumbsEnablemen
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12DeviceRemovedExtendedDataSettings_SetAutoBreadcrumbsEnablement: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -198,6 +200,7 @@ npt_dispatch_ID3D12DeviceRemovedExtendedDataSettings_SetPageFaultEnablement(stru
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12DeviceRemovedExtendedDataSettings_SetPageFaultEnablement on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -215,6 +218,7 @@ npt_dispatch_ID3D12DeviceRemovedExtendedDataSettings_SetPageFaultEnablement(stru
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12DeviceRemovedExtendedDataSettings_SetPageFaultEnablement: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -314,6 +318,7 @@ npt_dispatch_ID3D12DeviceRemovedExtendedDataSettings_SetWatsonDumpEnablement(str
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12DeviceRemovedExtendedDataSettings_SetWatsonDumpEnablement on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -331,6 +336,7 @@ npt_dispatch_ID3D12DeviceRemovedExtendedDataSettings_SetWatsonDumpEnablement(str
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12DeviceRemovedExtendedDataSettings_SetWatsonDumpEnablement: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -430,6 +436,7 @@ npt_dispatch_ID3D12DeviceRemovedExtendedDataSettings1_SetBreadcrumbContextEnable
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12DeviceRemovedExtendedDataSettings1_SetBreadcrumbContextEnablement on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -447,6 +454,7 @@ npt_dispatch_ID3D12DeviceRemovedExtendedDataSettings1_SetBreadcrumbContextEnable
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12DeviceRemovedExtendedDataSettings1_SetBreadcrumbContextEnablement: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -546,6 +554,7 @@ npt_dispatch_ID3D12DeviceRemovedExtendedDataSettings2_UseMarkersOnlyAutoBreadcru
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12DeviceRemovedExtendedDataSettings2_UseMarkersOnlyAutoBreadcrumbs on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -563,6 +572,7 @@ npt_dispatch_ID3D12DeviceRemovedExtendedDataSettings2_UseMarkersOnlyAutoBreadcru
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D12DeviceRemovedExtendedDataSettings2_UseMarkersOnlyAutoBreadcrumbs: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }

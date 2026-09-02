@@ -95,6 +95,7 @@ npt_dispatch_ID3D11ClassInstance_GetClassLinkage(struct npt_dispatch_context *ct
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11ClassInstance_GetClassLinkage on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppLinkage);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -112,6 +113,7 @@ npt_dispatch_ID3D11ClassInstance_GetClassLinkage(struct npt_dispatch_context *ct
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11ClassInstance_GetClassLinkage: an argument handle is unknown "
                     "to this context");
+            npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppLinkage);
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -135,6 +137,8 @@ npt_dispatch_ID3D11ClassInstance_GetClassLinkage(struct npt_dispatch_context *ct
      * whose type is determined by the caller's riid. */
     if (args.ppLinkage && *args.ppLinkage)
         npt_cs_handle_register_guest_id(ctx, args._guest_id_ppLinkage, *args.ppLinkage, NPT_OBJECT_TYPE_ID3D11CLASSLINKAGE);
+    else if (args.ppLinkage)
+        npt_cs_handle_register_failed_guest_id(ctx, args._guest_id_ppLinkage);
 
     if (cmd_flags & NPT_CMD_FLAG_REPLY) {
         if (!npt_cs_decoder_get_fatal(ctx->decoder)) {
@@ -217,6 +221,7 @@ npt_dispatch_ID3D11ClassInstance_GetDesc(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11ClassInstance_GetDesc on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -234,6 +239,7 @@ npt_dispatch_ID3D11ClassInstance_GetDesc(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11ClassInstance_GetDesc: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -358,6 +364,7 @@ npt_dispatch_ID3D11ClassInstance_GetInstanceName(struct npt_dispatch_context *ct
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11ClassInstance_GetInstanceName on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -375,6 +382,7 @@ npt_dispatch_ID3D11ClassInstance_GetInstanceName(struct npt_dispatch_context *ct
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11ClassInstance_GetInstanceName: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -499,6 +507,7 @@ npt_dispatch_ID3D11ClassInstance_GetTypeName(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11ClassInstance_GetTypeName on unregistered object "
                     "0x%016" PRIx64, (uint64_t)object_id);
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
@@ -516,6 +525,7 @@ npt_dispatch_ID3D11ClassInstance_GetTypeName(struct npt_dispatch_context *ctx,
         if (!(cmd_flags & NPT_CMD_FLAG_REPLY)) {
             npt_log("dropping ID3D11ClassInstance_GetTypeName: an argument handle is unknown "
                     "to this context");
+
             npt_cs_decoder_reset_temp_pool(ctx->decoder);
             return;
         }
