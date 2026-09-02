@@ -78,6 +78,8 @@ struct npt_ring {
    cnd_t cond;
    thrd_t thread;
    atomic_bool started;
+   /* This thread runs QOS_CLASS_UTILITY (efficiency cores). */
+   bool qos_utility;
 
    /* Both guarded by ring->mutex: set there by the notify helpers,
     * cleared and re-tested there by the ring thread's idle wait, which

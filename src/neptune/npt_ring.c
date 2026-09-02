@@ -418,23 +418,29 @@ npt_ring_thread(void *arg)
     * guest's nice would renice the WHOLE render server -- every ring of
     * every context in it -- on behalf of one guest thread.  Set the QoS
     * class instead: it is per-thread and it, not nice, is what decides
-    * scheduling band and timer coalescing on macOS.
+    * scheduling band and core placement on macOS.
     *
-    * USER_INTERACTIVE because this thread is on the frame's critical
-    * path (guest recording blocks on ring space while it drains, and
-    * command-buffer commits are only as timely as this loop).  Setting
-    * it explicitly also stops the render server from inheriting a
-    * background QoS from whatever launched QEMU. */
+    * Every ring of a multi-ring guest runs UTILITY, which on Apple silicon
+    * confines the thread to the efficiency cores: those threads mostly
+    * poll (npt_ring_relax between bursts, the bounded park when idle),
+    * there is one per recording thread, and on the performance cores they
+    * take time from the vCPU threads that is worth more than their decode
+    * speed.  A single-ring guest keeps its one ring USER_INTERACTIVE: that
+    * decoder is on the frame's critical path and loses frame time on an
+    * efficiency core.  The first ring therefore starts USER_INTERACTIVE
+    * and moves itself once the context turns multi-ring (see the loop). */
+   ring->qos_utility =
+      atomic_load_explicit(&ctx->multi_ring, memory_order_acquire);
    {
-      const int qos_rc =
-         pthread_set_qos_class_self_np(QOS_CLASS_USER_INTERACTIVE, 0);
+      const int qos_rc = pthread_set_qos_class_self_np(
+         ring->qos_utility ? QOS_CLASS_UTILITY : QOS_CLASS_USER_INTERACTIVE, 0);
       static _Atomic bool qos_logged;
       if (!atomic_exchange(&qos_logged, true)) {
          qos_class_t got = QOS_CLASS_UNSPECIFIED;
          pthread_get_qos_class_np(pthread_self(), &got, NULL);
          npt_log("ring thread QoS: set rc=%d, effective class=0x%x "
-                 "(USER_INTERACTIVE=0x%x)", qos_rc, (unsigned)got,
-                 (unsigned)QOS_CLASS_USER_INTERACTIVE);
+                 "(USER_INTERACTIVE=0x%x UTILITY=0x%x)", qos_rc, (unsigned)got,
+                 (unsigned)QOS_CLASS_USER_INTERACTIVE, (unsigned)QOS_CLASS_UTILITY);
       }
    }
 #elif !defined(_WIN32)
@@ -454,6 +460,13 @@ npt_ring_thread(void *arg)
    uint32_t relax_iter = 0;
    int ret = 0;
    while (ring->started) {
+#if defined(__APPLE__)
+      if (unlikely(!ring->qos_utility) &&
+          atomic_load_explicit(&ctx->multi_ring, memory_order_acquire)) {
+         pthread_set_qos_class_self_np(QOS_CLASS_UTILITY, 0);
+         ring->qos_utility = true;
+      }
+#endif
       /* An empty ring past the idle timeout waits; feedback decides only
        * whether the wait is bounded by the poll cadence. */
       bool notified = false;
@@ -972,6 +985,8 @@ npt_ring_create_from_cmd(struct npt_context *ctx,
       ring->monitor = true;
       npt_ring_set_status_bits(ring, NPT_RING_STATUS_ALIVE_BIT);
    }
+   if (!list_is_empty(&ctx->rings))
+      atomic_store_explicit(&ctx->multi_ring, true, memory_order_release);
    list_addtail(&ring->head, &ctx->rings);
    cnd_broadcast(&ctx->ring_cond);
    mtx_unlock(&ctx->ring_mutex);

@@ -96,6 +96,8 @@ struct npt_context {
    uint64_t *destroyed_ring_ids;
    uint32_t destroyed_ring_count;
    uint32_t destroyed_ring_cap;
+   /* Set once a second ring registers: the guest runs a multi-ring model. */
+   atomic_bool multi_ring;
 
    /* Watchdog-reporter thread, lazily started by CREATE_RING.  OR-sets
     * NPT_RING_STATUS_ALIVE_BIT on every monitored ring at a period
