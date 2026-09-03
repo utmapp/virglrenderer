@@ -284,12 +284,15 @@ struct npt_cmd_map_resource {
    /* Subresource byte count.  Host clamps memcpy to MIN(byte_size,
     * shmem size) to bound over-reads.  0 = use shmem size. */
    uint64_t byte_size;
-   /* Texture-only mip-aware dims.  When both nonzero the host
-    * computes READ memcpy size as RowPitch * mip_height * mip_depth
-    * (clamped to shmem).  Required for non-mip-0 subresources where
-    * the backend row_pitch can differ from the guest's
-    * pre-allocation estimate.  Buffer callers leave both 0. */
-   uint32_t mip_height;
+   /* Texture-only extent of the mapped subresource in ROWS OF MEMORY
+    * (block rows for the compressed formats, luma + chroma rows for
+    * the planar ones) and depth slices.  When both are nonzero the
+    * host sizes the mapped region as
+    *   DepthPitch * (mip_depth - 1) + RowPitch * mip_rows
+    * from the pitches D3D returned, clamped to byte_size and to the
+    * shmem.  Required because the guest cannot know the backend's
+    * pitches before the Map.  Buffer callers leave both 0. */
+   uint32_t mip_rows;
    uint32_t mip_depth;
    /* Byte offset of the guest's slot window inside the shmem blob.
     * The map pool sub-allocates many resources from one blob, so a

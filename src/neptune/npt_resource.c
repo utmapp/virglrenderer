@@ -221,7 +221,7 @@ npt_resource_map(struct npt_context *ctx,
                  uint64_t read_range_begin,
                  uint64_t read_range_end,
                  uint64_t byte_size,
-                 uint32_t mip_height, uint32_t mip_depth,
+                 uint32_t mip_rows, uint32_t mip_depth,
                  uint32_t shmem_offset,
                  uint32_t *out_row_pitch, uint32_t *out_depth_pitch,
                  uint32_t *out_mapped_size)
@@ -310,20 +310,27 @@ npt_resource_map(struct npt_context *ctx,
    }
 
    /* Memcpy bound for READ (and matching WRITE on the Unmap path):
-    *   1. (mip_height, mip_depth) for textures — tightest, required
-    *      since the guest can't know RowPitch ahead of Map.
-    *   2. byte_size for buffers.
+    *   1. textures: the D3D pitches over the guest's row/slice extent,
+    *      every slice but the last at the full DepthPitch (a DepthPitch
+    *      below one slice is treated as unpadded);
+    *   2. buffers: byte_size;
     *   3. shmem size as fallback.
-    * Clamped to shmem_res->size so an oversized blob can't over-read
-    * past D3D's mapped region into unrelated host memory. */
+    * Clamped to byte_size -- the guest's slot -- and to the shmem, so
+    * neither D3D's mapped region nor a neighbouring slot of the shared
+    * map pool is overrun. */
    uint64_t bound;
-   if (mip_height && mip_depth) {
-      bound = (uint64_t)mapped.RowPitch *
-              (uint64_t)mip_height *
-              (uint64_t)mip_depth;
+   if (mip_rows && mip_depth) {
+      const uint64_t slice = (uint64_t)mapped.RowPitch * mip_rows;
+      const uint64_t strides =
+         (mip_depth > 1u && mapped.DepthPitch >= slice)
+            ? (uint64_t)mapped.DepthPitch * (mip_depth - 1u)
+            : slice * (mip_depth - 1u);
+      bound = strides + slice;
    } else {
       bound = byte_size ? byte_size : shmem_res->size - shmem_offset;
    }
+   if (byte_size && bound > byte_size)
+      bound = byte_size;
    if (bound > shmem_res->size - shmem_offset)
       bound = shmem_res->size - shmem_offset;
    const uint32_t mapped_size = (uint32_t)bound;

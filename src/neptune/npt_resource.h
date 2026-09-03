@@ -43,7 +43,7 @@ npt_resource_map(struct npt_context *ctx,
                  uint32_t api_map_flags, uint32_t shmem_res_id,
                  uint64_t read_range_begin, uint64_t read_range_end,
                  uint64_t byte_size,
-                 uint32_t mip_height, uint32_t mip_depth,
+                 uint32_t mip_rows, uint32_t mip_depth,
                  uint32_t shmem_offset,
                  uint32_t *out_row_pitch, uint32_t *out_depth_pitch,
                  uint32_t *out_mapped_size);

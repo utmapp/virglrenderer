@@ -353,7 +353,7 @@ npt_dispatch_map_resource(struct npt_context *ctx,
       ctx, cmd.context_id, cmd.resource_id, cmd.subresource,
       cmd.access_flags, cmd.api_map_flags, cmd.shmem_res_id,
       cmd.read_range_begin, cmd.read_range_end,
-      cmd.byte_size, cmd.mip_height, cmd.mip_depth,
+      cmd.byte_size, cmd.mip_rows, cmd.mip_depth,
       cmd.shmem_offset,
       &reply.row_pitch, &reply.depth_pitch, &reply.mapped_size);
 
