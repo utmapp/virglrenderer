@@ -75,6 +75,12 @@ struct npt_cmd_set_reply_stream {
 #define NPT_RING_STATUS_IDLE_BIT  (1u << 0)
 #define NPT_RING_STATUS_FATAL_BIT (1u << 1)
 #define NPT_RING_STATUS_ALIVE_BIT (1u << 2)
+/* Bits 8..31 hold a heartbeat counter the ring-monitor thread bumps on
+ * every report period.  A guest that cannot clear ALIVE (an atomic
+ * read-modify-write faults on write-combining memory under ARM and the
+ * x86 translators) watches the counter stand still instead. */
+#define NPT_RING_STATUS_HEARTBEAT_SHIFT 8u
+#define NPT_RING_STATUS_HEARTBEAT_ONE   (1u << NPT_RING_STATUS_HEARTBEAT_SHIFT)
 
 struct npt_cmd_create_ring {
    struct npt_command_header header;

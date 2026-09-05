@@ -267,4 +267,16 @@ npt_ring_set_status_bits(struct npt_ring *ring, uint32_t mask)
    atomic_fetch_or_explicit(ring->control.status, mask, memory_order_seq_cst);
 }
 
+/* One monitor tick: set ALIVE and advance the heartbeat counter.  The add
+ * starts above the flag bits, so it never touches them; the counter wraps
+ * harmlessly, the guest only compares it for change. */
+static inline void
+npt_ring_heartbeat(struct npt_ring *ring)
+{
+   atomic_fetch_or_explicit(ring->control.status, NPT_RING_STATUS_ALIVE_BIT,
+                            memory_order_seq_cst);
+   atomic_fetch_add_explicit(ring->control.status, NPT_RING_STATUS_HEARTBEAT_ONE,
+                             memory_order_seq_cst);
+}
+
 #endif /* NPT_RING_H */

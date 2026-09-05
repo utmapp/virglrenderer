@@ -959,7 +959,7 @@ npt_context_ring_monitor_thread(void *arg)
          mtx_lock(&ctx->ring_mutex);
          list_for_each_entry (struct npt_ring, ring, &ctx->rings, head) {
             if (ring->monitor)
-               npt_ring_set_status_bits(ring, NPT_RING_STATUS_ALIVE_BIT);
+               npt_ring_heartbeat(ring);
          }
          mtx_unlock(&ctx->ring_mutex);
          ret = 0;
