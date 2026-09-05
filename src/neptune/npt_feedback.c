@@ -324,8 +324,10 @@ npt_feedback_query_poll_one(struct npt_context *ctx,
    if (!slot)
       return false;
 
-   /* PIPELINE_STATISTICS is 88 bytes; the slot caps result room. */
-   uint8_t scratch[NPT_QUERY_FEEDBACK_SLOT_RESULT];
+   /* PIPELINE_STATISTICS is 88 bytes; the slot caps result room.  Zeroed:
+    * the host library writes an EVENT result as one byte, and the guest
+    * reads the BOOL it asked for. */
+   uint8_t scratch[NPT_QUERY_FEEDBACK_SLOT_RESULT] = {0};
    /* D3D11_ASYNC_GETDATA_DONOTFLUSH: D3D11 forbids implicit Flush
     * from inside another method's body, and the host driver crashes
     * if it happens mid-CopySubresourceRegion. */

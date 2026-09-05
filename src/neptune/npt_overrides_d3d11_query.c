@@ -34,7 +34,28 @@ npt_override_DC_End(struct npt_dispatch_context *dctx,
    npt_feedback_query_mark_end(ctx, args->_self, args->pAsync);
 }
 
+/* A wire GetData answers one query straight from the host library.
+ * D3D completes queries in End order, so once it reports S_OK every
+ * query ended before it is complete too, and the guest may read their
+ * slots right after this reply: publish them now instead of leaving
+ * them to the next rate-limited poll. */
+static HRESULT
+npt_override_DC_GetData(struct npt_dispatch_context *dctx,
+                        struct npt_command_ID3D11DeviceContext_GetData *args,
+                        PFN_ID3D11DeviceContext_GetData original)
+{
+   HRESULT hr = original(args->_self, args->pAsync, args->pData,
+                         args->DataSize, args->GetDataFlags);
+   if (hr == 0 /* S_OK */) {
+      struct npt_context *ctx = npt_context_from_dispatch(dctx);
+      if (ctx)
+         npt_feedback_poll_interval(ctx, 0);
+   }
+   return hr;
+}
+
 struct npt_dispatch_id3d11devicecontext_overrides
 npt_query_dc_overrides = {
    .End = npt_override_DC_End,
+   .GetData = npt_override_DC_GetData,
 };
