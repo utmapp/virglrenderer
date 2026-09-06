@@ -17,10 +17,10 @@
 
 struct npt_context;
 
-/* Hard cap on per-call payload byte_size.  Bounded so the byte_size+7
- * alignment math can't wrap to 0 on a hostile value and read stale
- * bytes. */
-#define NPT_MAX_RESOURCE_UPDATE_BYTES (64u << 20)
+/* Hard cap on per-call payload byte_size: 2 GB, the guest client's map
+ * slot cap, and bounded so the byte_size+7 alignment math can't wrap to 0
+ * on a hostile value and read stale bytes. */
+#define NPT_MAX_RESOURCE_UPDATE_BYTES (2048u << 20)
 
 /* RESOURCE_UPDATE.  `payload` points at the contiguous source bytes in
  * the decoder's stream; lifetime is the caller's responsibility. */
