@@ -100,6 +100,12 @@ npt_library_load_embedder_api(struct npt_d3d_library *lib)
          ((union { void *p; int (*f)(void *); }){
             .p = npt_library_sym(mod, name) }).f;
 
+      snprintf(name, sizeof(name), "%sshared_handle_close",
+               candidates[i].prefix);
+      lib->pfn_shared_handle_close =
+         ((union { void *p; int (*f)(void *); }){
+            .p = npt_library_sym(mod, name) }).f;
+
       /* Optional, as on the Linux side.  DXMT has no D3D12 at all, so
        * it exports nothing here. */
       snprintf(name, sizeof(name), "%sopen_existing_heap_from_fd",

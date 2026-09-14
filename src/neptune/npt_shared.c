@@ -27,6 +27,8 @@
 #include "virgl_hw.h"
 
 #include "npt_context.h"
+#include "npt_library.h"
+#include "npt_renderer.h"
 #include "npt_transport_defs.h"
 
 #include "neptune-protocol/npt_protocol_defs.h"
@@ -98,79 +100,28 @@ struct npt_darwin_shared_texture {
 #define NPT_SHARED_ATTACH_WAIT_MS   1000
 #define NPT_SHARED_ATTACH_POLL_MS   2
 
-HRESULT
-npt_shared_export_blob(struct npt_context *ctx, uint64_t texture_id,
-                       uint64_t blob_id, uint32_t data_res_id,
-                       uint32_t data_off)
+/* CloseHandle analog for an NT-style shared handle (CreateSharedHandle
+ * family); the backend's export is the authority on what owns what. */
+static void
+npt_shared_handle_close(HANDLE handle)
 {
-   if (!texture_id || !blob_id)
-      return NPT_E_INVALIDARG;
+#ifdef __APPLE__
+   struct npt_d3d_library *lib = npt_renderer_get_library();
+   if (lib && lib->pfn_shared_handle_close)
+      lib->pfn_shared_handle_close((void *)(uintptr_t)handle);
+#else
+   (void)handle;
+#endif
+}
 
-   void *texture = npt_context_lookup_object(ctx, NULL, texture_id,
-                                             NPT_OBJECT_TYPE_IUNKNOWN);
-   if (!texture) {
-      npt_log("shared: export: texture id 0x%016" PRIx64 " not found",
-              texture_id);
-      return NPT_E_INVALIDARG;
-   }
-
-   /* Export the texture's shared descriptor: D3D12 resources through
-    * the device's CreateSharedHandle, D3D11 textures through
-    * IDXGIResource::GetSharedHandle.
-    *
-    * The returned HANDLE is a pointer to a descriptor the exporting
-    * object owns and keeps valid until it is destroyed, so nothing here
-    * frees it; only copies -- a dup of desc->fd and the scalar fields --
-    * leave this frame. */
-   HANDLE handle = 0;
-   HRESULT hr;
-   void *res12 = NULL;
-   if (NPT_SUCCEEDED(npt_com_query_interface(texture,
-                                             &NPT_IID_ID3D12Resource,
-                                             &res12)) && res12) {
-      void *dev12 = NULL;
-      PFN_ID3D12DeviceChild_GetDevice get_dev12 =
-         NPT_COM_VTBL_FUNC(PFN_ID3D12DeviceChild_GetDevice,
-                           npt_com_vtable(res12),
-                           NPT_VTBL_ID3D12DeviceChild_GetDevice);
-      hr = get_dev12(res12, &NPT_IID_ID3D12Device, &dev12);
-      if (NPT_FAILED(hr) || !dev12) {
-         npt_com_release(res12);
-         npt_log("shared: export: blob_id %" PRIu64 " GetDevice failed",
-                 blob_id);
-         return NPT_E_FAIL;
-      }
-
-      PFN_ID3D12Device_CreateSharedHandle create_shared =
-         NPT_COM_VTBL_FUNC(PFN_ID3D12Device_CreateSharedHandle,
-                           npt_com_vtable(dev12),
-                           NPT_VTBL_ID3D12Device_CreateSharedHandle);
-      hr = create_shared(dev12, res12, NULL, 0x10000000u, NULL, &handle);
-      npt_com_release(dev12);
-      npt_com_release(res12);
-   } else {
-      void *dxgi_res = NULL;
-      if (NPT_FAILED(npt_com_query_interface(texture, &NPT_IID_IDXGIResource,
-                                             &dxgi_res)) || !dxgi_res) {
-         npt_log("shared: export: blob_id %" PRIu64 " has no IDXGIResource",
-                 blob_id);
-         return NPT_E_FAIL;
-      }
-
-      PFN_IDXGIResource_GetSharedHandle get_shared =
-         NPT_COM_VTBL_FUNC(PFN_IDXGIResource_GetSharedHandle,
-                           npt_com_vtable(dxgi_res),
-                           NPT_VTBL_IDXGIResource_GetSharedHandle);
-      hr = get_shared(dxgi_res, &handle);
-      npt_com_release(dxgi_res);
-   }
-
-   if (NPT_FAILED(hr) || !handle) {
-      npt_log("shared: export: blob_id %" PRIu64
-              " shared-handle export failed (hr=0x%x)", blob_id, hr);
-      return NPT_FAILED(hr) ? hr : NPT_E_FAIL;
-   }
-
+/* Publish `handle`'s descriptor to the guest and stage its blob.  Only
+ * copies -- a dup of the descriptor's fd and the scalar fields -- leave
+ * this frame; the handle itself stays the caller's. */
+static HRESULT
+npt_shared_export_handle(struct npt_context *ctx, uint64_t blob_id,
+                         uint32_t data_res_id, uint32_t data_off,
+                         HANDLE handle)
+{
    struct npt_blob_export_info info;
    memset(&info, 0, sizeof(info));
 
@@ -277,6 +228,87 @@ npt_shared_export_blob(struct npt_context *ctx, uint64_t texture_id,
            desc->planes[0].pitch, ctx->ctx_id);
 #endif
    return NPT_S_OK;
+}
+
+HRESULT
+npt_shared_export_blob(struct npt_context *ctx, uint64_t texture_id,
+                       uint64_t blob_id, uint32_t data_res_id,
+                       uint32_t data_off)
+{
+   if (!texture_id || !blob_id)
+      return NPT_E_INVALIDARG;
+
+   void *texture = npt_context_lookup_object(ctx, NULL, texture_id,
+                                             NPT_OBJECT_TYPE_IUNKNOWN);
+   if (!texture) {
+      npt_log("shared: export: texture id 0x%016" PRIx64 " not found",
+              texture_id);
+      return NPT_E_INVALIDARG;
+   }
+
+   /* Export the texture's shared descriptor: D3D12 resources through
+    * the device's CreateSharedHandle, D3D11 textures through
+    * IDXGIResource::GetSharedHandle.
+    *
+    * A GetSharedHandle descriptor belongs to the exporting resource and
+    * lives as long as it does.  A CreateSharedHandle one is NT-style:
+    * it owns its own fd and lives until closed, so it is closed here
+    * once its contents are copied out. */
+   HANDLE handle = 0;
+   HRESULT hr;
+   bool nt_handle = false;
+   void *res12 = NULL;
+   if (NPT_SUCCEEDED(npt_com_query_interface(texture,
+                                             &NPT_IID_ID3D12Resource,
+                                             &res12)) && res12) {
+      void *dev12 = NULL;
+      PFN_ID3D12DeviceChild_GetDevice get_dev12 =
+         NPT_COM_VTBL_FUNC(PFN_ID3D12DeviceChild_GetDevice,
+                           npt_com_vtable(res12),
+                           NPT_VTBL_ID3D12DeviceChild_GetDevice);
+      hr = get_dev12(res12, &NPT_IID_ID3D12Device, &dev12);
+      if (NPT_FAILED(hr) || !dev12) {
+         npt_com_release(res12);
+         npt_log("shared: export: blob_id %" PRIu64 " GetDevice failed",
+                 blob_id);
+         return NPT_E_FAIL;
+      }
+
+      PFN_ID3D12Device_CreateSharedHandle create_shared =
+         NPT_COM_VTBL_FUNC(PFN_ID3D12Device_CreateSharedHandle,
+                           npt_com_vtable(dev12),
+                           NPT_VTBL_ID3D12Device_CreateSharedHandle);
+      hr = create_shared(dev12, res12, NULL, 0x10000000u, NULL, &handle);
+      nt_handle = true;
+      npt_com_release(dev12);
+      npt_com_release(res12);
+   } else {
+      void *dxgi_res = NULL;
+      if (NPT_FAILED(npt_com_query_interface(texture, &NPT_IID_IDXGIResource,
+                                             &dxgi_res)) || !dxgi_res) {
+         npt_log("shared: export: blob_id %" PRIu64 " has no IDXGIResource",
+                 blob_id);
+         return NPT_E_FAIL;
+      }
+
+      PFN_IDXGIResource_GetSharedHandle get_shared =
+         NPT_COM_VTBL_FUNC(PFN_IDXGIResource_GetSharedHandle,
+                           npt_com_vtable(dxgi_res),
+                           NPT_VTBL_IDXGIResource_GetSharedHandle);
+      hr = get_shared(dxgi_res, &handle);
+      npt_com_release(dxgi_res);
+   }
+
+   if (NPT_FAILED(hr) || !handle) {
+      npt_log("shared: export: blob_id %" PRIu64
+              " shared-handle export failed (hr=0x%x)", blob_id, hr);
+      return NPT_FAILED(hr) ? hr : NPT_E_FAIL;
+   }
+
+   hr = npt_shared_export_handle(ctx, blob_id, data_res_id, data_off, handle);
+   if (nt_handle)
+      npt_shared_handle_close(handle);
+   return hr;
 }
 
 HRESULT

@@ -90,6 +90,10 @@ struct npt_d3d_library {
    void *(*pfn_event_create)(int manual_reset, int initial_state);
    void  (*pfn_event_close)(void *handle);
    int   (*pfn_event_dup_fd)(void *handle);
+   /* Darwin: CloseHandle analog for the NT-style handles the backend's
+    * CreateSharedHandle family vends (each owns its own fd).  NULL on a
+    * backend without one (dxmt has no D3D12 sharing). */
+   int   (*pfn_shared_handle_close)(void *handle);
    /* Optional, darwin: same contract as the vkd3d dmabuf twin below.
     * NULL => CREATE_HEAP_FROM_SHMEM fails cleanly (sync-map fallback). */
    PFN_npt_lib_darwin_open_existing_heap_from_fd pfn_darwin_open_existing_heap_from_fd;
