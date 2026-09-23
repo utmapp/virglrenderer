@@ -6078,6 +6078,8 @@ npt_decode_ID3D12Device2_CreatePipelineState_args_temp(struct npt_cs_decoder *de
 static inline void
 npt_replace_ID3D12Device2_CreatePipelineState_args_handle(struct npt_dispatch_context *ctx, struct npt_command_ID3D12Device2_CreatePipelineState *args)
 {
+    if (args->pDesc)
+        npt_replace_D3D12_PIPELINE_STATE_STREAM_DESC_handle(ctx, (D3D12_PIPELINE_STATE_STREAM_DESC *)args->pDesc);
 }
 
 static inline void

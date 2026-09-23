@@ -758,9 +758,6 @@ static inline void npt_replace_D3D12_COMPUTE_PIPELINE_STATE_DESC_handle(struct n
 static inline size_t npt_sizeof_D3D12_RT_FORMAT_ARRAY(const D3D12_RT_FORMAT_ARRAY *val, int max_mode);
 static inline void npt_encode_D3D12_RT_FORMAT_ARRAY(struct npt_cs_encoder *enc, const D3D12_RT_FORMAT_ARRAY *val);
 static inline void npt_decode_D3D12_RT_FORMAT_ARRAY(struct npt_cs_decoder *dec, D3D12_RT_FORMAT_ARRAY *val);
-static inline size_t npt_sizeof_D3D12_PIPELINE_STATE_STREAM_DESC(const D3D12_PIPELINE_STATE_STREAM_DESC *val, int max_mode);
-static inline void npt_encode_D3D12_PIPELINE_STATE_STREAM_DESC(struct npt_cs_encoder *enc, const D3D12_PIPELINE_STATE_STREAM_DESC *val);
-static inline void npt_decode_D3D12_PIPELINE_STATE_STREAM_DESC(struct npt_cs_decoder *dec, D3D12_PIPELINE_STATE_STREAM_DESC *val);
 static inline size_t npt_sizeof_D3D12_FEATURE_DATA_D3D12_OPTIONS(const D3D12_FEATURE_DATA_D3D12_OPTIONS *val, int max_mode);
 static inline void npt_encode_D3D12_FEATURE_DATA_D3D12_OPTIONS(struct npt_cs_encoder *enc, const D3D12_FEATURE_DATA_D3D12_OPTIONS *val);
 static inline void npt_decode_D3D12_FEATURE_DATA_D3D12_OPTIONS(struct npt_cs_decoder *dec, D3D12_FEATURE_DATA_D3D12_OPTIONS *val);
@@ -1521,6 +1518,10 @@ static inline void npt_decode_D3D12_DISPATCH_MESH_ARGUMENTS(struct npt_cs_decode
 static inline size_t npt_sizeof_SIZE(const SIZE *val, int max_mode);
 static inline void npt_encode_SIZE(struct npt_cs_encoder *enc, const SIZE *val);
 static inline void npt_decode_SIZE(struct npt_cs_decoder *dec, SIZE *val);
+static inline size_t npt_sizeof_D3D12_PIPELINE_STATE_STREAM_DESC(const D3D12_PIPELINE_STATE_STREAM_DESC *val, int max_mode);
+static inline void npt_encode_D3D12_PIPELINE_STATE_STREAM_DESC(struct npt_cs_encoder *enc, const D3D12_PIPELINE_STATE_STREAM_DESC *val);
+static inline void npt_decode_D3D12_PIPELINE_STATE_STREAM_DESC(struct npt_cs_decoder *dec, D3D12_PIPELINE_STATE_STREAM_DESC *val);
+static inline void npt_replace_D3D12_PIPELINE_STATE_STREAM_DESC_handle(struct npt_dispatch_context *ctx, D3D12_PIPELINE_STATE_STREAM_DESC *val);
 
 /* D3D11_AUTHENTICATED_PROTECTION_FLAGS__anon_0 (struct) */
 
@@ -10882,50 +10883,6 @@ npt_decode_D3D12_RT_FORMAT_ARRAY(struct npt_cs_decoder *dec, D3D12_RT_FORMAT_ARR
     (void)npt_decode_array_count(dec, 8);
     npt_decode_DXGI_FORMAT_array(dec, (DXGI_FORMAT *)val->RTFormats, 8);
     npt_decode_UINT(dec, &val->NumRenderTargets);
-}
-
-/* D3D12_PIPELINE_STATE_STREAM_DESC (struct) */
-
-static inline size_t
-npt_sizeof_D3D12_PIPELINE_STATE_STREAM_DESC(const D3D12_PIPELINE_STATE_STREAM_DESC *val, int max_mode)
-{
-    size_t size = 0;
-    size += npt_sizeof_SIZE_T(&val->SizeInBytes, max_mode);
-    if (val->pPipelineStateSubobjectStream) {
-        size += npt_sizeof_array_count(0);
-        size += npt_sizeof_blob_array(val->pPipelineStateSubobjectStream, 0);
-    } else {
-        size += npt_sizeof_array_count(0);
-    }
-    return size;
-}
-
-static inline void
-npt_encode_D3D12_PIPELINE_STATE_STREAM_DESC(struct npt_cs_encoder *enc, const D3D12_PIPELINE_STATE_STREAM_DESC *val)
-{
-    npt_encode_SIZE_T(enc, &val->SizeInBytes);
-    if (val->pPipelineStateSubobjectStream) {
-        npt_encode_array_count(enc, 0);
-        npt_encode_blob_array(enc, val->pPipelineStateSubobjectStream, 0);
-    } else {
-        npt_encode_array_count(enc, 0);
-    }
-}
-
-static inline void
-npt_decode_D3D12_PIPELINE_STATE_STREAM_DESC(struct npt_cs_decoder *dec, D3D12_PIPELINE_STATE_STREAM_DESC *val)
-{
-    npt_decode_SIZE_T(dec, &val->SizeInBytes);
-    {
-        const uint64_t _blob_size = npt_decode_array_count_unchecked(dec);
-        if (_blob_size) {
-            val->pPipelineStateSubobjectStream = npt_cs_decoder_alloc_temp(dec, _blob_size);
-            if (!val->pPipelineStateSubobjectStream) return;
-            npt_decode_blob_array(dec, (void *)val->pPipelineStateSubobjectStream, _blob_size);
-        } else {
-            val->pPipelineStateSubobjectStream = NULL;
-        }
-    }
 }
 
 /* D3D12_FEATURE_DATA_D3D12_OPTIONS (struct) */
@@ -21875,6 +21832,12 @@ npt_decode_SIZE(struct npt_cs_decoder *dec, SIZE *val)
     npt_decode_LONG(dec, &val->cy);
 }
 
+
+/* Hand-written codecs (manual_codec); NPT_CODEC_IS_HOST guards their
+ * host-only replace pass. */
+#define NPT_CODEC_IS_HOST 1
+#include "npt_protocol_codec_D3D12_PIPELINE_STATE_STREAM_DESC.h"
+#undef NPT_CODEC_IS_HOST
 
 #pragma GCC diagnostic pop
 

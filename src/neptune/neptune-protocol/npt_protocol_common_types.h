@@ -12768,9 +12768,6 @@ static inline void npt_decode_D3D12_COMPUTE_PIPELINE_STATE_DESC(struct npt_cs_de
 static inline size_t npt_sizeof_D3D12_RT_FORMAT_ARRAY(const D3D12_RT_FORMAT_ARRAY *val, int max_mode);
 static inline void npt_encode_D3D12_RT_FORMAT_ARRAY(struct npt_cs_encoder *enc, const D3D12_RT_FORMAT_ARRAY *val);
 static inline void npt_decode_D3D12_RT_FORMAT_ARRAY(struct npt_cs_decoder *dec, D3D12_RT_FORMAT_ARRAY *val);
-static inline size_t npt_sizeof_D3D12_PIPELINE_STATE_STREAM_DESC(const D3D12_PIPELINE_STATE_STREAM_DESC *val, int max_mode);
-static inline void npt_encode_D3D12_PIPELINE_STATE_STREAM_DESC(struct npt_cs_encoder *enc, const D3D12_PIPELINE_STATE_STREAM_DESC *val);
-static inline void npt_decode_D3D12_PIPELINE_STATE_STREAM_DESC(struct npt_cs_decoder *dec, D3D12_PIPELINE_STATE_STREAM_DESC *val);
 static inline size_t npt_sizeof_D3D12_FEATURE_DATA_D3D12_OPTIONS(const D3D12_FEATURE_DATA_D3D12_OPTIONS *val, int max_mode);
 static inline void npt_encode_D3D12_FEATURE_DATA_D3D12_OPTIONS(struct npt_cs_encoder *enc, const D3D12_FEATURE_DATA_D3D12_OPTIONS *val);
 static inline void npt_decode_D3D12_FEATURE_DATA_D3D12_OPTIONS(struct npt_cs_decoder *dec, D3D12_FEATURE_DATA_D3D12_OPTIONS *val);
