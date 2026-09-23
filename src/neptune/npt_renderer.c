@@ -89,9 +89,17 @@ npt_capset_backend_caps(void)
              VIRGL_RENDERER_CAPSET_NEPTUNE_CAP_MAP_DEFAULT_BUFFERS |
              VIRGL_RENDERER_CAPSET_NEPTUNE_CAP_SHADER_CACHE;
    }
-   /* D3DMetal has none of the DXMT bits, but its shader front end
-    * (Metal Shader Converter) takes DXIL natively; DXMT parses DXBC only. */
+#if defined(__APPLE__)
+   /* D3DMetal, the darwin default slice.  It has none of the DXMT bits;
+    * its shader front end (Metal Shader Converter) takes DXIL natively,
+    * and it is the backend the UMD's DXIL path is validated on. */
    return VIRGL_RENDERER_CAPSET_NEPTUNE_CAP_DXIL;
+#else
+   /* Every D3D12 backend takes DXBC.  DXIL is claimed only for a backend
+    * the UMD's DXIL path is validated on, which no Linux backend is, and
+    * nothing a backend reports can stand in for that validation. */
+   return 0;
+#endif
 }
 
 size_t
