@@ -9,7 +9,12 @@
 #include "vkr_common.h"
 
 struct gbm_bo;
-struct vkr_mtl_shm;
+/* POSIX shm imported as host memory, backing memory the guest can map */
+struct vkr_shm {
+   int fd;
+   void *ptr;
+   size_t size;
+};
 
 struct vkr_device_memory {
    struct vkr_object base;
@@ -27,8 +32,8 @@ struct vkr_device_memory {
    /* udmabuf backing non-external mappable memory */
    int udmabuf_fd;
 
-   /* Metal buffer backed by POSIX shared memory */
-   struct vkr_mtl_shm *mtl_shm;
+   /* shm imported as host memory when the host cannot export an fd */
+   struct vkr_shm *shm;
 
    uint64_t allocation_size;
    uint32_t memory_type_index;

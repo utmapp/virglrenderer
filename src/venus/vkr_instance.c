@@ -183,17 +183,6 @@ vkr_dispatch_vkCreateInstance(struct vn_dispatch_context *dispatch,
       create_info->flags |= VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
       ext_names[ext_count++] = VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME;
    }
-
-   /* The Metal shared-memory allocator exports the underlying MTLDevice via
-    * vkExportMetalObjectsEXT (see vkr_metal_get_device).  VK_EXT_metal_objects
-    * requires the export intent to be declared at instance creation, otherwise
-    * the export violates VUID-VkExportMetalObjectsInfoEXT-pNext-06791. */
-   VkExportMetalObjectCreateInfoEXT export_metal_device = {
-      .sType = VK_STRUCTURE_TYPE_EXPORT_METAL_OBJECT_CREATE_INFO_EXT,
-      .pNext = create_info->pNext,
-      .exportObjectType = VK_EXPORT_METAL_OBJECT_TYPE_METAL_DEVICE_BIT_EXT,
-   };
-   create_info->pNext = &export_metal_device;
 #endif /* __APPLE__ */
 
    assert(layer_count <= ARRAY_SIZE(layer_names));

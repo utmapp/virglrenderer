@@ -286,10 +286,8 @@ vkr_physical_device_init_extensions(struct vkr_physical_device *physical_dev)
          physical_dev->EXT_image_drm_format_modifier = true;
       else if (!strcmp(props->extensionName, "VK_EXT_queue_family_foreign"))
          physical_dev->EXT_queue_family_foreign = true;
-      else if (!strcmp(props->extensionName, "VK_EXT_external_memory_metal"))
-         physical_dev->EXT_external_memory_metal = true;
-      else if (!strcmp(props->extensionName, "VK_EXT_metal_objects"))
-         physical_dev->EXT_metal_objects = true;
+      else if (!strcmp(props->extensionName, "VK_EXT_external_memory_host"))
+         physical_dev->EXT_external_memory_host = true;
       else if (!strcmp(props->extensionName, "VK_KHR_portability_subset"))
          physical_dev->KHR_portability_subset = true;
 
@@ -303,16 +301,17 @@ vkr_physical_device_init_extensions(struct vkr_physical_device *physical_dev)
 
    /* Advertise the extensions we emulate on top of a host that lacks them.
     *
-    * On macOS the host has VK_EXT_external_memory_metal instead of dma_buf.
-    * Device memory is backed by POSIX shm wrapped in an MTLBuffer and is
-    * handed to the guest as an fd, so the guest driver can use it exactly as
-    * it would a dma_buf, but the host Vulkan implementation must never see a
-    * dma_buf handle type.
+    * A host that cannot export memory as an fd, such as macOS, can still
+    * import host memory. Device memory is then backed by POSIX shm imported
+    * through VK_EXT_external_memory_host and handed to the guest as an fd, so
+    * the guest driver can use it exactly as it would a dma_buf, but the host
+    * Vulkan implementation must never see a dma_buf handle type.
     */
    VkExtensionProperties prop;
    uint32_t emulated_count = 0;
-   physical_dev->is_dma_buf_emulated =
-      !physical_dev->EXT_external_memory_dma_buf && physical_dev->EXT_external_memory_metal;
+   physical_dev->is_dma_buf_emulated = !physical_dev->EXT_external_memory_dma_buf &&
+                                       !physical_dev->KHR_external_memory_fd &&
+                                       physical_dev->EXT_external_memory_host;
    emulated_count += 2 * physical_dev->is_dma_buf_emulated;
    emulated_count += !physical_dev->EXT_image_drm_format_modifier;
    emulated_count += !physical_dev->EXT_queue_family_foreign;
