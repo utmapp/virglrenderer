@@ -26,10 +26,10 @@ struct npt_queue_sync {
    uint32_t ring_idx;
    uint64_t fence_id;
 
-   /* Non-NULL: an AUTO_RELEASE arm's transferred proxy reference; the
-    * worker releases it after the fence retires, so the signal handle
-    * the D3D library stored stays valid until it has been written.
-    * Held by pointer: the token may already map to a newer proxy. */
+   /* Non-NULL: the arm's transferred proxy reference; the worker
+    * releases it after the fence retires, so the signal handle the D3D
+    * library stored stays valid until it has been written.  Held by
+    * pointer: the token may already map to a newer proxy. */
    struct npt_event_proxy *release_proxy;
 
    /* Value-gated retirement (GATE_WAIT): retire only once

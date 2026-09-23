@@ -96,9 +96,9 @@ npt_queue_sync_retire(struct npt_queue *queue, struct npt_queue_sync *sync)
 {
    queue->context->retire_fence(queue->context->ctx_id,
                                  sync->ring_idx, sync->fence_id);
-   /* AUTO_RELEASE arm: the proxy reference was transferred to this
-    * entry at pairing; the fence has retired (the proxy fired), so the
-    * D3D library is done writing the signal handle -- release it. */
+   /* The arm's proxy reference was transferred to this entry at
+    * pairing; the fence has retired (the proxy fired), so the D3D
+    * library is done writing the signal handle -- release it. */
    npt_event_release_proxy(queue->context, sync->release_proxy);
    if (sync->check_fence)
       npt_d3d12_gate_release(sync->check_fence);

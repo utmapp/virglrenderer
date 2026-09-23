@@ -414,16 +414,18 @@ npt_event_arm(struct npt_context *ctx, uint64_t token, uint32_t ring_idx,
    struct npt_event_pending_fence *parked =
       event_take_parked_locked(ctx, ring_idx);
    if (parked) {
-      /* AUTO_RELEASE: transfer the arm reference to the sync-queue entry
-       * instead of unreffing, so the signal handle the D3D library stored
-       * stays valid until it has been written. */
-      if (!auto_release)
-         npt_event_proxy_unref_locked(ctx, pr, NULL);
+      /* The arm reference moves to the sync-queue entry, which releases
+       * it after retirement (npt_queue.c): the D3D library keeps the
+       * proxy's signal handle until the GPU work retires, and a guest
+       * RELEASE_EVENT can land before that (the swapchain WSI thread
+       * releases its single-use token right after queuing the present),
+       * so the arm's reference must outlive it or the eventfd closes
+       * under the backend's SetEvent. */
       mtx_unlock(&ctx->event_mutex);
 
       const struct npt_event_paired paired = {
          .fd = dup_fd,
-         .release_proxy = auto_release ? pr : NULL,
+         .release_proxy = pr,
       };
       event_pair_parked(ctx, parked, &paired);
       return true;
@@ -439,7 +441,6 @@ npt_event_arm(struct npt_context *ctx, uint64_t token, uint32_t ring_idx,
    p->ring_idx = ring_idx;
    p->dup_fd   = dup_fd;
    p->proxy    = pr;
-   p->auto_release = auto_release;
    list_addtail(&p->head, &ctx->event_pending_arms);
 
    mtx_unlock(&ctx->event_mutex);
@@ -593,12 +594,9 @@ npt_event_pop_arm_or_park_fence(struct npt_context *ctx, uint32_t ring_idx,
          out->check_value = p->check_value;
          list_del(&p->head);
          if (p->proxy) {
-            /* AUTO_RELEASE: transfer the arm reference to the caller's
-             * sync-queue entry (released after retirement, post-fire). */
-            if (p->auto_release)
-               out->release_proxy = p->proxy;
-            else
-               npt_event_proxy_unref_locked(ctx, p->proxy, NULL);
+            /* The arm reference moves to the caller's sync-queue entry,
+             * released after retirement (see npt_event_arm). */
+            out->release_proxy = p->proxy;
          }
          free(p);
          break;
