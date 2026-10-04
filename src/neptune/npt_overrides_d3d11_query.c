@@ -2,11 +2,12 @@
  * Copyright 2026 Turing Software LLC
  * SPDX-License-Identifier: MIT
  *
- * Host-side ID3D11DeviceContext::End hook that queues the query's
- * feedback entry for the next poll.  Begin and GetData need no host
- * hook: the guest bumps the slot version at Begin so a stale-flag
- * observation hits a version mismatch (S_FALSE), and the guest's
- * local GetData reads the feedback slot directly.
+ * Host-side ID3D11DeviceContext::End hook that counts the End and
+ * queues the query's feedback entry for the next poll.  Begin and
+ * GetData need no host hook: the guest counts Ends the same way and
+ * clears the slot under its new count before sending each End, so a
+ * stale-flag observation hits a version mismatch (S_FALSE), and the
+ * guest's local GetData reads the feedback slot directly.
  */
 
 #include "npt_context.h"

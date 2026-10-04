@@ -405,6 +405,11 @@ npt_feedback_query_mark_end(struct npt_context *ctx,
    if (match) {
       if (!match->host_ctx)
          match->host_ctx = host_ctx;
+      /* The version counts Ends, in lockstep with the guest, which
+       * bumps its own count before sending each End.  The poll stamps
+       * this on the result, so a result for an earlier End can never
+       * satisfy a guest GetData for a later one. */
+      match->version++;
       npt_feedback_set_pending_locked(ctx, match);
    }
    npt_feedback_state_unlock(ctx);
