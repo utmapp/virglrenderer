@@ -8,6 +8,7 @@
 #include "virglrenderer.h"
 #include "vrend_metal.h"
 #include "pipe/p_state.h"
+#include "util/u_format.h"
 #include "util/u_math.h"
 #include <sys/mman.h>
 #include <unistd.h>
@@ -144,6 +145,17 @@ bool virgl_metal_create_texture_from_shm(MTLDevice_id device,
    /* newBufferWithBytesNoCopy requires a page-aligned pointer and length */
    const size_t page_size = getpagesize();
    const size_t map_size = (size + page_size - 1) & ~(page_size - 1);
+
+   /* Metal asserts, aborting the whole process, on a linear texture whose
+    * rows or extent do not fit its buffer.  The layout comes from the guest,
+    * so refuse it here instead. */
+   const uint64_t min_row = util_format_get_stride(desc->format, desc->width);
+   if (!desc->width || !desc->height || !min_row || bytesPerRow < min_row ||
+       desc->offset % deviceAlignment ||
+       desc->offset + (uint64_t)bytesPerRow * (desc->height - 1) + min_row > map_size) {
+      [descriptor release];
+      return false;
+   }
 
    void *shm_ptr = mmap(NULL, map_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
    if (shm_ptr == MAP_FAILED) {
