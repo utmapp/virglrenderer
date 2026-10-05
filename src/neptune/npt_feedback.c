@@ -371,6 +371,41 @@ npt_feedback_query_register(struct npt_context *ctx,
    npt_feedback_state_unlock(ctx);
 }
 
+/* The context the poll calls GetData on.  End may arrive on a deferred
+ * context, but GetData is only valid on an immediate context and returns
+ * no result on a deferred one, so a deferred context resolves to its
+ * device's immediate context.  The immediate context lives as long as
+ * the device, like the raw host_ctx pointer kept here. */
+static void *
+npt_feedback_query_poll_ctx(void *host_ctx)
+{
+   PFN_ID3D11DeviceContext_GetType get_type =
+      NPT_COM_VTBL_FUNC(PFN_ID3D11DeviceContext_GetType,
+                        npt_com_vtable(host_ctx),
+                        NPT_VTBL_ID3D11DeviceContext_GetType);
+   if (get_type(host_ctx) != D3D11_DEVICE_CONTEXT_DEFERRED)
+      return host_ctx;
+
+   ID3D11Device *device = NULL;
+   PFN_ID3D11DeviceChild_GetDevice get_dev =
+      NPT_COM_VTBL_FUNC(PFN_ID3D11DeviceChild_GetDevice,
+                        npt_com_vtable(host_ctx),
+                        NPT_VTBL_ID3D11DeviceChild_GetDevice);
+   get_dev(host_ctx, &device);
+   if (!device)
+      return NULL;
+   ID3D11DeviceContext *imm = NULL;
+   PFN_ID3D11Device_GetImmediateContext get_imm =
+      NPT_COM_VTBL_FUNC(PFN_ID3D11Device_GetImmediateContext,
+                        npt_com_vtable(device),
+                        NPT_VTBL_ID3D11Device_GetImmediateContext);
+   get_imm(device, &imm);
+   if (imm)
+      npt_com_release(imm);
+   npt_com_release(device);
+   return imm;
+}
+
 void
 npt_feedback_query_mark_end(struct npt_context *ctx,
                             void *host_ctx,
@@ -404,7 +439,7 @@ npt_feedback_query_mark_end(struct npt_context *ctx,
    }
    if (match) {
       if (!match->host_ctx)
-         match->host_ctx = host_ctx;
+         match->host_ctx = npt_feedback_query_poll_ctx(host_ctx);
       /* The version counts Ends, in lockstep with the guest, which
        * bumps its own count before sending each End.  The poll stamps
        * this on the result, so a result for an earlier End can never
