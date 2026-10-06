@@ -299,19 +299,22 @@ npt_ring_cond_wait_ns(struct npt_ring *ring, uint64_t ns)
 #endif
 }
 
+/* Relax passes below this many yield; from it on they sleep. */
+#define NPT_RING_RELAX_SLEEP_ITER 16u
+
 static void
 npt_ring_relax(uint32_t *iter)
 {
-   const uint32_t busy_wait_order = 4;
    const uint32_t base_sleep_us = 10;
 
    (*iter)++;
-   if (*iter < (1u << busy_wait_order)) {
+   if (*iter < NPT_RING_RELAX_SLEEP_ITER) {
       thrd_yield();
       return;
    }
 
-   const uint32_t shift = util_last_bit(*iter) - busy_wait_order - 1;
+   const uint32_t shift =
+      util_last_bit(*iter) - util_last_bit(NPT_RING_RELAX_SLEEP_ITER);
    const uint32_t us = base_sleep_us << shift;
    const struct timespec ts = {
       .tv_sec = us / 1000000,
@@ -456,7 +459,12 @@ npt_ring_thread(void *arg)
    }
 #endif
 
-   uint64_t last_submit = npt_ring_now();
+   /* The idle timeout is measured from the first sleeping relax pass
+    * after the last submit, not from the submit itself, so the clock is
+    * read only on passes that sleep anyway.  The yield passes before the
+    * first sleep add microseconds to a millisecond timeout. */
+   uint64_t idle_since = 0;
+   bool idle_timed = false;
    uint32_t relax_iter = 0;
    int ret = 0;
    while (ring->started) {
@@ -470,7 +478,7 @@ npt_ring_thread(void *arg)
       /* An empty ring past the idle timeout waits; feedback decides only
        * whether the wait is bounded by the poll cadence. */
       bool notified = false;
-      if (npt_ring_now() >= last_submit + ring->idle_timeout) {
+      if (idle_timed && npt_ring_now() >= idle_since + ring->idle_timeout) {
          const uint64_t idle_t0 =
             npt_profile_enabled() ? npt_profile_now_ns() : 0;
 
@@ -538,8 +546,8 @@ npt_ring_thread(void *arg)
       }
 
       if (notified) {
-         last_submit = npt_ring_now();
          relax_iter = 0;
+         idle_timed = false;
       }
 
       const uint32_t cmd_size = npt_ring_load_tail(ring) - ring->buffer.cur;
@@ -559,9 +567,14 @@ npt_ring_thread(void *arg)
             break;
          }
 
-         last_submit = npt_ring_now();
          relax_iter = 0;
+         idle_timed = false;
       } else {
+         if (!idle_timed && relax_iter + 1 >= NPT_RING_RELAX_SLEEP_ITER) {
+            idle_since = npt_ring_now();
+            idle_timed = true;
+         }
+
          /* Buffer empty.  Catch a driver bug where the guest waits
           * on a seqno this ring can't reach. */
          uint32_t wait_ring_seqno = 0;
@@ -587,9 +600,11 @@ npt_ring_thread(void *arg)
 
          /* Cap relax_iter while feedback is pending: GPU execution
           * of a queued Signal lags by ms, so longer sleeps would
-          * miss the value advancing.  16 keeps the next sleep ~10 us. */
-         if (npt_ring_feedback_pending(ctx) && relax_iter > 16)
-            relax_iter = 16;
+          * miss the value advancing.  The cap keeps the next sleep at
+          * the shortest, ~10 us. */
+         if (npt_ring_feedback_pending(ctx) &&
+             relax_iter > NPT_RING_RELAX_SLEEP_ITER)
+            relax_iter = NPT_RING_RELAX_SLEEP_ITER;
 
          const uint64_t relax_t0 =
             npt_profile_enabled() ? npt_profile_now_ns() : 0;
