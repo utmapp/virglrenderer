@@ -862,6 +862,14 @@ npt_context_get_wait_ring_seqno(struct npt_context *ctx,
                                 uint64_t ring_id,
                                 uint32_t *out_seqno)
 {
+   /* Same lockless check as on_ring_seqno_update: .id is published
+    * under the mutex with release semantics, so an acquire load that
+    * names another ring, or none, needs no lock.  Only a ring that is
+    * being waited on takes the mutex to read the seqno. */
+   if (likely(atomic_load_explicit(&ctx->wait_ring.id,
+                                   memory_order_acquire) != ring_id))
+      return false;
+
    bool wait_ring = false;
    mtx_lock(&ctx->wait_ring.mutex);
    if (ctx->wait_ring.id == ring_id) {
