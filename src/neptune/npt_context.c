@@ -328,9 +328,11 @@ static inline uint32_t
 npt_lookup_cache_slot(uint64_t id)
 {
    /* ids are COM pointers (16-byte aligned) or small monotonic guest
-    * counters; fold the useful bits down. */
-   return (uint32_t)((id >> 4) ^ (id >> 16) ^ (id >> 28)) &
-          (NPT_CS_LOOKUP_CACHE_SIZE - 1);
+    * counters.  Fibonacci hashing: the multiply mixes every input bit into
+    * the top bits, so aligned pointers and consecutive counters both spread
+    * evenly across the slots. */
+   return (uint32_t)((id * 0x9E3779B97F4A7C15ull) >>
+                     (64u - NPT_CS_LOOKUP_CACHE_BITS));
 }
 
 /* On a non-permissive failure of a nonzero id, sets *miss and leaves
