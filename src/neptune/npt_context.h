@@ -154,12 +154,15 @@ struct npt_context {
     * time, and runs on the ring thread that settles its last watch. */
    mtx_t deferred_mutex;
    struct list_head deferred_releases;
-   /* Bumped (release) whenever an id leaves the table or changes type;
-    * decoders compare it (acquire) to validate their private lookup
-    * cache (npt_cs.h).  Registration of a NEW id never bumps it: a
-    * cache can only hold ids that were present, and a fresh id is a
-    * miss until first looked up. */
-   _Atomic uint64_t object_gen;
+   /* One generation per decoder lookup-cache slot (npt_cs.h), bumped
+    * (release) when an id hashing to that slot leaves the table or
+    * changes type; a cache entry is valid only while its slot's
+    * generation still equals the one it was filled under (acquire).
+    * Per slot so that one id leaving the table invalidates one entry
+    * per decoder, not every decoder's whole cache.  Registration of a
+    * NEW id never bumps: a cache can only hold ids that were present,
+    * and a fresh id is a miss until first looked up. */
+   _Atomic uint64_t object_gen[NPT_CS_LOOKUP_CACHE_SIZE];
 
    mtx_t pending_blob_mutex;
    struct hash_table *pending_blob_table;  /* blob_id -> npt_pending_blob */

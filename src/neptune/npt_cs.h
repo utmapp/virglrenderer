@@ -189,15 +189,17 @@ struct npt_cs_decoder_saved_state {
  * Every ring thread owns one decoder, so this is private to the thread
  * and a hit touches no shared cache line -- the table's mutex would cost
  * every ring thread an exclusive line acquisition per handle argument.
- * Direct-mapped; flushed whole when the context's object generation moves
- * (any unregister / type change).  Sized for a frame's working set, since
- * a conflict miss costs the table mutex.  Lives inside the heap-allocated
- * ring and context, never on a stack. */
+ * Direct-mapped; an entry is invalidated when its slot's generation in the
+ * context moves (an unregister / type change of an id hashing there).
+ * Sized for a frame's working set, since a conflict miss costs the table
+ * mutex.  Lives inside the heap-allocated ring and context, never on a
+ * stack. */
 #define NPT_CS_LOOKUP_CACHE_BITS 12u
 #define NPT_CS_LOOKUP_CACHE_SIZE (1u << NPT_CS_LOOKUP_CACHE_BITS)
 struct npt_cs_lookup_entry {
    uint64_t id;
    void *host_ptr;
+   uint64_t gen;   /* the slot's npt_context.object_gen when filled */
    uint32_t type;
 };
 
@@ -213,7 +215,6 @@ struct npt_cs_decoder {
 
    struct npt_cs_decoder_temp_pool temp_pool;
 
-   uint64_t lookup_gen;
    struct npt_cs_lookup_entry lookup_cache[NPT_CS_LOOKUP_CACHE_SIZE];
 
    struct npt_cs_decoder_saved_state saved_state;
