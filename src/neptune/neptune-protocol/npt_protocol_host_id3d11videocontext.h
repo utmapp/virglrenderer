@@ -585,14 +585,12 @@ npt_decode_ID3D11VideoContext_SubmitDecoderBuffers_args_temp(struct npt_cs_decod
     }
     npt_decode_UINT(dec, &args->NumBuffers);
     uint64_t _cnt_pBufferDesc = 0;
-    if (npt_peek_array_count(dec)) {
-        _cnt_pBufferDesc = npt_decode_array_count_unchecked(dec);
-        args->pBufferDesc = npt_cs_decoder_alloc_temp_array(dec, sizeof(D3D11_VIDEO_DECODER_BUFFER_DESC), _cnt_pBufferDesc);
+    if (npt_decode_counted_pointer_count(dec, &_cnt_pBufferDesc)) {
+        args->pBufferDesc = npt_cs_decoder_alloc_temp_array(dec, sizeof(D3D11_VIDEO_DECODER_BUFFER_DESC), _cnt_pBufferDesc ? _cnt_pBufferDesc : 1);
         if (!args->pBufferDesc) return;
         for (uint32_t _i = 0; _i < (uint32_t)_cnt_pBufferDesc; _i++)
             npt_decode_D3D11_VIDEO_DECODER_BUFFER_DESC(dec, (D3D11_VIDEO_DECODER_BUFFER_DESC *)&args->pBufferDesc[_i]);
     } else {
-        (void)npt_decode_array_count_unchecked(dec); /* consume the 0 */
         args->pBufferDesc = NULL;
     }
     /* A counted array must carry every element the callee will read. */
@@ -3576,13 +3574,11 @@ npt_decode_ID3D11VideoContext_VideoProcessorSetStreamPalette_args_temp(struct np
     npt_decode_UINT(dec, &args->StreamIndex);
     npt_decode_UINT(dec, &args->Count);
     uint64_t _cnt_pEntries = 0;
-    if (npt_peek_array_count(dec)) {
-        _cnt_pEntries = npt_decode_array_count_unchecked(dec);
-        args->pEntries = npt_cs_decoder_alloc_temp_array(dec, sizeof(UINT), _cnt_pEntries);
+    if (npt_decode_counted_pointer_count(dec, &_cnt_pEntries)) {
+        args->pEntries = npt_cs_decoder_alloc_temp_array(dec, sizeof(UINT), _cnt_pEntries ? _cnt_pEntries : 1);
         if (!args->pEntries) return;
         npt_decode_UINT_array(dec, (UINT *)args->pEntries, _cnt_pEntries);
     } else {
-        (void)npt_decode_array_count_unchecked(dec); /* consume the 0 */
         args->pEntries = NULL;
     }
     /* A counted array must carry every element the callee will read. */
@@ -6435,14 +6431,12 @@ npt_decode_ID3D11VideoContext_VideoProcessorBlt_args_temp(struct npt_cs_decoder 
     npt_decode_UINT(dec, &args->OutputFrame);
     npt_decode_UINT(dec, &args->StreamCount);
     uint64_t _cnt_pStreams = 0;
-    if (npt_peek_array_count(dec)) {
-        _cnt_pStreams = npt_decode_array_count_unchecked(dec);
-        args->pStreams = npt_cs_decoder_alloc_temp_array(dec, sizeof(D3D11_VIDEO_PROCESSOR_STREAM), _cnt_pStreams);
+    if (npt_decode_counted_pointer_count(dec, &_cnt_pStreams)) {
+        args->pStreams = npt_cs_decoder_alloc_temp_array(dec, sizeof(D3D11_VIDEO_PROCESSOR_STREAM), _cnt_pStreams ? _cnt_pStreams : 1);
         if (!args->pStreams) return;
         for (uint32_t _i = 0; _i < (uint32_t)_cnt_pStreams; _i++)
             npt_decode_D3D11_VIDEO_PROCESSOR_STREAM(dec, (D3D11_VIDEO_PROCESSOR_STREAM *)&args->pStreams[_i]);
     } else {
-        (void)npt_decode_array_count_unchecked(dec); /* consume the 0 */
         args->pStreams = NULL;
     }
     /* A counted array must carry every element the callee will read. */
@@ -8204,14 +8198,12 @@ npt_decode_ID3D11VideoContext1_SubmitDecoderBuffers1_args_temp(struct npt_cs_dec
     }
     npt_decode_UINT(dec, &args->NumBuffers);
     uint64_t _cnt_pBufferDesc = 0;
-    if (npt_peek_array_count(dec)) {
-        _cnt_pBufferDesc = npt_decode_array_count_unchecked(dec);
-        args->pBufferDesc = npt_cs_decoder_alloc_temp_array(dec, sizeof(D3D11_VIDEO_DECODER_BUFFER_DESC1), _cnt_pBufferDesc);
+    if (npt_decode_counted_pointer_count(dec, &_cnt_pBufferDesc)) {
+        args->pBufferDesc = npt_cs_decoder_alloc_temp_array(dec, sizeof(D3D11_VIDEO_DECODER_BUFFER_DESC1), _cnt_pBufferDesc ? _cnt_pBufferDesc : 1);
         if (!args->pBufferDesc) return;
         for (uint32_t _i = 0; _i < (uint32_t)_cnt_pBufferDesc; _i++)
             npt_decode_D3D11_VIDEO_DECODER_BUFFER_DESC1(dec, (D3D11_VIDEO_DECODER_BUFFER_DESC1 *)&args->pBufferDesc[_i]);
     } else {
-        (void)npt_decode_array_count_unchecked(dec); /* consume the 0 */
         args->pBufferDesc = NULL;
     }
     /* A counted array must carry every element the callee will read. */
@@ -9965,14 +9957,12 @@ npt_decode_ID3D11VideoContext1_VideoProcessorGetBehaviorHints_args_temp(struct n
     npt_decode_DXGI_FORMAT(dec, &args->OutputFormat);
     npt_decode_UINT(dec, &args->StreamCount);
     uint64_t _cnt_pStreams = 0;
-    if (npt_peek_array_count(dec)) {
-        _cnt_pStreams = npt_decode_array_count_unchecked(dec);
-        args->pStreams = npt_cs_decoder_alloc_temp_array(dec, sizeof(D3D11_VIDEO_PROCESSOR_STREAM_BEHAVIOR_HINT), _cnt_pStreams);
+    if (npt_decode_counted_pointer_count(dec, &_cnt_pStreams)) {
+        args->pStreams = npt_cs_decoder_alloc_temp_array(dec, sizeof(D3D11_VIDEO_PROCESSOR_STREAM_BEHAVIOR_HINT), _cnt_pStreams ? _cnt_pStreams : 1);
         if (!args->pStreams) return;
         for (uint32_t _i = 0; _i < (uint32_t)_cnt_pStreams; _i++)
             npt_decode_D3D11_VIDEO_PROCESSOR_STREAM_BEHAVIOR_HINT(dec, (D3D11_VIDEO_PROCESSOR_STREAM_BEHAVIOR_HINT *)&args->pStreams[_i]);
     } else {
-        (void)npt_decode_array_count_unchecked(dec); /* consume the 0 */
         args->pStreams = NULL;
     }
 
@@ -10723,13 +10713,11 @@ npt_decode_ID3D11VideoContext3_DecoderBeginFrame1_args_temp(struct npt_cs_decode
     }
     npt_decode_UINT(dec, &args->NumComponentHistograms);
     uint64_t _cnt_pHistogramOffsets = 0;
-    if (npt_peek_array_count(dec)) {
-        _cnt_pHistogramOffsets = npt_decode_array_count_unchecked(dec);
-        args->pHistogramOffsets = npt_cs_decoder_alloc_temp_array(dec, sizeof(UINT), _cnt_pHistogramOffsets);
+    if (npt_decode_counted_pointer_count(dec, &_cnt_pHistogramOffsets)) {
+        args->pHistogramOffsets = npt_cs_decoder_alloc_temp_array(dec, sizeof(UINT), _cnt_pHistogramOffsets ? _cnt_pHistogramOffsets : 1);
         if (!args->pHistogramOffsets) return;
         npt_decode_UINT_array(dec, (UINT *)args->pHistogramOffsets, _cnt_pHistogramOffsets);
     } else {
-        (void)npt_decode_array_count_unchecked(dec); /* consume the 0 */
         args->pHistogramOffsets = NULL;
     }
     uint64_t _cnt_ppHistogramBuffers = npt_decode_array_count_unchecked(dec);
@@ -10893,14 +10881,12 @@ npt_decode_ID3D11VideoContext3_SubmitDecoderBuffers2_args_temp(struct npt_cs_dec
     }
     npt_decode_UINT(dec, &args->NumBuffers);
     uint64_t _cnt_pBufferDesc = 0;
-    if (npt_peek_array_count(dec)) {
-        _cnt_pBufferDesc = npt_decode_array_count_unchecked(dec);
-        args->pBufferDesc = npt_cs_decoder_alloc_temp_array(dec, sizeof(D3D11_VIDEO_DECODER_BUFFER_DESC2), _cnt_pBufferDesc);
+    if (npt_decode_counted_pointer_count(dec, &_cnt_pBufferDesc)) {
+        args->pBufferDesc = npt_cs_decoder_alloc_temp_array(dec, sizeof(D3D11_VIDEO_DECODER_BUFFER_DESC2), _cnt_pBufferDesc ? _cnt_pBufferDesc : 1);
         if (!args->pBufferDesc) return;
         for (uint32_t _i = 0; _i < (uint32_t)_cnt_pBufferDesc; _i++)
             npt_decode_D3D11_VIDEO_DECODER_BUFFER_DESC2(dec, (D3D11_VIDEO_DECODER_BUFFER_DESC2 *)&args->pBufferDesc[_i]);
     } else {
-        (void)npt_decode_array_count_unchecked(dec); /* consume the 0 */
         args->pBufferDesc = NULL;
     }
     /* A counted array must carry every element the callee will read. */

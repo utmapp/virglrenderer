@@ -47,25 +47,21 @@ npt_decode_ID3D12CommandQueue_UpdateTileMappings_args_temp(struct npt_cs_decoder
     }
     npt_decode_UINT(dec, &args->NumResourceRegions);
     uint64_t _cnt_pResourceRegionStartCoordinates = 0;
-    if (npt_peek_array_count(dec)) {
-        _cnt_pResourceRegionStartCoordinates = npt_decode_array_count_unchecked(dec);
-        args->pResourceRegionStartCoordinates = npt_cs_decoder_alloc_temp_array(dec, sizeof(D3D12_TILED_RESOURCE_COORDINATE), _cnt_pResourceRegionStartCoordinates);
+    if (npt_decode_counted_pointer_count(dec, &_cnt_pResourceRegionStartCoordinates)) {
+        args->pResourceRegionStartCoordinates = npt_cs_decoder_alloc_temp_array(dec, sizeof(D3D12_TILED_RESOURCE_COORDINATE), _cnt_pResourceRegionStartCoordinates ? _cnt_pResourceRegionStartCoordinates : 1);
         if (!args->pResourceRegionStartCoordinates) return;
         for (uint32_t _i = 0; _i < (uint32_t)_cnt_pResourceRegionStartCoordinates; _i++)
             npt_decode_D3D12_TILED_RESOURCE_COORDINATE(dec, (D3D12_TILED_RESOURCE_COORDINATE *)&args->pResourceRegionStartCoordinates[_i]);
     } else {
-        (void)npt_decode_array_count_unchecked(dec); /* consume the 0 */
         args->pResourceRegionStartCoordinates = NULL;
     }
     uint64_t _cnt_pResourceRegionSizes = 0;
-    if (npt_peek_array_count(dec)) {
-        _cnt_pResourceRegionSizes = npt_decode_array_count_unchecked(dec);
-        args->pResourceRegionSizes = npt_cs_decoder_alloc_temp_array(dec, sizeof(D3D12_TILE_REGION_SIZE), _cnt_pResourceRegionSizes);
+    if (npt_decode_counted_pointer_count(dec, &_cnt_pResourceRegionSizes)) {
+        args->pResourceRegionSizes = npt_cs_decoder_alloc_temp_array(dec, sizeof(D3D12_TILE_REGION_SIZE), _cnt_pResourceRegionSizes ? _cnt_pResourceRegionSizes : 1);
         if (!args->pResourceRegionSizes) return;
         for (uint32_t _i = 0; _i < (uint32_t)_cnt_pResourceRegionSizes; _i++)
             npt_decode_D3D12_TILE_REGION_SIZE(dec, (D3D12_TILE_REGION_SIZE *)&args->pResourceRegionSizes[_i]);
     } else {
-        (void)npt_decode_array_count_unchecked(dec); /* consume the 0 */
         args->pResourceRegionSizes = NULL;
     }
     {
@@ -75,33 +71,27 @@ npt_decode_ID3D12CommandQueue_UpdateTileMappings_args_temp(struct npt_cs_decoder
     }
     npt_decode_UINT(dec, &args->NumRanges);
     uint64_t _cnt_pRangeFlags = 0;
-    if (npt_peek_array_count(dec)) {
-        _cnt_pRangeFlags = npt_decode_array_count_unchecked(dec);
-        args->pRangeFlags = npt_cs_decoder_alloc_temp_array(dec, sizeof(D3D12_TILE_RANGE_FLAGS), _cnt_pRangeFlags);
+    if (npt_decode_counted_pointer_count(dec, &_cnt_pRangeFlags)) {
+        args->pRangeFlags = npt_cs_decoder_alloc_temp_array(dec, sizeof(D3D12_TILE_RANGE_FLAGS), _cnt_pRangeFlags ? _cnt_pRangeFlags : 1);
         if (!args->pRangeFlags) return;
         npt_decode_D3D12_TILE_RANGE_FLAGS_array(dec, (D3D12_TILE_RANGE_FLAGS *)args->pRangeFlags, _cnt_pRangeFlags);
     } else {
-        (void)npt_decode_array_count_unchecked(dec); /* consume the 0 */
         args->pRangeFlags = NULL;
     }
     uint64_t _cnt_pHeapRangeStartOffsets = 0;
-    if (npt_peek_array_count(dec)) {
-        _cnt_pHeapRangeStartOffsets = npt_decode_array_count_unchecked(dec);
-        args->pHeapRangeStartOffsets = npt_cs_decoder_alloc_temp_array(dec, sizeof(UINT), _cnt_pHeapRangeStartOffsets);
+    if (npt_decode_counted_pointer_count(dec, &_cnt_pHeapRangeStartOffsets)) {
+        args->pHeapRangeStartOffsets = npt_cs_decoder_alloc_temp_array(dec, sizeof(UINT), _cnt_pHeapRangeStartOffsets ? _cnt_pHeapRangeStartOffsets : 1);
         if (!args->pHeapRangeStartOffsets) return;
         npt_decode_UINT_array(dec, (UINT *)args->pHeapRangeStartOffsets, _cnt_pHeapRangeStartOffsets);
     } else {
-        (void)npt_decode_array_count_unchecked(dec); /* consume the 0 */
         args->pHeapRangeStartOffsets = NULL;
     }
     uint64_t _cnt_pRangeTileCounts = 0;
-    if (npt_peek_array_count(dec)) {
-        _cnt_pRangeTileCounts = npt_decode_array_count_unchecked(dec);
-        args->pRangeTileCounts = npt_cs_decoder_alloc_temp_array(dec, sizeof(UINT), _cnt_pRangeTileCounts);
+    if (npt_decode_counted_pointer_count(dec, &_cnt_pRangeTileCounts)) {
+        args->pRangeTileCounts = npt_cs_decoder_alloc_temp_array(dec, sizeof(UINT), _cnt_pRangeTileCounts ? _cnt_pRangeTileCounts : 1);
         if (!args->pRangeTileCounts) return;
         npt_decode_UINT_array(dec, (UINT *)args->pRangeTileCounts, _cnt_pRangeTileCounts);
     } else {
-        (void)npt_decode_array_count_unchecked(dec); /* consume the 0 */
         args->pRangeTileCounts = NULL;
     }
     npt_decode_D3D12_TILE_MAPPING_FLAGS(dec, &args->Flags);

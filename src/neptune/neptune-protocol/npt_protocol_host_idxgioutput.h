@@ -2529,13 +2529,11 @@ npt_decode_IDXGIOutput5_DuplicateOutput1_args_temp(struct npt_cs_decoder *dec,
     npt_decode_UINT(dec, &args->Flags);
     npt_decode_UINT(dec, &args->SupportedFormatsCount);
     uint64_t _cnt_pSupportedFormats = 0;
-    if (npt_peek_array_count(dec)) {
-        _cnt_pSupportedFormats = npt_decode_array_count_unchecked(dec);
-        args->pSupportedFormats = npt_cs_decoder_alloc_temp_array(dec, sizeof(DXGI_FORMAT), _cnt_pSupportedFormats);
+    if (npt_decode_counted_pointer_count(dec, &_cnt_pSupportedFormats)) {
+        args->pSupportedFormats = npt_cs_decoder_alloc_temp_array(dec, sizeof(DXGI_FORMAT), _cnt_pSupportedFormats ? _cnt_pSupportedFormats : 1);
         if (!args->pSupportedFormats) return;
         npt_decode_DXGI_FORMAT_array(dec, (DXGI_FORMAT *)args->pSupportedFormats, _cnt_pSupportedFormats);
     } else {
-        (void)npt_decode_array_count_unchecked(dec); /* consume the 0 */
         args->pSupportedFormats = NULL;
     }
     {

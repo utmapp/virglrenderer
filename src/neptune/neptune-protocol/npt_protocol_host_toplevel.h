@@ -487,13 +487,11 @@ npt_decode_D3D11CreateDevice_args_temp(struct npt_cs_decoder *dec,
     }
     npt_decode_UINT(dec, &args->Flags);
     uint64_t _cnt_pFeatureLevels = 0;
-    if (npt_peek_array_count(dec)) {
-        _cnt_pFeatureLevels = npt_decode_array_count_unchecked(dec);
-        args->pFeatureLevels = npt_cs_decoder_alloc_temp_array(dec, sizeof(D3D_FEATURE_LEVEL), _cnt_pFeatureLevels);
+    if (npt_decode_counted_pointer_count(dec, &_cnt_pFeatureLevels)) {
+        args->pFeatureLevels = npt_cs_decoder_alloc_temp_array(dec, sizeof(D3D_FEATURE_LEVEL), _cnt_pFeatureLevels ? _cnt_pFeatureLevels : 1);
         if (!args->pFeatureLevels) return;
         npt_decode_D3D_FEATURE_LEVEL_array(dec, (D3D_FEATURE_LEVEL *)args->pFeatureLevels, _cnt_pFeatureLevels);
     } else {
-        (void)npt_decode_array_count_unchecked(dec); /* consume the 0 */
         args->pFeatureLevels = NULL;
     }
     npt_decode_UINT(dec, &args->FeatureLevels);
@@ -663,13 +661,11 @@ npt_decode_D3D11CreateDeviceAndSwapChain_args_temp(struct npt_cs_decoder *dec,
     }
     npt_decode_UINT(dec, &args->Flags);
     uint64_t _cnt_pFeatureLevels = 0;
-    if (npt_peek_array_count(dec)) {
-        _cnt_pFeatureLevels = npt_decode_array_count_unchecked(dec);
-        args->pFeatureLevels = npt_cs_decoder_alloc_temp_array(dec, sizeof(D3D_FEATURE_LEVEL), _cnt_pFeatureLevels);
+    if (npt_decode_counted_pointer_count(dec, &_cnt_pFeatureLevels)) {
+        args->pFeatureLevels = npt_cs_decoder_alloc_temp_array(dec, sizeof(D3D_FEATURE_LEVEL), _cnt_pFeatureLevels ? _cnt_pFeatureLevels : 1);
         if (!args->pFeatureLevels) return;
         npt_decode_D3D_FEATURE_LEVEL_array(dec, (D3D_FEATURE_LEVEL *)args->pFeatureLevels, _cnt_pFeatureLevels);
     } else {
-        (void)npt_decode_array_count_unchecked(dec); /* consume the 0 */
         args->pFeatureLevels = NULL;
     }
     npt_decode_UINT(dec, &args->FeatureLevels);
@@ -854,13 +850,11 @@ npt_decode_D3D11On12CreateDevice_args_temp(struct npt_cs_decoder *dec,
     }
     npt_decode_UINT(dec, &args->Flags);
     uint64_t _cnt_pFeatureLevels = 0;
-    if (npt_peek_array_count(dec)) {
-        _cnt_pFeatureLevels = npt_decode_array_count_unchecked(dec);
-        args->pFeatureLevels = npt_cs_decoder_alloc_temp_array(dec, sizeof(D3D_FEATURE_LEVEL), _cnt_pFeatureLevels);
+    if (npt_decode_counted_pointer_count(dec, &_cnt_pFeatureLevels)) {
+        args->pFeatureLevels = npt_cs_decoder_alloc_temp_array(dec, sizeof(D3D_FEATURE_LEVEL), _cnt_pFeatureLevels ? _cnt_pFeatureLevels : 1);
         if (!args->pFeatureLevels) return;
         npt_decode_D3D_FEATURE_LEVEL_array(dec, (D3D_FEATURE_LEVEL *)args->pFeatureLevels, _cnt_pFeatureLevels);
     } else {
-        (void)npt_decode_array_count_unchecked(dec); /* consume the 0 */
         args->pFeatureLevels = NULL;
     }
     npt_decode_UINT(dec, &args->FeatureLevels);

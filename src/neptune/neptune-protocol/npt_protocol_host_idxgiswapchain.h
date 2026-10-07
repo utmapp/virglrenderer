@@ -3967,13 +3967,11 @@ npt_decode_IDXGISwapChain3_ResizeBuffers1_args_temp(struct npt_cs_decoder *dec,
     npt_decode_DXGI_FORMAT(dec, &args->Format);
     npt_decode_UINT(dec, &args->SwapChainFlags);
     uint64_t _cnt_pCreationNodeMask = 0;
-    if (npt_peek_array_count(dec)) {
-        _cnt_pCreationNodeMask = npt_decode_array_count_unchecked(dec);
-        args->pCreationNodeMask = npt_cs_decoder_alloc_temp_array(dec, sizeof(UINT), _cnt_pCreationNodeMask);
+    if (npt_decode_counted_pointer_count(dec, &_cnt_pCreationNodeMask)) {
+        args->pCreationNodeMask = npt_cs_decoder_alloc_temp_array(dec, sizeof(UINT), _cnt_pCreationNodeMask ? _cnt_pCreationNodeMask : 1);
         if (!args->pCreationNodeMask) return;
         npt_decode_UINT_array(dec, (UINT *)args->pCreationNodeMask, _cnt_pCreationNodeMask);
     } else {
-        (void)npt_decode_array_count_unchecked(dec); /* consume the 0 */
         args->pCreationNodeMask = NULL;
     }
     uint64_t _cnt_ppPresentQueue = npt_decode_array_count_unchecked(dec);

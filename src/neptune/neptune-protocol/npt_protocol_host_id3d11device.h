@@ -205,14 +205,12 @@ npt_decode_ID3D11Device_CreateTexture1D_args_temp(struct npt_cs_decoder *dec,
         return;
     }
     uint64_t _cnt_pInitialData = 0;
-    if (npt_peek_array_count(dec)) {
-        _cnt_pInitialData = npt_decode_array_count_unchecked(dec);
-        args->pInitialData = npt_cs_decoder_alloc_temp_array(dec, sizeof(D3D11_SUBRESOURCE_DATA), _cnt_pInitialData);
+    if (npt_decode_counted_pointer_count(dec, &_cnt_pInitialData)) {
+        args->pInitialData = npt_cs_decoder_alloc_temp_array(dec, sizeof(D3D11_SUBRESOURCE_DATA), _cnt_pInitialData ? _cnt_pInitialData : 1);
         if (!args->pInitialData) return;
         for (uint32_t _i = 0; _i < (uint32_t)_cnt_pInitialData; _i++)
             npt_decode_D3D11_SUBRESOURCE_DATA(dec, (D3D11_SUBRESOURCE_DATA *)&args->pInitialData[_i]);
     } else {
-        (void)npt_decode_array_count_unchecked(dec); /* consume the 0 */
         args->pInitialData = NULL;
     }
     {
@@ -370,14 +368,12 @@ npt_decode_ID3D11Device_CreateTexture2D_args_temp(struct npt_cs_decoder *dec,
         return;
     }
     uint64_t _cnt_pInitialData = 0;
-    if (npt_peek_array_count(dec)) {
-        _cnt_pInitialData = npt_decode_array_count_unchecked(dec);
-        args->pInitialData = npt_cs_decoder_alloc_temp_array(dec, sizeof(D3D11_SUBRESOURCE_DATA), _cnt_pInitialData);
+    if (npt_decode_counted_pointer_count(dec, &_cnt_pInitialData)) {
+        args->pInitialData = npt_cs_decoder_alloc_temp_array(dec, sizeof(D3D11_SUBRESOURCE_DATA), _cnt_pInitialData ? _cnt_pInitialData : 1);
         if (!args->pInitialData) return;
         for (uint32_t _i = 0; _i < (uint32_t)_cnt_pInitialData; _i++)
             npt_decode_D3D11_SUBRESOURCE_DATA(dec, (D3D11_SUBRESOURCE_DATA *)&args->pInitialData[_i]);
     } else {
-        (void)npt_decode_array_count_unchecked(dec); /* consume the 0 */
         args->pInitialData = NULL;
     }
     {
@@ -535,14 +531,12 @@ npt_decode_ID3D11Device_CreateTexture3D_args_temp(struct npt_cs_decoder *dec,
         return;
     }
     uint64_t _cnt_pInitialData = 0;
-    if (npt_peek_array_count(dec)) {
-        _cnt_pInitialData = npt_decode_array_count_unchecked(dec);
-        args->pInitialData = npt_cs_decoder_alloc_temp_array(dec, sizeof(D3D11_SUBRESOURCE_DATA), _cnt_pInitialData);
+    if (npt_decode_counted_pointer_count(dec, &_cnt_pInitialData)) {
+        args->pInitialData = npt_cs_decoder_alloc_temp_array(dec, sizeof(D3D11_SUBRESOURCE_DATA), _cnt_pInitialData ? _cnt_pInitialData : 1);
         if (!args->pInitialData) return;
         for (uint32_t _i = 0; _i < (uint32_t)_cnt_pInitialData; _i++)
             npt_decode_D3D11_SUBRESOURCE_DATA(dec, (D3D11_SUBRESOURCE_DATA *)&args->pInitialData[_i]);
     } else {
-        (void)npt_decode_array_count_unchecked(dec); /* consume the 0 */
         args->pInitialData = NULL;
     }
     {
@@ -1305,14 +1299,12 @@ npt_decode_ID3D11Device_CreateInputLayout_args_temp(struct npt_cs_decoder *dec,
 {
     /* Decode input parameters from the wire */
     uint64_t _cnt_pInputElementDescs = 0;
-    if (npt_peek_array_count(dec)) {
-        _cnt_pInputElementDescs = npt_decode_array_count_unchecked(dec);
-        args->pInputElementDescs = npt_cs_decoder_alloc_temp_array(dec, sizeof(D3D11_INPUT_ELEMENT_DESC), _cnt_pInputElementDescs);
+    if (npt_decode_counted_pointer_count(dec, &_cnt_pInputElementDescs)) {
+        args->pInputElementDescs = npt_cs_decoder_alloc_temp_array(dec, sizeof(D3D11_INPUT_ELEMENT_DESC), _cnt_pInputElementDescs ? _cnt_pInputElementDescs : 1);
         if (!args->pInputElementDescs) return;
         for (uint32_t _i = 0; _i < (uint32_t)_cnt_pInputElementDescs; _i++)
             npt_decode_D3D11_INPUT_ELEMENT_DESC(dec, (D3D11_INPUT_ELEMENT_DESC *)&args->pInputElementDescs[_i]);
     } else {
-        (void)npt_decode_array_count_unchecked(dec); /* consume the 0 */
         args->pInputElementDescs = NULL;
     }
     npt_decode_UINT(dec, &args->NumElements);
@@ -1810,25 +1802,21 @@ npt_decode_ID3D11Device_CreateGeometryShaderWithStreamOutput_args_temp(struct np
     }
     npt_decode_SIZE_T(dec, &args->BytecodeLength);
     uint64_t _cnt_pSODeclaration = 0;
-    if (npt_peek_array_count(dec)) {
-        _cnt_pSODeclaration = npt_decode_array_count_unchecked(dec);
-        args->pSODeclaration = npt_cs_decoder_alloc_temp_array(dec, sizeof(D3D11_SO_DECLARATION_ENTRY), _cnt_pSODeclaration);
+    if (npt_decode_counted_pointer_count(dec, &_cnt_pSODeclaration)) {
+        args->pSODeclaration = npt_cs_decoder_alloc_temp_array(dec, sizeof(D3D11_SO_DECLARATION_ENTRY), _cnt_pSODeclaration ? _cnt_pSODeclaration : 1);
         if (!args->pSODeclaration) return;
         for (uint32_t _i = 0; _i < (uint32_t)_cnt_pSODeclaration; _i++)
             npt_decode_D3D11_SO_DECLARATION_ENTRY(dec, (D3D11_SO_DECLARATION_ENTRY *)&args->pSODeclaration[_i]);
     } else {
-        (void)npt_decode_array_count_unchecked(dec); /* consume the 0 */
         args->pSODeclaration = NULL;
     }
     npt_decode_UINT(dec, &args->NumEntries);
     uint64_t _cnt_pBufferStrides = 0;
-    if (npt_peek_array_count(dec)) {
-        _cnt_pBufferStrides = npt_decode_array_count_unchecked(dec);
-        args->pBufferStrides = npt_cs_decoder_alloc_temp_array(dec, sizeof(UINT), _cnt_pBufferStrides);
+    if (npt_decode_counted_pointer_count(dec, &_cnt_pBufferStrides)) {
+        args->pBufferStrides = npt_cs_decoder_alloc_temp_array(dec, sizeof(UINT), _cnt_pBufferStrides ? _cnt_pBufferStrides : 1);
         if (!args->pBufferStrides) return;
         npt_decode_UINT_array(dec, (UINT *)args->pBufferStrides, _cnt_pBufferStrides);
     } else {
-        (void)npt_decode_array_count_unchecked(dec); /* consume the 0 */
         args->pBufferStrides = NULL;
     }
     npt_decode_UINT(dec, &args->NumStrides);
@@ -6547,13 +6535,11 @@ npt_decode_ID3D11Device1_CreateDeviceContextState_args_temp(struct npt_cs_decode
     /* Decode input parameters from the wire */
     npt_decode_UINT(dec, &args->Flags);
     uint64_t _cnt_pFeatureLevels = 0;
-    if (npt_peek_array_count(dec)) {
-        _cnt_pFeatureLevels = npt_decode_array_count_unchecked(dec);
-        args->pFeatureLevels = npt_cs_decoder_alloc_temp_array(dec, sizeof(D3D_FEATURE_LEVEL), _cnt_pFeatureLevels);
+    if (npt_decode_counted_pointer_count(dec, &_cnt_pFeatureLevels)) {
+        args->pFeatureLevels = npt_cs_decoder_alloc_temp_array(dec, sizeof(D3D_FEATURE_LEVEL), _cnt_pFeatureLevels ? _cnt_pFeatureLevels : 1);
         if (!args->pFeatureLevels) return;
         npt_decode_D3D_FEATURE_LEVEL_array(dec, (D3D_FEATURE_LEVEL *)args->pFeatureLevels, _cnt_pFeatureLevels);
     } else {
-        (void)npt_decode_array_count_unchecked(dec); /* consume the 0 */
         args->pFeatureLevels = NULL;
     }
     npt_decode_UINT(dec, &args->FeatureLevels);
@@ -7630,14 +7616,12 @@ npt_decode_ID3D11Device3_CreateTexture2D1_args_temp(struct npt_cs_decoder *dec,
         return;
     }
     uint64_t _cnt_pInitialData = 0;
-    if (npt_peek_array_count(dec)) {
-        _cnt_pInitialData = npt_decode_array_count_unchecked(dec);
-        args->pInitialData = npt_cs_decoder_alloc_temp_array(dec, sizeof(D3D11_SUBRESOURCE_DATA), _cnt_pInitialData);
+    if (npt_decode_counted_pointer_count(dec, &_cnt_pInitialData)) {
+        args->pInitialData = npt_cs_decoder_alloc_temp_array(dec, sizeof(D3D11_SUBRESOURCE_DATA), _cnt_pInitialData ? _cnt_pInitialData : 1);
         if (!args->pInitialData) return;
         for (uint32_t _i = 0; _i < (uint32_t)_cnt_pInitialData; _i++)
             npt_decode_D3D11_SUBRESOURCE_DATA(dec, (D3D11_SUBRESOURCE_DATA *)&args->pInitialData[_i]);
     } else {
-        (void)npt_decode_array_count_unchecked(dec); /* consume the 0 */
         args->pInitialData = NULL;
     }
     {
@@ -7795,14 +7779,12 @@ npt_decode_ID3D11Device3_CreateTexture3D1_args_temp(struct npt_cs_decoder *dec,
         return;
     }
     uint64_t _cnt_pInitialData = 0;
-    if (npt_peek_array_count(dec)) {
-        _cnt_pInitialData = npt_decode_array_count_unchecked(dec);
-        args->pInitialData = npt_cs_decoder_alloc_temp_array(dec, sizeof(D3D11_SUBRESOURCE_DATA), _cnt_pInitialData);
+    if (npt_decode_counted_pointer_count(dec, &_cnt_pInitialData)) {
+        args->pInitialData = npt_cs_decoder_alloc_temp_array(dec, sizeof(D3D11_SUBRESOURCE_DATA), _cnt_pInitialData ? _cnt_pInitialData : 1);
         if (!args->pInitialData) return;
         for (uint32_t _i = 0; _i < (uint32_t)_cnt_pInitialData; _i++)
             npt_decode_D3D11_SUBRESOURCE_DATA(dec, (D3D11_SUBRESOURCE_DATA *)&args->pInitialData[_i]);
     } else {
-        (void)npt_decode_array_count_unchecked(dec); /* consume the 0 */
         args->pInitialData = NULL;
     }
     {

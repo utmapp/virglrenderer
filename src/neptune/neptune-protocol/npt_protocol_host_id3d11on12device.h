@@ -807,13 +807,11 @@ npt_decode_ID3D11On12Device2_ReturnUnderlyingResource_args_temp(struct npt_cs_de
     }
     npt_decode_UINT(dec, &args->NumSync);
     uint64_t _cnt_pSignalValues = 0;
-    if (npt_peek_array_count(dec)) {
-        _cnt_pSignalValues = npt_decode_array_count_unchecked(dec);
-        args->pSignalValues = npt_cs_decoder_alloc_temp_array(dec, sizeof(UINT64), _cnt_pSignalValues);
+    if (npt_decode_counted_pointer_count(dec, &_cnt_pSignalValues)) {
+        args->pSignalValues = npt_cs_decoder_alloc_temp_array(dec, sizeof(UINT64), _cnt_pSignalValues ? _cnt_pSignalValues : 1);
         if (!args->pSignalValues) return;
         npt_decode_UINT64_array(dec, (UINT64 *)args->pSignalValues, _cnt_pSignalValues);
     } else {
-        (void)npt_decode_array_count_unchecked(dec); /* consume the 0 */
         args->pSignalValues = NULL;
     }
     uint64_t _cnt_ppFences = npt_decode_array_count_unchecked(dec);

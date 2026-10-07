@@ -663,14 +663,12 @@ npt_decode_ID3D12DeviceFactory_EnableExperimentalFeatures_args_temp(struct npt_c
     /* Decode input parameters from the wire */
     npt_decode_UINT(dec, &args->NumFeatures);
     uint64_t _cnt_pIIDs = 0;
-    if (npt_peek_array_count(dec)) {
-        _cnt_pIIDs = npt_decode_array_count_unchecked(dec);
-        args->pIIDs = npt_cs_decoder_alloc_temp_array(dec, sizeof(IID), _cnt_pIIDs);
+    if (npt_decode_counted_pointer_count(dec, &_cnt_pIIDs)) {
+        args->pIIDs = npt_cs_decoder_alloc_temp_array(dec, sizeof(IID), _cnt_pIIDs ? _cnt_pIIDs : 1);
         if (!args->pIIDs) return;
         for (uint32_t _i = 0; _i < (uint32_t)_cnt_pIIDs; _i++)
             npt_decode_IID(dec, (IID *)&args->pIIDs[_i]);
     } else {
-        (void)npt_decode_array_count_unchecked(dec); /* consume the 0 */
         args->pIIDs = NULL;
     }
     {
@@ -684,13 +682,11 @@ npt_decode_ID3D12DeviceFactory_EnableExperimentalFeatures_args_temp(struct npt_c
         }
     }
     uint64_t _cnt_pConfigurationStructSizes = 0;
-    if (npt_peek_array_count(dec)) {
-        _cnt_pConfigurationStructSizes = npt_decode_array_count_unchecked(dec);
-        args->pConfigurationStructSizes = npt_cs_decoder_alloc_temp_array(dec, sizeof(UINT), _cnt_pConfigurationStructSizes);
+    if (npt_decode_counted_pointer_count(dec, &_cnt_pConfigurationStructSizes)) {
+        args->pConfigurationStructSizes = npt_cs_decoder_alloc_temp_array(dec, sizeof(UINT), _cnt_pConfigurationStructSizes ? _cnt_pConfigurationStructSizes : 1);
         if (!args->pConfigurationStructSizes) return;
         npt_decode_UINT_array(dec, (UINT *)args->pConfigurationStructSizes, _cnt_pConfigurationStructSizes);
     } else {
-        (void)npt_decode_array_count_unchecked(dec); /* consume the 0 */
         args->pConfigurationStructSizes = NULL;
     }
     /* A counted array must carry every element the callee will read. */

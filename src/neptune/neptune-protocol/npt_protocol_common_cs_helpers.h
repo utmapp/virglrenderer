@@ -289,6 +289,41 @@ static inline uint64_t npt_peek_array_count(struct npt_cs_decoder *dec)
     return count;
 }
 
+/*
+ * Counted pointers historically used count=0 for both NULL+0 and
+ * non-NULL+0, losing pointer presence.  Keep the one-word wire format:
+ *
+ *   0             -> NULL
+ *   UINT64_MAX    -> present pointer, logical count 0
+ *   N             -> present pointer, logical count N
+ *
+ * UINT64_MAX is not a meaningful allocatable array length.
+ */
+#define NPT_COUNTED_POINTER_PRESENT_ZERO (~(uint64_t)0)
+
+static inline uint64_t
+npt_counted_pointer_wire_count(const void *ptr, uint64_t count)
+{
+    if (!ptr)
+        return 0;
+    return count ? count : NPT_COUNTED_POINTER_PRESENT_ZERO;
+}
+
+static inline bool
+npt_decode_counted_pointer_count(struct npt_cs_decoder *dec, uint64_t *count)
+{
+    uint64_t wire_count = npt_decode_array_count_unchecked(dec);
+
+    if (!wire_count) {
+        *count = 0;
+        return false;
+    }
+
+    *count = wire_count == NPT_COUNTED_POINTER_PRESENT_ZERO
+        ? 0 : wire_count;
+    return true;
+}
+
 /* ------------------------------------------------------------------ */
 /* Simple pointer (present = 1, absent = 0)                            */
 /* ------------------------------------------------------------------ */
