@@ -63,11 +63,14 @@ struct npt_resource {
 
    size_t size;
 
-   /* Live ID3D12Heap imports aliasing u.data, plus any import in
-    * progress.  While nonzero the mapping must NOT be munmapped: destroy
-    * marks the entry `zombie` instead and the last import released
+   /* Users of u.data that outlive a resource_mutex section: live
+    * ID3D12Heap imports aliasing it, an import in progress, and a
+    * MAP/UNMAP copying through it.  DESTROY_RESOURCE is a virtio control
+    * command, not ordered against ring commands, so it can arrive while
+    * any of these runs.  While nonzero the mapping must NOT be munmapped:
+    * destroy marks the entry `zombie` instead and the last unpin
     * completes the free.  Both fields are guarded by resource_mutex. */
-   uint32_t heap_import_count;
+   uint32_t pin_count;
    bool zombie;
 };
 
@@ -289,6 +292,18 @@ npt_context_destroy_resource(struct npt_context *ctx, uint32_t res_id);
  * munmap that was deferred while it was pinned. */
 void
 npt_context_free_detached_resource(struct npt_resource *res);
+
+/* Look up an SHM resource with a mapping and pin it inside one
+ * resource_mutex section, so a concurrent destroy cannot free it between
+ * the lookup and the pin.  NULL if absent or not mapped SHM.  Balanced by
+ * npt_context_unpin_resource. */
+struct npt_resource *
+npt_context_pin_shm_resource(struct npt_context *ctx, uint32_t res_id);
+
+/* Drop one pin, completing the free of a resource destroyed while
+ * pinned. */
+void
+npt_context_unpin_resource(struct npt_context *ctx, struct npt_resource *res);
 
 static inline struct npt_resource *
 npt_context_get_resource(struct npt_context *ctx, uint32_t res_id)

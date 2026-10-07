@@ -23,7 +23,7 @@ npt_dispatch_create_heap_from_shmem(struct npt_context *ctx,
                                     const struct npt_command_header *header);
 
 /* COM_RELEASE hook: if guest_id is a shmem-imported heap, drop the
- * backing resource's heap_import_count and complete a deferred zombie
+ * backing resource's pin and complete a deferred zombie
  * munmap.  Must run AFTER the host library released the heap object.
  * Silent no-op for non-heap ids. */
 void

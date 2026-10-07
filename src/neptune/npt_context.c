@@ -93,6 +93,39 @@ npt_context_free_detached_resource(struct npt_resource *res)
    npt_resource_free(res);
 }
 
+struct npt_resource *
+npt_context_pin_shm_resource(struct npt_context *ctx, uint32_t res_id)
+{
+   mtx_lock(&ctx->resource_mutex);
+   const struct hash_entry *entry =
+      _mesa_hash_table_search(ctx->resource_table, &res_id);
+   struct npt_resource *res = entry ? entry->data : NULL;
+   if (res && res->fd_type == VIRGL_RESOURCE_FD_SHM && res->u.data)
+      res->pin_count++;
+   else
+      res = NULL;
+   mtx_unlock(&ctx->resource_mutex);
+
+   return res;
+}
+
+void
+npt_context_unpin_resource(struct npt_context *ctx, struct npt_resource *res)
+{
+   mtx_lock(&ctx->resource_mutex);
+   assert(res->pin_count > 0);
+   res->pin_count--;
+   const bool free_now = res->zombie && res->pin_count == 0;
+   const uint32_t res_id = res->res_id;
+   mtx_unlock(&ctx->resource_mutex);
+
+   if (free_now) {
+      npt_log("last pin on destroyed res %u dropped; completing deferred "
+              "munmap", res_id);
+      npt_context_free_detached_resource(res);
+   }
+}
+
 /* Overrides are set only where the default dispatcher cannot cope:
  * top-level functions (no _self for dlsym to bind against),
  * shared-HANDLE rejection, and feedback lifecycle hooks.  All other
@@ -1452,19 +1485,19 @@ npt_context_destroy_resource(struct npt_context *ctx, uint32_t res_id)
       npt_ring_destroy(ring);
    }
 
-   /* A live ID3D12Heap import still aliases this mapping, so munmapping
-    * it now is undefined under the host graphics driver.  Park the
-    * detached entry as a zombie for the last import to free. */
+   /* A D3D12 heap import, or a MAP/UNMAP copy on a ring thread, still
+    * uses this mapping, so munmapping it now is a use-after-free.  Park
+    * the detached entry as a zombie for the last unpin to free. */
    mtx_lock(&ctx->resource_mutex);
-   const uint32_t imports = res->heap_import_count;
-   if (imports > 0)
+   const uint32_t pins = res->pin_count;
+   if (pins > 0)
       res->zombie = true;
    mtx_unlock(&ctx->resource_mutex);
 
-   if (imports > 0) {
-      npt_log("destroy_resource: res %u still imported by %u D3D12 heap(s); "
-              "DEFERRING munmap until heap release (zombie)",
-              res_id, imports);
+   if (pins > 0) {
+      npt_log("destroy_resource: res %u still pinned %u time(s); "
+              "DEFERRING munmap until the last unpin (zombie)",
+              res_id, pins);
       return;
    }
 
