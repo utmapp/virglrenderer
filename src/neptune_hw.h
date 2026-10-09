@@ -36,4 +36,9 @@ struct virgl_renderer_capset_neptune {
  * DXMT, whose shader front end parses DXBC only. */
 #define VIRGL_RENDERER_CAPSET_NEPTUNE_CAP_DXIL                        (1u << 6)
 
+/* The D3D11 backend can take a guest shared-memory blob as the storage
+ * of a DYNAMIC buffer (RESOURCE_BIND_D3D11_BUFFER_SHMEM), so a guest Map
+ * writes the bytes the GPU reads with no host copy. */
+#define VIRGL_RENDERER_CAPSET_NEPTUNE_CAP_D3D11_EXTERNAL_BUFFERS      (1u << 7)
+
 #endif /* NEPTUNE_HW_H */

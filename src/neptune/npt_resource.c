@@ -16,6 +16,7 @@
 
 #include "npt_com.h"
 #include "npt_context.h"
+#include "npt_library.h"
 #include "npt_transport_defs.h"
 
 #include "neptune-protocol/npt_protocol_host_dispatch_types.h"
@@ -225,11 +226,13 @@ npt_resource_map_pinned(struct npt_context *ctx,
                         uint32_t mip_rows, uint32_t mip_depth,
                         uint32_t shmem_offset,
                         uint32_t *out_row_pitch, uint32_t *out_depth_pitch,
-                        uint32_t *out_mapped_size)
+                        uint32_t *out_mapped_size,
+                        uint32_t *out_external_cookie)
 {
    *out_row_pitch = 0;
    *out_depth_pitch = 0;
    *out_mapped_size = 0;
+   *out_external_cookie = NPT_EXTERNAL_COOKIE_NONE;
 
    void *resource = npt_context_lookup_object(ctx, NULL, resource_id,
                                               NPT_OBJECT_TYPE_IUNKNOWN);
@@ -250,6 +253,7 @@ npt_resource_map_pinned(struct npt_context *ctx,
    D3D11_MAPPED_SUBRESOURCE mapped;
    memset(&mapped, 0, sizeof(mapped));
    HRESULT hr;
+   uint32_t external_cookie = NPT_EXTERNAL_COOKIE_NONE;
 
    if (!context_id) {
       /* RowPitch/DepthPitch stay 0: this path serves buffers, and the
@@ -300,6 +304,16 @@ npt_resource_map_pinned(struct npt_context *ctx,
 
       if (NPT_FAILED(hr))
          return hr;
+
+      /* A DXMT buffer bound to guest shmem may have mapped one of those
+       * shmems: the guest then writes it in place, and nothing is copied
+       * here or at UNMAP. */
+      const struct npt_d3d_library *lib = npt_renderer_get_library();
+      uint32_t cookie;
+      if (lib && lib->pfn_dxmt_d3d11_buffer_external_cookie &&
+          lib->pfn_dxmt_d3d11_buffer_external_cookie(resource, mapped.pData,
+                                                     &cookie) == 0)
+         external_cookie = cookie;
    }
 
    /* Memcpy bound for READ (and matching WRITE on the Unmap path):
@@ -326,9 +340,10 @@ npt_resource_map_pinned(struct npt_context *ctx,
       bound = byte_size;
    if (bound > shmem_res->size - shmem_offset)
       bound = shmem_res->size - shmem_offset;
-   const uint32_t mapped_size = (uint32_t)bound;
+   const bool external = external_cookie != NPT_EXTERNAL_COOKIE_NONE;
+   const uint32_t mapped_size = external ? 0 : (uint32_t)bound;
 
-   if (access_flags & NPT_MAP_ACCESS_READ)
+   if ((access_flags & NPT_MAP_ACCESS_READ) && !external)
       memcpy((uint8_t *)shmem_res->u.data + shmem_offset, mapped.pData,
              mapped_size);
 
@@ -353,11 +368,13 @@ npt_resource_map_pinned(struct npt_context *ctx,
       .mapped_data  = mapped.pData,
       .mapped_size  = mapped_size,
       .persistent   = !!(access_flags & NPT_MAP_ACCESS_PERSISTENT),
+      .external     = external,
    };
 
    *out_row_pitch = mapped.RowPitch;
    *out_depth_pitch = mapped.DepthPitch;
    *out_mapped_size = mapped_size;
+   *out_external_cookie = external_cookie;
    return hr;
 }
 
@@ -454,7 +471,7 @@ npt_resource_unmap_pinned(struct npt_context *ctx,
       return NPT_E_FAIL;
    }
 
-   if (entry->access_flags & NPT_MAP_ACCESS_WRITE) {
+   if ((entry->access_flags & NPT_MAP_ACCESS_WRITE) && !entry->external) {
       /* MIN(guest byte_size, recorded mapped_size) so we don't
        * overrun the D3D region with stale/padded SHM bytes.  0 means
        * "use the full mapped_size". */
@@ -516,11 +533,12 @@ npt_resource_map(struct npt_context *ctx,
                  uint32_t mip_rows, uint32_t mip_depth,
                  uint32_t shmem_offset,
                  uint32_t *out_row_pitch, uint32_t *out_depth_pitch,
-                 uint32_t *out_mapped_size)
+                 uint32_t *out_mapped_size, uint32_t *out_external_cookie)
 {
    *out_row_pitch = 0;
    *out_depth_pitch = 0;
    *out_mapped_size = 0;
+   *out_external_cookie = NPT_EXTERNAL_COOKIE_NONE;
 
    struct npt_resource *shmem_res =
       npt_context_pin_shm_resource(ctx, shmem_res_id);
@@ -532,8 +550,52 @@ npt_resource_map(struct npt_context *ctx,
       ctx, context_id, resource_id, subresource, access_flags,
       api_map_flags, shmem_res, read_range_begin, read_range_end,
       byte_size, mip_rows, mip_depth, shmem_offset,
-      out_row_pitch, out_depth_pitch, out_mapped_size);
+      out_row_pitch, out_depth_pitch, out_mapped_size,
+      out_external_cookie);
    npt_context_unpin_resource(ctx, shmem_res);
+   return hr;
+}
+
+HRESULT
+npt_resource_bind_d3d11_buffer_shmem(struct npt_context *ctx,
+                                     uint64_t buffer_id,
+                                     uint32_t shmem_res_id,
+                                     uint64_t byte_size,
+                                     uint32_t cookie, uint32_t reserved)
+{
+   const struct npt_d3d_library *lib = npt_renderer_get_library();
+   if (!lib || !lib->pfn_dxmt_d3d11_buffer_bind_external_fd)
+      return NPT_E_NOTIMPL;
+   if (!byte_size || cookie == NPT_EXTERNAL_COOKIE_NONE || reserved)
+      return NPT_E_INVALIDARG;
+
+   void *buffer = npt_context_lookup_object(ctx, NULL, buffer_id,
+                                            NPT_OBJECT_TYPE_ID3D11BUFFER);
+   if (!buffer) {
+      npt_log("bind_d3d11_buffer_shmem: NULL buffer");
+      return NPT_E_INVALIDARG;
+   }
+
+   /* The backend dups the fd and maps it itself, so the pin only has to
+    * cover the call. */
+   struct npt_resource *shmem =
+      npt_context_pin_shm_resource(ctx, shmem_res_id);
+   if (!shmem) {
+      npt_log("bind_d3d11_buffer_shmem: invalid SHM resource %u",
+              shmem_res_id);
+      return NPT_E_INVALIDARG;
+   }
+   HRESULT hr;
+   if (shmem->u.fd < 0 || byte_size > shmem->size) {
+      npt_log("bind_d3d11_buffer_shmem: res %u (fd %d, %zu bytes) cannot "
+              "back %" PRIu64 " bytes", shmem_res_id, shmem->u.fd,
+              shmem->size, byte_size);
+      hr = NPT_E_INVALIDARG;
+   } else {
+      hr = (HRESULT)lib->pfn_dxmt_d3d11_buffer_bind_external_fd(
+         buffer, shmem->u.fd, shmem->size, cookie);
+   }
+   npt_context_unpin_resource(ctx, shmem);
    return hr;
 }
 

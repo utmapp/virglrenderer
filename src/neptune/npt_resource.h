@@ -46,7 +46,15 @@ npt_resource_map(struct npt_context *ctx,
                  uint32_t mip_rows, uint32_t mip_depth,
                  uint32_t shmem_offset,
                  uint32_t *out_row_pitch, uint32_t *out_depth_pitch,
-                 uint32_t *out_mapped_size);
+                 uint32_t *out_mapped_size, uint32_t *out_external_cookie);
+
+/* RESOURCE_BIND_D3D11_BUFFER_SHMEM. */
+HRESULT
+npt_resource_bind_d3d11_buffer_shmem(struct npt_context *ctx,
+                                     uint64_t buffer_id,
+                                     uint32_t shmem_res_id,
+                                     uint64_t byte_size,
+                                     uint32_t cookie, uint32_t reserved);
 
 /* RESOURCE_UNMAP.  written_range_{begin,end} are accepted for the
  * D3D12 path (pWrittenRange) and ignored on D3D11. */

@@ -32,6 +32,35 @@ npt_dispatch_is_ring_dispatch(const struct npt_context *ctx,
 }
 
 static void
+npt_dispatch_bind_d3d11_buffer_shmem(struct npt_context *ctx,
+                                     struct npt_cs_decoder *dec,
+                                     struct npt_cs_encoder *enc,
+                                     const struct npt_command_header *header)
+{
+   struct npt_cmd_bind_d3d11_buffer_shmem cmd;
+   cmd.header = *header;
+   npt_cs_decoder_read(dec, sizeof(cmd) - sizeof(cmd.header),
+                       &cmd.shmem_res_id, sizeof(cmd) - sizeof(cmd.header));
+   if (npt_cs_decoder_get_fatal(dec))
+      return;
+
+   const HRESULT hr = npt_resource_bind_d3d11_buffer_shmem(
+      ctx, header->object_id, cmd.shmem_res_id, cmd.byte_size, cmd.cookie,
+      cmd.reserved);
+
+   if (header->cmd_flags & NPT_CMD_FLAG_REPLY) {
+      struct npt_cmd_bind_d3d11_buffer_shmem_reply reply;
+      memset(&reply, 0, sizeof(reply));
+      reply.header.cmd_type = header->cmd_type;
+      reply.header.cmd_return = (uint32_t)hr;
+      if (npt_cs_encoder_acquire(enc)) {
+         npt_cs_encoder_write(enc, sizeof(reply), &reply, sizeof(reply));
+         npt_cs_encoder_release(enc);
+      }
+   }
+}
+
+static void
 npt_dispatch_set_reply_stream(struct npt_context *ctx,
                               struct npt_cs_decoder *dec,
                               struct npt_cs_encoder *enc)
@@ -355,7 +384,8 @@ npt_dispatch_map_resource(struct npt_context *ctx,
       cmd.read_range_begin, cmd.read_range_end,
       cmd.byte_size, cmd.mip_rows, cmd.mip_depth,
       cmd.shmem_offset,
-      &reply.row_pitch, &reply.depth_pitch, &reply.mapped_size);
+      &reply.row_pitch, &reply.depth_pitch, &reply.mapped_size,
+      &reply.external_cookie);
 
    if (header->cmd_flags & NPT_CMD_FLAG_REPLY) {
       if (npt_cs_encoder_acquire(enc)) {
@@ -678,6 +708,9 @@ npt_dispatch_subgroup_resource(struct npt_context *ctx,
       return true;
    case NPT_TRANSPORT_RESOURCE_CREATE_HEAP_FROM_SHMEM:
       npt_dispatch_create_heap_from_shmem(ctx, dec, enc, header);
+      return true;
+   case NPT_TRANSPORT_RESOURCE_BIND_D3D11_BUFFER_SHMEM:
+      npt_dispatch_bind_d3d11_buffer_shmem(ctx, dec, enc, header);
       return true;
    default:
       return false;

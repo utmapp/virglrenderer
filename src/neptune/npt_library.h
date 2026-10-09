@@ -71,6 +71,12 @@ typedef HRESULT (*PFN_npt_lib_darwin_open_existing_heap_from_fd)(
    void *device, int fd, uint64_t offset, uint64_t size,
    uint32_t heap_type, uint32_t heap_flags, const GUID *iid, void **heap);
 
+/* dxmt_native.h: guest-shared DYNAMIC buffer storage. */
+typedef int32_t (*PFN_npt_lib_dxmt_d3d11_buffer_bind_external_fd)(
+   void *buffer, int fd, uint64_t backing_length, uint32_t cookie);
+typedef int (*PFN_npt_lib_dxmt_d3d11_buffer_external_cookie)(
+   void *buffer, void *mapped_ptr, uint32_t *out_cookie);
+
 struct npt_d3d_library {
    void *d3d11_module;
    void *dxgi_module;
@@ -97,6 +103,9 @@ struct npt_d3d_library {
    /* Optional, darwin: same contract as the vkd3d dmabuf twin below.
     * NULL => CREATE_HEAP_FROM_SHMEM fails cleanly (sync-map fallback). */
    PFN_npt_lib_darwin_open_existing_heap_from_fd pfn_darwin_open_existing_heap_from_fd;
+   /* DXMT only; NULL => RESOURCE_BIND_D3D11_BUFFER_SHMEM is E_NOTIMPL. */
+   PFN_npt_lib_dxmt_d3d11_buffer_bind_external_fd pfn_dxmt_d3d11_buffer_bind_external_fd;
+   PFN_npt_lib_dxmt_d3d11_buffer_external_cookie pfn_dxmt_d3d11_buffer_external_cookie;
    enum npt_backend_kind backend;
 
    /* NPT_WA_* bits describing the workarounds the loaded backend needs, set in

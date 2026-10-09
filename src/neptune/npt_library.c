@@ -114,6 +114,19 @@ npt_library_load_embedder_api(struct npt_d3d_library *lib)
          ((union { void *p;
                    PFN_npt_lib_darwin_open_existing_heap_from_fd f; }){
             .p = npt_library_sym(mod, name) }).f;
+
+      if (candidates[i].kind == NPT_BACKEND_DXMT) {
+         lib->pfn_dxmt_d3d11_buffer_bind_external_fd =
+            ((union { void *p;
+                      PFN_npt_lib_dxmt_d3d11_buffer_bind_external_fd f; }){
+               .p = npt_library_sym(mod,
+                                    "dxmt_d3d11_buffer_bind_external_fd") }).f;
+         lib->pfn_dxmt_d3d11_buffer_external_cookie =
+            ((union { void *p;
+                      PFN_npt_lib_dxmt_d3d11_buffer_external_cookie f; }){
+               .p = npt_library_sym(mod,
+                                    "dxmt_d3d11_buffer_external_cookie") }).f;
+      }
       return;
    }
    npt_log("backend embedder API (dmn_/dxmt_event_*) not found");

@@ -227,6 +227,9 @@ struct npt_cmd_com_query_interface_reply {
 #define NPT_TRANSPORT_RESOURCE_UNMAP                 2u
 #define NPT_TRANSPORT_RESOURCE_EXECUTE_CMD_STREAM    3u
 #define NPT_TRANSPORT_RESOURCE_CREATE_HEAP_FROM_SHMEM 4u
+#define NPT_TRANSPORT_RESOURCE_BIND_D3D11_BUFFER_SHMEM 5u
+/* map_resource_reply.external_cookie when the Map landed on host memory. */
+#define NPT_EXTERNAL_COOKIE_NONE 0xffffffffu
 
 /* UpdateSubresource(1) wire path; also serves D3D11_SUBRESOURCE_DATA
  * pSysMem.  D3D12 WriteToSubresource has identical shape (same box
@@ -315,7 +318,10 @@ struct npt_cmd_map_resource_reply {
    uint32_t row_pitch;
    uint32_t depth_pitch;
    uint32_t mapped_size;      /* 0 for persistent */
-   uint32_t pad;
+   /* D3D11: cookie of the guest shmem the Map landed on (bound with
+    * RESOURCE_BIND_D3D11_BUFFER_SHMEM), so the guest writes it directly
+    * and the UNMAP copies nothing; NPT_EXTERNAL_COOKIE_NONE otherwise. */
+   uint32_t external_cookie;
 };
 
 /* Synchronous: guest must not submit Draws reading this resource until
@@ -369,6 +375,28 @@ struct npt_cmd_create_heap_from_shmem {
    uint64_t size;
    uint32_t heap_type;    /* D3D12_HEAP_TYPE (app's) */
    uint32_t heap_flags;   /* D3D12_HEAP_FLAGS (app's) */
+};
+
+/* Synchronous.  Make a guest SHM blob the storage of one rename
+ * allocation of a DYNAMIC ID3D11Buffer (header.object_id), tagged with
+ * cookie; a later Map(WRITE_DISCARD) may rename onto it, and its reply
+ * then carries the cookie.  byte_size is the buffer's ByteWidth; the blob
+ * must cover it and be a multiple of the host page size.  The backend
+ * keeps its own reference to the blob's memory, so the virtio resource
+ * may be destroyed before the buffer.  Reply: cmd_return = HRESULT;
+ * E_NOTIMPL from a backend without the capability. */
+struct npt_cmd_bind_d3d11_buffer_shmem {
+   struct npt_command_header header;
+   /* header.object_id = guest ID3D11Buffer id */
+   uint32_t shmem_res_id;
+   uint32_t cookie;
+   uint64_t byte_size;
+   uint32_t reserved;     /* 0 */
+   uint32_t pad;
+};
+
+struct npt_cmd_bind_d3d11_buffer_shmem_reply {
+   struct npt_reply_header header;
 };
 
 struct npt_cmd_create_heap_from_shmem_reply {

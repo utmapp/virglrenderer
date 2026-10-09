@@ -43,6 +43,9 @@ struct npt_sync_map_entry {
    void    *mapped_data;   /* host pointer returned by D3D11/12 Map */
    uint32_t mapped_size;
    bool     persistent;    /* D3D12 persistent map: no Unmap expected */
+   /* The Map landed on a guest shmem bound to the buffer: the guest
+    * wrote it in place, so UNMAP copies nothing. */
+   bool     external;
 };
 
 struct npt_resource {
