@@ -25,6 +25,12 @@ extern struct npt_dispatch_id3d11fence_overrides npt_id3d11fence_overrides;
  * repack (npt_overrides_d3d12_device.c). */
 extern struct npt_dispatch_id3d12device_overrides npt_id3d12device_overrides;
 
+/* DXR state objects (npt_overrides_d3d12_raytracing.c): the wire deep-copies
+ * SUBOBJECT_TO_EXPORTS_ASSOCIATION.pSubobjectToAssociate, so it is relinked
+ * to the decoded subobject array before the backend sees the desc. */
+extern struct npt_dispatch_id3d12device5_overrides npt_id3d12device5_overrides;
+extern struct npt_dispatch_id3d12device7_overrides npt_id3d12device7_overrides;
+
 /* Hooks Begin/End on the immediate context to maintain the per-query
  * pending list. */
 extern struct npt_dispatch_id3d11devicecontext_overrides
