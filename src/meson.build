@@ -129,6 +129,7 @@ neptune_sources = [
    'neptune/npt_overrides_d3d12_device.c',
    'neptune/npt_overrides_d3d12_pipeline.c',
    'neptune/npt_overrides_d3d12_fence.c',
+   'neptune/npt_overrides_d3d12_raytracing.c',
 ]
 
 drm_sources = [
