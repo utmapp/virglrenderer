@@ -169,7 +169,6 @@ npt_decode_IDXGIOutputDuplication_AcquireNextFrame_args_temp(struct npt_cs_decod
 {
     /* Decode input parameters from the wire */
     npt_decode_UINT(dec, &args->TimeoutInMilliseconds);
-
     {
         uint64_t _gid;
         npt_decode_uint64_t(dec, &_gid);
@@ -309,6 +308,9 @@ struct npt_command_IDXGIOutputDuplication_GetFrameDirtyRects {
     UINT DirtyRectsBufferSize;
     void * pDirtyRectsBuffer;
     UINT * pDirtyRectsBufferSizeRequired;
+    /* Elements allocated for pDirtyRectsBuffer at decode; the reply never
+     * encodes more, whatever count the callee wrote back. */
+    uint64_t _cap_pDirtyRectsBuffer;
     HRESULT ret;
 };
 
@@ -318,8 +320,6 @@ npt_decode_IDXGIOutputDuplication_GetFrameDirtyRects_args_temp(struct npt_cs_dec
 {
     /* Decode input parameters from the wire */
     npt_decode_UINT(dec, &args->DirtyRectsBufferSize);
-
-
     /* Allocate temp storage for output-only parameters */
 
     if (args->DirtyRectsBufferSize) {
@@ -329,6 +329,7 @@ npt_decode_IDXGIOutputDuplication_GetFrameDirtyRects_args_temp(struct npt_cs_dec
     } else {
         args->pDirtyRectsBuffer = NULL;
     }
+    args->_cap_pDirtyRectsBuffer = args->pDirtyRectsBuffer ? (uint64_t)(args->DirtyRectsBufferSize) : 0;
     args->pDirtyRectsBufferSizeRequired = npt_cs_decoder_alloc_temp(dec, sizeof(UINT));
     if (!args->pDirtyRectsBufferSizeRequired) return;
     memset(args->pDirtyRectsBufferSizeRequired, 0, sizeof(UINT));
@@ -353,11 +354,14 @@ npt_encode_IDXGIOutputDuplication_GetFrameDirtyRects_reply(struct npt_cs_encoder
      * failure the host may have written the required count but left the
      * array contents unpopulated, so only encode elements on success. */
     if ((HRESULT)args->ret >= 0) {
+        {
+        const uint64_t _n_pDirtyRectsBuffer = (uint64_t)(*args->pDirtyRectsBufferSizeRequired) < args->_cap_pDirtyRectsBuffer ? (uint64_t)(*args->pDirtyRectsBufferSizeRequired) : args->_cap_pDirtyRectsBuffer;
         if (args->pDirtyRectsBuffer) {
-        npt_encode_array_count(enc, *args->pDirtyRectsBufferSizeRequired);
-        npt_encode_blob_array(enc, args->pDirtyRectsBuffer, *args->pDirtyRectsBufferSizeRequired);
-    } else {
-        npt_encode_array_count(enc, 0);
+            npt_encode_array_count(enc, _n_pDirtyRectsBuffer);
+            npt_encode_blob_array(enc, args->pDirtyRectsBuffer, _n_pDirtyRectsBuffer);
+        } else {
+            npt_encode_array_count(enc, 0);
+        }
     }
     } else {
         npt_encode_array_count(enc, 0);
@@ -463,6 +467,9 @@ struct npt_command_IDXGIOutputDuplication_GetFrameMoveRects {
     UINT MoveRectsBufferSize;
     void * pMoveRectBuffer;
     UINT * pMoveRectsBufferSizeRequired;
+    /* Elements allocated for pMoveRectBuffer at decode; the reply never
+     * encodes more, whatever count the callee wrote back. */
+    uint64_t _cap_pMoveRectBuffer;
     HRESULT ret;
 };
 
@@ -472,8 +479,6 @@ npt_decode_IDXGIOutputDuplication_GetFrameMoveRects_args_temp(struct npt_cs_deco
 {
     /* Decode input parameters from the wire */
     npt_decode_UINT(dec, &args->MoveRectsBufferSize);
-
-
     /* Allocate temp storage for output-only parameters */
 
     if (args->MoveRectsBufferSize) {
@@ -483,6 +488,7 @@ npt_decode_IDXGIOutputDuplication_GetFrameMoveRects_args_temp(struct npt_cs_deco
     } else {
         args->pMoveRectBuffer = NULL;
     }
+    args->_cap_pMoveRectBuffer = args->pMoveRectBuffer ? (uint64_t)(args->MoveRectsBufferSize) : 0;
     args->pMoveRectsBufferSizeRequired = npt_cs_decoder_alloc_temp(dec, sizeof(UINT));
     if (!args->pMoveRectsBufferSizeRequired) return;
     memset(args->pMoveRectsBufferSizeRequired, 0, sizeof(UINT));
@@ -507,11 +513,14 @@ npt_encode_IDXGIOutputDuplication_GetFrameMoveRects_reply(struct npt_cs_encoder 
      * failure the host may have written the required count but left the
      * array contents unpopulated, so only encode elements on success. */
     if ((HRESULT)args->ret >= 0) {
+        {
+        const uint64_t _n_pMoveRectBuffer = (uint64_t)(*args->pMoveRectsBufferSizeRequired) < args->_cap_pMoveRectBuffer ? (uint64_t)(*args->pMoveRectsBufferSizeRequired) : args->_cap_pMoveRectBuffer;
         if (args->pMoveRectBuffer) {
-        npt_encode_array_count(enc, *args->pMoveRectsBufferSizeRequired);
-        npt_encode_blob_array(enc, args->pMoveRectBuffer, *args->pMoveRectsBufferSizeRequired);
-    } else {
-        npt_encode_array_count(enc, 0);
+            npt_encode_array_count(enc, _n_pMoveRectBuffer);
+            npt_encode_blob_array(enc, args->pMoveRectBuffer, _n_pMoveRectBuffer);
+        } else {
+            npt_encode_array_count(enc, 0);
+        }
     }
     } else {
         npt_encode_array_count(enc, 0);
@@ -618,6 +627,9 @@ struct npt_command_IDXGIOutputDuplication_GetFramePointerShape {
     void * pPointerShapeBuffer;
     UINT * pPointerShapeBufferSizeRequired;
     DXGI_OUTDUPL_POINTER_SHAPE_INFO * pPointerShapeInfo;
+    /* Elements allocated for pPointerShapeBuffer at decode; the reply never
+     * encodes more, whatever count the callee wrote back. */
+    uint64_t _cap_pPointerShapeBuffer;
     HRESULT ret;
 };
 
@@ -627,9 +639,6 @@ npt_decode_IDXGIOutputDuplication_GetFramePointerShape_args_temp(struct npt_cs_d
 {
     /* Decode input parameters from the wire */
     npt_decode_UINT(dec, &args->PointerShapeBufferSize);
-
-
-
     /* Allocate temp storage for output-only parameters */
 
     if (args->PointerShapeBufferSize) {
@@ -639,6 +648,7 @@ npt_decode_IDXGIOutputDuplication_GetFramePointerShape_args_temp(struct npt_cs_d
     } else {
         args->pPointerShapeBuffer = NULL;
     }
+    args->_cap_pPointerShapeBuffer = args->pPointerShapeBuffer ? (uint64_t)(args->PointerShapeBufferSize) : 0;
     args->pPointerShapeBufferSizeRequired = npt_cs_decoder_alloc_temp(dec, sizeof(UINT));
     if (!args->pPointerShapeBufferSizeRequired) return;
     memset(args->pPointerShapeBufferSizeRequired, 0, sizeof(UINT));
@@ -666,11 +676,14 @@ npt_encode_IDXGIOutputDuplication_GetFramePointerShape_reply(struct npt_cs_encod
      * failure the host may have written the required count but left the
      * array contents unpopulated, so only encode elements on success. */
     if ((HRESULT)args->ret >= 0) {
+        {
+        const uint64_t _n_pPointerShapeBuffer = (uint64_t)(*args->pPointerShapeBufferSizeRequired) < args->_cap_pPointerShapeBuffer ? (uint64_t)(*args->pPointerShapeBufferSizeRequired) : args->_cap_pPointerShapeBuffer;
         if (args->pPointerShapeBuffer) {
-        npt_encode_array_count(enc, *args->pPointerShapeBufferSizeRequired);
-        npt_encode_blob_array(enc, args->pPointerShapeBuffer, *args->pPointerShapeBufferSizeRequired);
-    } else {
-        npt_encode_array_count(enc, 0);
+            npt_encode_array_count(enc, _n_pPointerShapeBuffer);
+            npt_encode_blob_array(enc, args->pPointerShapeBuffer, _n_pPointerShapeBuffer);
+        } else {
+            npt_encode_array_count(enc, 0);
+        }
     }
     } else {
         npt_encode_array_count(enc, 0);

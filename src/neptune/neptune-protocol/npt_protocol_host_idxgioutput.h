@@ -156,6 +156,9 @@ struct npt_command_IDXGIOutput_GetDisplayModeList {
     UINT Flags;
     UINT * pNumModes;
     DXGI_MODE_DESC * pDesc;
+    /* Elements allocated for pDesc at decode; the reply never
+     * encodes more, whatever count the callee wrote back. */
+    uint64_t _cap_pDesc;
     HRESULT ret;
 };
 
@@ -175,7 +178,6 @@ npt_decode_IDXGIOutput_GetDisplayModeList_args_temp(struct npt_cs_decoder *dec,
         npt_cs_decoder_set_fatal(dec); /* non-optional pointer is NULL */
         return;
     }
-
     /* Allocate temp storage for output-only parameters */
 
 
@@ -187,6 +189,7 @@ npt_decode_IDXGIOutput_GetDisplayModeList_args_temp(struct npt_cs_decoder *dec,
     } else {
         args->pDesc = NULL;
     }
+    args->_cap_pDesc = args->pDesc ? (uint64_t)(*args->pNumModes) : 0;
 }
 
 static inline void
@@ -210,12 +213,15 @@ npt_encode_IDXGIOutput_GetDisplayModeList_reply(struct npt_cs_encoder *enc,
      * failure the host may have written the required count but left the
      * array contents unpopulated, so only encode elements on success. */
     if ((HRESULT)args->ret >= 0) {
+        {
+        const uint64_t _n_pDesc = (uint64_t)(*args->pNumModes) < args->_cap_pDesc ? (uint64_t)(*args->pNumModes) : args->_cap_pDesc;
         if (args->pDesc) {
-        npt_encode_array_count(enc, *args->pNumModes);
-        for (uint32_t _i = 0; _i < (uint32_t)(*args->pNumModes); _i++)
-            npt_encode_DXGI_MODE_DESC(enc, &args->pDesc[_i]);
-    } else {
-        npt_encode_array_count(enc, 0);
+            npt_encode_array_count(enc, _n_pDesc);
+            for (uint32_t _i = 0; _i < (uint32_t)(_n_pDesc); _i++)
+                npt_encode_DXGI_MODE_DESC(enc, &args->pDesc[_i]);
+        } else {
+            npt_encode_array_count(enc, 0);
+        }
     }
     } else {
         npt_encode_array_count(enc, 0);
@@ -336,7 +342,6 @@ npt_decode_IDXGIOutput_FindClosestMatchingMode_args_temp(struct npt_cs_decoder *
         npt_cs_decoder_set_fatal(dec); /* non-optional pointer is NULL */
         return;
     }
-
     {
         npt_object_id _id;
         npt_decode_uint64_t(dec, &_id);
@@ -1626,6 +1631,9 @@ struct npt_command_IDXGIOutput1_GetDisplayModeList1 {
     UINT Flags;
     UINT * pNumModes;
     DXGI_MODE_DESC1 * pDesc;
+    /* Elements allocated for pDesc at decode; the reply never
+     * encodes more, whatever count the callee wrote back. */
+    uint64_t _cap_pDesc;
     HRESULT ret;
 };
 
@@ -1645,7 +1653,6 @@ npt_decode_IDXGIOutput1_GetDisplayModeList1_args_temp(struct npt_cs_decoder *dec
         npt_cs_decoder_set_fatal(dec); /* non-optional pointer is NULL */
         return;
     }
-
     /* Allocate temp storage for output-only parameters */
 
 
@@ -1657,6 +1664,7 @@ npt_decode_IDXGIOutput1_GetDisplayModeList1_args_temp(struct npt_cs_decoder *dec
     } else {
         args->pDesc = NULL;
     }
+    args->_cap_pDesc = args->pDesc ? (uint64_t)(*args->pNumModes) : 0;
 }
 
 static inline void
@@ -1680,12 +1688,15 @@ npt_encode_IDXGIOutput1_GetDisplayModeList1_reply(struct npt_cs_encoder *enc,
      * failure the host may have written the required count but left the
      * array contents unpopulated, so only encode elements on success. */
     if ((HRESULT)args->ret >= 0) {
+        {
+        const uint64_t _n_pDesc = (uint64_t)(*args->pNumModes) < args->_cap_pDesc ? (uint64_t)(*args->pNumModes) : args->_cap_pDesc;
         if (args->pDesc) {
-        npt_encode_array_count(enc, *args->pNumModes);
-        for (uint32_t _i = 0; _i < (uint32_t)(*args->pNumModes); _i++)
-            npt_encode_DXGI_MODE_DESC1(enc, &args->pDesc[_i]);
-    } else {
-        npt_encode_array_count(enc, 0);
+            npt_encode_array_count(enc, _n_pDesc);
+            for (uint32_t _i = 0; _i < (uint32_t)(_n_pDesc); _i++)
+                npt_encode_DXGI_MODE_DESC1(enc, &args->pDesc[_i]);
+        } else {
+            npt_encode_array_count(enc, 0);
+        }
     }
     } else {
         npt_encode_array_count(enc, 0);
@@ -1806,7 +1817,6 @@ npt_decode_IDXGIOutput1_FindClosestMatchingMode1_args_temp(struct npt_cs_decoder
         npt_cs_decoder_set_fatal(dec); /* non-optional pointer is NULL */
         return;
     }
-
     {
         npt_object_id _id;
         npt_decode_uint64_t(dec, &_id);
@@ -2357,7 +2367,6 @@ npt_decode_IDXGIOutput3_CheckOverlaySupport_args_temp(struct npt_cs_decoder *dec
         npt_decode_uint64_t(dec, &_id);
         args->pConcernedDevice = (IUnknown *)npt_object_from_id(_id);
     }
-
     /* Allocate temp storage for output-only parameters */
 
 
@@ -2499,7 +2508,6 @@ npt_decode_IDXGIOutput4_CheckOverlayColorSpaceSupport_args_temp(struct npt_cs_de
         npt_decode_uint64_t(dec, &_id);
         args->pConcernedDevice = (IUnknown *)npt_object_from_id(_id);
     }
-
     /* Allocate temp storage for output-only parameters */
 
 
@@ -2655,6 +2663,8 @@ npt_decode_IDXGIOutput5_DuplicateOutput1_args_temp(struct npt_cs_decoder *dec,
         _has_cnt_pSupportedFormats = 1;
         args->pSupportedFormats = npt_cs_decoder_alloc_temp_array(dec, sizeof(DXGI_FORMAT), _cnt_pSupportedFormats ? _cnt_pSupportedFormats : 1);
         if (!args->pSupportedFormats) return;
+        /* Present but empty: a callee that walks it anyway reads zeros, not the previous command. */
+        if (!_cnt_pSupportedFormats) memset((void *)args->pSupportedFormats, 0, sizeof(DXGI_FORMAT));
         npt_decode_DXGI_FORMAT_array(dec, (DXGI_FORMAT *)args->pSupportedFormats, _cnt_pSupportedFormats);
     } else {
         args->pSupportedFormats = NULL;

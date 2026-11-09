@@ -655,6 +655,9 @@ struct npt_command_ID3D12PipelineLibrary_Serialize {
     void *_self;
     void * pData;
     SIZE_T DataSizeInBytes;
+    /* Elements allocated for pData at decode; the reply never
+     * encodes more, whatever count the callee wrote back. */
+    uint64_t _cap_pData;
     HRESULT ret;
 };
 
@@ -663,7 +666,6 @@ npt_decode_ID3D12PipelineLibrary_Serialize_args_temp(struct npt_cs_decoder *dec,
                                                      struct npt_command_ID3D12PipelineLibrary_Serialize *args)
 {
     /* Decode input parameters from the wire */
-
     npt_decode_SIZE_T(dec, &args->DataSizeInBytes);
     /* Allocate temp storage for output-only parameters */
     if (args->DataSizeInBytes) {
@@ -673,6 +675,7 @@ npt_decode_ID3D12PipelineLibrary_Serialize_args_temp(struct npt_cs_decoder *dec,
     } else {
         args->pData = NULL;
     }
+    args->_cap_pData = args->pData ? (uint64_t)(args->DataSizeInBytes) : 0;
 
 }
 
@@ -691,11 +694,14 @@ npt_encode_ID3D12PipelineLibrary_Serialize_reply(struct npt_cs_encoder *enc,
         .cmd_return = (uint32_t)args->ret,
     };
     npt_cs_encoder_write(enc, sizeof(_reply), &_reply, sizeof(_reply));
-    if (args->pData) {
-        npt_encode_array_count(enc, args->DataSizeInBytes);
-        npt_encode_blob_array(enc, args->pData, args->DataSizeInBytes);
-    } else {
-        npt_encode_array_count(enc, 0);
+    {
+        const uint64_t _n_pData = ((HRESULT)args->ret < 0) ? 0 : ((uint64_t)(args->DataSizeInBytes) < args->_cap_pData ? (uint64_t)(args->DataSizeInBytes) : args->_cap_pData);
+        if (args->pData) {
+            npt_encode_array_count(enc, _n_pData);
+            npt_encode_blob_array(enc, args->pData, _n_pData);
+        } else {
+            npt_encode_array_count(enc, 0);
+        }
     }
 }
 

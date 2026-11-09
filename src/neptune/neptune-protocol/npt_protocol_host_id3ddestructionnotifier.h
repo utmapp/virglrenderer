@@ -34,17 +34,13 @@ npt_decode_ID3DDestructionNotifier_RegisterDestructionCallback_args_temp(struct 
                                                                          struct npt_command_ID3DDestructionNotifier_RegisterDestructionCallback *args)
 {
     /* Decode input parameters from the wire */
-    /* ERROR: callbackFn (PFN_DESTRUCTION_CALLBACK) is not serializable */
+    /* callbackFn (PFN_DESTRUCTION_CALLBACK) is not serializable */
+    npt_cs_decoder_set_fatal(dec);
     return;
-    /* ERROR: pData (void) is not serializable */
-    return;
-
     /* Allocate temp storage for output-only parameters */
 
 
-    args->pCallbackID = npt_cs_decoder_alloc_temp(dec, sizeof(UINT));
-    if (!args->pCallbackID) return;
-    memset(args->pCallbackID, 0, sizeof(UINT));
+
 }
 
 static inline void

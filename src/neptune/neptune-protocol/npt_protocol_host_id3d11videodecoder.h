@@ -34,7 +34,6 @@ npt_decode_ID3D11VideoDecoder_GetCreationParameters_args_temp(struct npt_cs_deco
 {
     /* Decode input parameters from the wire */
 
-
     /* Allocate temp storage for output-only parameters */
     args->pVideoDesc = npt_cs_decoder_alloc_temp(dec, sizeof(D3D11_VIDEO_DECODER_DESC));
     if (!args->pVideoDesc) return;

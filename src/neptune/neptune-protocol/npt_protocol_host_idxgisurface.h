@@ -286,7 +286,6 @@ npt_decode_IDXGISurface1_GetDC_args_temp(struct npt_cs_decoder *dec,
 {
     /* Decode input parameters from the wire */
     npt_decode_BOOL(dec, &args->Discard);
-
     /* Allocate temp storage for output-only parameters */
 
     args->phdc = npt_cs_decoder_alloc_temp(dec, sizeof(HDC));
@@ -576,7 +575,6 @@ npt_decode_IDXGISurface2_GetResource_args_temp(struct npt_cs_decoder *dec,
             args->ppParentResource = NULL;
         }
     }
-
     /* Allocate temp storage for output-only parameters */
 
 

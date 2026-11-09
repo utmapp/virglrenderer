@@ -2490,6 +2490,8 @@ npt_decode_ID3D12Device_CopyDescriptors_args_temp(struct npt_cs_decoder *dec,
         _has_cnt_pDestDescriptorRangeStarts = 1;
         args->pDestDescriptorRangeStarts = npt_cs_decoder_alloc_temp_array(dec, sizeof(D3D12_CPU_DESCRIPTOR_HANDLE), _cnt_pDestDescriptorRangeStarts ? _cnt_pDestDescriptorRangeStarts : 1);
         if (!args->pDestDescriptorRangeStarts) return;
+        /* Present but empty: a callee that walks it anyway reads zeros, not the previous command. */
+        if (!_cnt_pDestDescriptorRangeStarts) memset((void *)args->pDestDescriptorRangeStarts, 0, sizeof(D3D12_CPU_DESCRIPTOR_HANDLE));
         for (uint32_t _i = 0; _i < (uint32_t)_cnt_pDestDescriptorRangeStarts; _i++)
             npt_decode_D3D12_CPU_DESCRIPTOR_HANDLE(dec, (D3D12_CPU_DESCRIPTOR_HANDLE *)&args->pDestDescriptorRangeStarts[_i]);
     } else {
@@ -2500,6 +2502,8 @@ npt_decode_ID3D12Device_CopyDescriptors_args_temp(struct npt_cs_decoder *dec,
         _has_cnt_pDestDescriptorRangeSizes = 1;
         args->pDestDescriptorRangeSizes = npt_cs_decoder_alloc_temp_array(dec, sizeof(UINT), _cnt_pDestDescriptorRangeSizes ? _cnt_pDestDescriptorRangeSizes : 1);
         if (!args->pDestDescriptorRangeSizes) return;
+        /* Present but empty: a callee that walks it anyway reads zeros, not the previous command. */
+        if (!_cnt_pDestDescriptorRangeSizes) memset((void *)args->pDestDescriptorRangeSizes, 0, sizeof(UINT));
         npt_decode_UINT_array(dec, (UINT *)args->pDestDescriptorRangeSizes, _cnt_pDestDescriptorRangeSizes);
     } else {
         args->pDestDescriptorRangeSizes = NULL;
@@ -2510,6 +2514,8 @@ npt_decode_ID3D12Device_CopyDescriptors_args_temp(struct npt_cs_decoder *dec,
         _has_cnt_pSrcDescriptorRangeStarts = 1;
         args->pSrcDescriptorRangeStarts = npt_cs_decoder_alloc_temp_array(dec, sizeof(D3D12_CPU_DESCRIPTOR_HANDLE), _cnt_pSrcDescriptorRangeStarts ? _cnt_pSrcDescriptorRangeStarts : 1);
         if (!args->pSrcDescriptorRangeStarts) return;
+        /* Present but empty: a callee that walks it anyway reads zeros, not the previous command. */
+        if (!_cnt_pSrcDescriptorRangeStarts) memset((void *)args->pSrcDescriptorRangeStarts, 0, sizeof(D3D12_CPU_DESCRIPTOR_HANDLE));
         for (uint32_t _i = 0; _i < (uint32_t)_cnt_pSrcDescriptorRangeStarts; _i++)
             npt_decode_D3D12_CPU_DESCRIPTOR_HANDLE(dec, (D3D12_CPU_DESCRIPTOR_HANDLE *)&args->pSrcDescriptorRangeStarts[_i]);
     } else {
@@ -2520,6 +2526,8 @@ npt_decode_ID3D12Device_CopyDescriptors_args_temp(struct npt_cs_decoder *dec,
         _has_cnt_pSrcDescriptorRangeSizes = 1;
         args->pSrcDescriptorRangeSizes = npt_cs_decoder_alloc_temp_array(dec, sizeof(UINT), _cnt_pSrcDescriptorRangeSizes ? _cnt_pSrcDescriptorRangeSizes : 1);
         if (!args->pSrcDescriptorRangeSizes) return;
+        /* Present but empty: a callee that walks it anyway reads zeros, not the previous command. */
+        if (!_cnt_pSrcDescriptorRangeSizes) memset((void *)args->pSrcDescriptorRangeSizes, 0, sizeof(UINT));
         npt_decode_UINT_array(dec, (UINT *)args->pSrcDescriptorRangeSizes, _cnt_pSrcDescriptorRangeSizes);
     } else {
         args->pSrcDescriptorRangeSizes = NULL;
@@ -2817,6 +2825,8 @@ npt_decode_ID3D12Device_GetResourceAllocationInfo_args_temp(struct npt_cs_decode
         _has_cnt_pResourceDescs = 1;
         args->pResourceDescs = npt_cs_decoder_alloc_temp_array(dec, sizeof(D3D12_RESOURCE_DESC), _cnt_pResourceDescs ? _cnt_pResourceDescs : 1);
         if (!args->pResourceDescs) return;
+        /* Present but empty: a callee that walks it anyway reads zeros, not the previous command. */
+        if (!_cnt_pResourceDescs) memset((void *)args->pResourceDescs, 0, sizeof(D3D12_RESOURCE_DESC));
         for (uint32_t _i = 0; _i < (uint32_t)_cnt_pResourceDescs; _i++)
             npt_decode_D3D12_RESOURCE_DESC(dec, (D3D12_RESOURCE_DESC *)&args->pResourceDescs[_i]);
     } else {
@@ -3846,7 +3856,6 @@ npt_decode_ID3D12Device_CreateSharedHandle_args_temp(struct npt_cs_decoder *dec,
             args->Name = NULL;
         }
     }
-
     /* Allocate temp storage for output-only parameters */
 
 
@@ -4158,7 +4167,6 @@ npt_decode_ID3D12Device_OpenSharedHandleByName_args_temp(struct npt_cs_decoder *
         }
     }
     npt_decode_DWORD(dec, &args->Access);
-
     /* Allocate temp storage for output-only parameters */
 
 
@@ -4878,6 +4886,15 @@ struct npt_command_ID3D12Device_GetCopyableFootprints {
     UINT * pNumRows;
     UINT64 * pRowSizeInBytes;
     UINT64 * pTotalBytes;
+    /* Elements allocated for pLayouts at decode; the reply never
+     * encodes more, whatever count the callee wrote back. */
+    uint64_t _cap_pLayouts;
+    /* Elements allocated for pNumRows at decode; the reply never
+     * encodes more, whatever count the callee wrote back. */
+    uint64_t _cap_pNumRows;
+    /* Elements allocated for pRowSizeInBytes at decode; the reply never
+     * encodes more, whatever count the callee wrote back. */
+    uint64_t _cap_pRowSizeInBytes;
 };
 
 static inline void
@@ -4897,10 +4914,6 @@ npt_decode_ID3D12Device_GetCopyableFootprints_args_temp(struct npt_cs_decoder *d
     npt_decode_UINT(dec, &args->FirstSubresource);
     npt_decode_UINT(dec, &args->NumSubresources);
     npt_decode_UINT64(dec, &args->BaseOffset);
-
-
-
-
     /* Allocate temp storage for output-only parameters */
 
 
@@ -4913,6 +4926,7 @@ npt_decode_ID3D12Device_GetCopyableFootprints_args_temp(struct npt_cs_decoder *d
     } else {
         args->pLayouts = NULL;
     }
+    args->_cap_pLayouts = args->pLayouts ? (uint64_t)(args->NumSubresources) : 0;
     if (args->NumSubresources) {
         args->pNumRows = npt_cs_decoder_alloc_temp_array(dec, sizeof(UINT), args->NumSubresources);
         if (!args->pNumRows) return;
@@ -4920,6 +4934,7 @@ npt_decode_ID3D12Device_GetCopyableFootprints_args_temp(struct npt_cs_decoder *d
     } else {
         args->pNumRows = NULL;
     }
+    args->_cap_pNumRows = args->pNumRows ? (uint64_t)(args->NumSubresources) : 0;
     if (args->NumSubresources) {
         args->pRowSizeInBytes = npt_cs_decoder_alloc_temp_array(dec, sizeof(UINT64), args->NumSubresources);
         if (!args->pRowSizeInBytes) return;
@@ -4927,6 +4942,7 @@ npt_decode_ID3D12Device_GetCopyableFootprints_args_temp(struct npt_cs_decoder *d
     } else {
         args->pRowSizeInBytes = NULL;
     }
+    args->_cap_pRowSizeInBytes = args->pRowSizeInBytes ? (uint64_t)(args->NumSubresources) : 0;
     args->pTotalBytes = npt_cs_decoder_alloc_temp(dec, sizeof(UINT64));
     if (!args->pTotalBytes) return;
     memset(args->pTotalBytes, 0, sizeof(UINT64));
@@ -4947,24 +4963,33 @@ npt_encode_ID3D12Device_GetCopyableFootprints_reply(struct npt_cs_encoder *enc,
         .cmd_return = 0,
     };
     npt_cs_encoder_write(enc, sizeof(_reply), &_reply, sizeof(_reply));
-    if (args->pLayouts) {
-        npt_encode_array_count(enc, args->NumSubresources);
-        for (uint32_t _i = 0; _i < (uint32_t)(args->NumSubresources); _i++)
-            npt_encode_D3D12_PLACED_SUBRESOURCE_FOOTPRINT(enc, &args->pLayouts[_i]);
-    } else {
-        npt_encode_array_count(enc, 0);
+    {
+        const uint64_t _n_pLayouts = (uint64_t)(args->NumSubresources) < args->_cap_pLayouts ? (uint64_t)(args->NumSubresources) : args->_cap_pLayouts;
+        if (args->pLayouts) {
+            npt_encode_array_count(enc, _n_pLayouts);
+            for (uint32_t _i = 0; _i < (uint32_t)(_n_pLayouts); _i++)
+                npt_encode_D3D12_PLACED_SUBRESOURCE_FOOTPRINT(enc, &args->pLayouts[_i]);
+        } else {
+            npt_encode_array_count(enc, 0);
+        }
     }
-    if (args->pNumRows) {
-        npt_encode_array_count(enc, args->NumSubresources);
-        npt_encode_UINT_array(enc, args->pNumRows, args->NumSubresources);
-    } else {
-        npt_encode_array_count(enc, 0);
+    {
+        const uint64_t _n_pNumRows = (uint64_t)(args->NumSubresources) < args->_cap_pNumRows ? (uint64_t)(args->NumSubresources) : args->_cap_pNumRows;
+        if (args->pNumRows) {
+            npt_encode_array_count(enc, _n_pNumRows);
+            npt_encode_UINT_array(enc, args->pNumRows, _n_pNumRows);
+        } else {
+            npt_encode_array_count(enc, 0);
+        }
     }
-    if (args->pRowSizeInBytes) {
-        npt_encode_array_count(enc, args->NumSubresources);
-        npt_encode_UINT64_array(enc, args->pRowSizeInBytes, args->NumSubresources);
-    } else {
-        npt_encode_array_count(enc, 0);
+    {
+        const uint64_t _n_pRowSizeInBytes = (uint64_t)(args->NumSubresources) < args->_cap_pRowSizeInBytes ? (uint64_t)(args->NumSubresources) : args->_cap_pRowSizeInBytes;
+        if (args->pRowSizeInBytes) {
+            npt_encode_array_count(enc, _n_pRowSizeInBytes);
+            npt_encode_UINT64_array(enc, args->pRowSizeInBytes, _n_pRowSizeInBytes);
+        } else {
+            npt_encode_array_count(enc, 0);
+        }
     }
     if (npt_encode_simple_pointer(enc, args->pTotalBytes))
         npt_encode_UINT64(enc, args->pTotalBytes);
@@ -5542,6 +5567,9 @@ struct npt_command_ID3D12Device_GetResourceTiling {
     UINT * pNumSubresourceTilings;
     UINT FirstSubresourceTilingToGet;
     D3D12_SUBRESOURCE_TILING * pSubresourceTilingsForNonPackedMips;
+    /* Elements allocated for pSubresourceTilingsForNonPackedMips at decode; the reply never
+     * encodes more, whatever count the callee wrote back. */
+    uint64_t _cap_pSubresourceTilingsForNonPackedMips;
 };
 
 static inline void
@@ -5554,9 +5582,6 @@ npt_decode_ID3D12Device_GetResourceTiling_args_temp(struct npt_cs_decoder *dec,
         npt_decode_uint64_t(dec, &_id);
         args->pTiledResource = (ID3D12Resource *)npt_object_from_id(_id);
     }
-
-
-
     if (npt_decode_simple_pointer(dec)) {
         args->pNumSubresourceTilings = npt_cs_decoder_alloc_temp(dec, sizeof(UINT));
         if (!args->pNumSubresourceTilings) return;
@@ -5565,7 +5590,6 @@ npt_decode_ID3D12Device_GetResourceTiling_args_temp(struct npt_cs_decoder *dec,
         args->pNumSubresourceTilings = NULL;
     }
     npt_decode_UINT(dec, &args->FirstSubresourceTilingToGet);
-
     /* Allocate temp storage for output-only parameters */
 
     args->pNumTilesForEntireResource = npt_cs_decoder_alloc_temp(dec, sizeof(UINT));
@@ -5586,6 +5610,7 @@ npt_decode_ID3D12Device_GetResourceTiling_args_temp(struct npt_cs_decoder *dec,
     } else {
         args->pSubresourceTilingsForNonPackedMips = NULL;
     }
+    args->_cap_pSubresourceTilingsForNonPackedMips = args->pSubresourceTilingsForNonPackedMips ? (uint64_t)((args->pNumSubresourceTilings ? *args->pNumSubresourceTilings : 0)) : 0;
 }
 
 static inline void
@@ -5612,12 +5637,15 @@ npt_encode_ID3D12Device_GetResourceTiling_reply(struct npt_cs_encoder *enc,
         npt_encode_D3D12_TILE_SHAPE(enc, args->pStandardTileShapeForNonPackedMips);
     if (npt_encode_simple_pointer(enc, args->pNumSubresourceTilings))
         npt_encode_UINT(enc, args->pNumSubresourceTilings);
-    if (args->pSubresourceTilingsForNonPackedMips) {
-        npt_encode_array_count(enc, (args->pNumSubresourceTilings ? *args->pNumSubresourceTilings : 0));
-        for (uint32_t _i = 0; _i < (uint32_t)((args->pNumSubresourceTilings ? *args->pNumSubresourceTilings : 0)); _i++)
-            npt_encode_D3D12_SUBRESOURCE_TILING(enc, &args->pSubresourceTilingsForNonPackedMips[_i]);
-    } else {
-        npt_encode_array_count(enc, 0);
+    {
+        const uint64_t _n_pSubresourceTilingsForNonPackedMips = (uint64_t)((args->pNumSubresourceTilings ? *args->pNumSubresourceTilings : 0)) < args->_cap_pSubresourceTilingsForNonPackedMips ? (uint64_t)((args->pNumSubresourceTilings ? *args->pNumSubresourceTilings : 0)) : args->_cap_pSubresourceTilingsForNonPackedMips;
+        if (args->pSubresourceTilingsForNonPackedMips) {
+            npt_encode_array_count(enc, _n_pSubresourceTilingsForNonPackedMips);
+            for (uint32_t _i = 0; _i < (uint32_t)(_n_pSubresourceTilingsForNonPackedMips); _i++)
+                npt_encode_D3D12_SUBRESOURCE_TILING(enc, &args->pSubresourceTilingsForNonPackedMips[_i]);
+        } else {
+            npt_encode_array_count(enc, 0);
+        }
     }
 }
 
@@ -6053,6 +6081,8 @@ npt_decode_ID3D12Device1_SetEventOnMultipleFenceCompletion_args_temp(struct npt_
         _has_cnt_pFenceValues = 1;
         args->pFenceValues = npt_cs_decoder_alloc_temp_array(dec, sizeof(UINT64), _cnt_pFenceValues ? _cnt_pFenceValues : 1);
         if (!args->pFenceValues) return;
+        /* Present but empty: a callee that walks it anyway reads zeros, not the previous command. */
+        if (!_cnt_pFenceValues) memset((void *)args->pFenceValues, 0, sizeof(UINT64));
         npt_decode_UINT64_array(dec, (UINT64 *)args->pFenceValues, _cnt_pFenceValues);
     } else {
         args->pFenceValues = NULL;
@@ -6232,6 +6262,8 @@ npt_decode_ID3D12Device1_SetResidencyPriority_args_temp(struct npt_cs_decoder *d
         _has_cnt_pPriorities = 1;
         args->pPriorities = npt_cs_decoder_alloc_temp_array(dec, sizeof(D3D12_RESIDENCY_PRIORITY), _cnt_pPriorities ? _cnt_pPriorities : 1);
         if (!args->pPriorities) return;
+        /* Present but empty: a callee that walks it anyway reads zeros, not the previous command. */
+        if (!_cnt_pPriorities) memset((void *)args->pPriorities, 0, sizeof(D3D12_RESIDENCY_PRIORITY));
         npt_decode_D3D12_RESIDENCY_PRIORITY_array(dec, (D3D12_RESIDENCY_PRIORITY *)args->pPriorities, _cnt_pPriorities);
     } else {
         args->pPriorities = NULL;
@@ -6556,29 +6588,9 @@ npt_decode_ID3D12Device3_OpenExistingHeapFromAddress_args_temp(struct npt_cs_dec
                                                                struct npt_command_ID3D12Device3_OpenExistingHeapFromAddress *args)
 {
     /* Decode input parameters from the wire */
-    /* ERROR: pAddress (void) is not serializable */
+    /* pAddress (void) is not serializable */
+    npt_cs_decoder_set_fatal(dec);
     return;
-    if (npt_decode_simple_pointer(dec)) {
-        args->riid = npt_cs_decoder_alloc_temp(dec, sizeof(IID));
-        if (!args->riid) return;
-        npt_decode_IID(dec, (IID *)args->riid);
-    } else {
-        args->riid = NULL;
-        npt_cs_decoder_set_fatal(dec); /* non-optional pointer is NULL */
-        return;
-    }
-    {
-        uint64_t _gid;
-        npt_decode_uint64_t(dec, &_gid);
-        args->_guest_id_ppvHeap = _gid;
-        if (_gid) {
-            args->ppvHeap = npt_cs_decoder_alloc_temp(dec, sizeof(void *));
-            if (!args->ppvHeap) return;
-            *args->ppvHeap = NULL;
-        } else {
-            args->ppvHeap = NULL;
-        }
-    }
     /* Allocate temp storage for output-only parameters */
 
 
@@ -7943,6 +7955,9 @@ struct npt_command_ID3D12Device4_GetResourceAllocationInfo1 {
     UINT numResourceDescs;
     const D3D12_RESOURCE_DESC * pResourceDescs;
     D3D12_RESOURCE_ALLOCATION_INFO1 * pResourceAllocationInfo1;
+    /* Elements allocated for pResourceAllocationInfo1 at decode; the reply never
+     * encodes more, whatever count the callee wrote back. */
+    uint64_t _cap_pResourceAllocationInfo1;
     D3D12_RESOURCE_ALLOCATION_INFO ret;
 };
 
@@ -7959,12 +7974,13 @@ npt_decode_ID3D12Device4_GetResourceAllocationInfo1_args_temp(struct npt_cs_deco
         _has_cnt_pResourceDescs = 1;
         args->pResourceDescs = npt_cs_decoder_alloc_temp_array(dec, sizeof(D3D12_RESOURCE_DESC), _cnt_pResourceDescs ? _cnt_pResourceDescs : 1);
         if (!args->pResourceDescs) return;
+        /* Present but empty: a callee that walks it anyway reads zeros, not the previous command. */
+        if (!_cnt_pResourceDescs) memset((void *)args->pResourceDescs, 0, sizeof(D3D12_RESOURCE_DESC));
         for (uint32_t _i = 0; _i < (uint32_t)_cnt_pResourceDescs; _i++)
             npt_decode_D3D12_RESOURCE_DESC(dec, (D3D12_RESOURCE_DESC *)&args->pResourceDescs[_i]);
     } else {
         args->pResourceDescs = NULL;
     }
-
     /* A counted array must hold every element the callee walks. */
     if ((_has_cnt_pResourceDescs > 0 && _cnt_pResourceDescs < (uint64_t)(args->numResourceDescs)) ||
         (_has_cnt_pResourceDescs == 0 && (uint64_t)(args->numResourceDescs) != 0)) {
@@ -7982,6 +7998,7 @@ npt_decode_ID3D12Device4_GetResourceAllocationInfo1_args_temp(struct npt_cs_deco
     } else {
         args->pResourceAllocationInfo1 = NULL;
     }
+    args->_cap_pResourceAllocationInfo1 = args->pResourceAllocationInfo1 ? (uint64_t)(args->numResourceDescs) : 0;
 }
 
 static inline void
@@ -8000,12 +8017,15 @@ npt_encode_ID3D12Device4_GetResourceAllocationInfo1_reply(struct npt_cs_encoder 
     };
     npt_cs_encoder_write(enc, sizeof(_reply), &_reply, sizeof(_reply));
     npt_encode_D3D12_RESOURCE_ALLOCATION_INFO(enc, &args->ret);
-    if (args->pResourceAllocationInfo1) {
-        npt_encode_array_count(enc, args->numResourceDescs);
-        for (uint32_t _i = 0; _i < (uint32_t)(args->numResourceDescs); _i++)
-            npt_encode_D3D12_RESOURCE_ALLOCATION_INFO1(enc, &args->pResourceAllocationInfo1[_i]);
-    } else {
-        npt_encode_array_count(enc, 0);
+    {
+        const uint64_t _n_pResourceAllocationInfo1 = (uint64_t)(args->numResourceDescs) < args->_cap_pResourceAllocationInfo1 ? (uint64_t)(args->numResourceDescs) : args->_cap_pResourceAllocationInfo1;
+        if (args->pResourceAllocationInfo1) {
+            npt_encode_array_count(enc, _n_pResourceAllocationInfo1);
+            for (uint32_t _i = 0; _i < (uint32_t)(_n_pResourceAllocationInfo1); _i++)
+                npt_encode_D3D12_RESOURCE_ALLOCATION_INFO1(enc, &args->pResourceAllocationInfo1[_i]);
+        } else {
+            npt_encode_array_count(enc, 0);
+        }
     }
 }
 
@@ -8395,6 +8415,9 @@ struct npt_command_ID3D12Device5_EnumerateMetaCommands {
     void *_self;
     UINT * pNumMetaCommands;
     D3D12_META_COMMAND_DESC * pDescs;
+    /* Elements allocated for pDescs at decode; the reply never
+     * encodes more, whatever count the callee wrote back. */
+    uint64_t _cap_pDescs;
     HRESULT ret;
 };
 
@@ -8412,7 +8435,6 @@ npt_decode_ID3D12Device5_EnumerateMetaCommands_args_temp(struct npt_cs_decoder *
         npt_cs_decoder_set_fatal(dec); /* non-optional pointer is NULL */
         return;
     }
-
     /* Allocate temp storage for output-only parameters */
 
     if (*args->pNumMetaCommands) {
@@ -8422,6 +8444,7 @@ npt_decode_ID3D12Device5_EnumerateMetaCommands_args_temp(struct npt_cs_decoder *
     } else {
         args->pDescs = NULL;
     }
+    args->_cap_pDescs = args->pDescs ? (uint64_t)(*args->pNumMetaCommands) : 0;
 }
 
 static inline void
@@ -8542,6 +8565,9 @@ struct npt_command_ID3D12Device5_EnumerateMetaCommandParameters {
     UINT * pTotalStructureSizeInBytes;
     UINT * pParameterCount;
     D3D12_META_COMMAND_PARAMETER_DESC * pParameterDescs;
+    /* Elements allocated for pParameterDescs at decode; the reply never
+     * encodes more, whatever count the callee wrote back. */
+    uint64_t _cap_pParameterDescs;
     HRESULT ret;
 };
 
@@ -8560,7 +8586,6 @@ npt_decode_ID3D12Device5_EnumerateMetaCommandParameters_args_temp(struct npt_cs_
         return;
     }
     npt_decode_D3D12_META_COMMAND_PARAMETER_STAGE(dec, &args->Stage);
-
     if (npt_decode_simple_pointer(dec)) {
         args->pParameterCount = npt_cs_decoder_alloc_temp(dec, sizeof(UINT));
         if (!args->pParameterCount) return;
@@ -8570,7 +8595,6 @@ npt_decode_ID3D12Device5_EnumerateMetaCommandParameters_args_temp(struct npt_cs_
         npt_cs_decoder_set_fatal(dec); /* non-optional pointer is NULL */
         return;
     }
-
     /* Allocate temp storage for output-only parameters */
 
 
@@ -8585,6 +8609,7 @@ npt_decode_ID3D12Device5_EnumerateMetaCommandParameters_args_temp(struct npt_cs_
     } else {
         args->pParameterDescs = NULL;
     }
+    args->_cap_pParameterDescs = args->pParameterDescs ? (uint64_t)(*args->pParameterCount) : 0;
 }
 
 static inline void
@@ -9081,7 +9106,6 @@ npt_decode_ID3D12Device5_GetRaytracingAccelerationStructurePrebuildInfo_args_tem
         npt_cs_decoder_set_fatal(dec); /* non-optional pointer is NULL */
         return;
     }
-
     /* Allocate temp storage for output-only parameters */
 
     args->pInfo = npt_cs_decoder_alloc_temp(dec, sizeof(D3D12_RAYTRACING_ACCELERATION_STRUCTURE_PREBUILD_INFO));
@@ -9357,7 +9381,6 @@ npt_decode_ID3D12Device6_SetBackgroundProcessingMode_args_temp(struct npt_cs_dec
         npt_decode_uint64_t(dec, &_id);
         args->hEventToSignalUponCompletion = (HANDLE)(uintptr_t)npt_win32_handle_from_id(_id);
     }
-
     /* Allocate temp storage for output-only parameters */
 
 
@@ -9832,6 +9855,9 @@ struct npt_command_ID3D12Device8_GetResourceAllocationInfo2 {
     UINT numResourceDescs;
     const D3D12_RESOURCE_DESC1 * pResourceDescs;
     D3D12_RESOURCE_ALLOCATION_INFO1 * pResourceAllocationInfo1;
+    /* Elements allocated for pResourceAllocationInfo1 at decode; the reply never
+     * encodes more, whatever count the callee wrote back. */
+    uint64_t _cap_pResourceAllocationInfo1;
     D3D12_RESOURCE_ALLOCATION_INFO ret;
 };
 
@@ -9848,12 +9874,13 @@ npt_decode_ID3D12Device8_GetResourceAllocationInfo2_args_temp(struct npt_cs_deco
         _has_cnt_pResourceDescs = 1;
         args->pResourceDescs = npt_cs_decoder_alloc_temp_array(dec, sizeof(D3D12_RESOURCE_DESC1), _cnt_pResourceDescs ? _cnt_pResourceDescs : 1);
         if (!args->pResourceDescs) return;
+        /* Present but empty: a callee that walks it anyway reads zeros, not the previous command. */
+        if (!_cnt_pResourceDescs) memset((void *)args->pResourceDescs, 0, sizeof(D3D12_RESOURCE_DESC1));
         for (uint32_t _i = 0; _i < (uint32_t)_cnt_pResourceDescs; _i++)
             npt_decode_D3D12_RESOURCE_DESC1(dec, (D3D12_RESOURCE_DESC1 *)&args->pResourceDescs[_i]);
     } else {
         args->pResourceDescs = NULL;
     }
-
     /* A counted array must hold every element the callee walks. */
     if ((_has_cnt_pResourceDescs > 0 && _cnt_pResourceDescs < (uint64_t)(args->numResourceDescs)) ||
         (_has_cnt_pResourceDescs == 0 && (uint64_t)(args->numResourceDescs) != 0)) {
@@ -9871,6 +9898,7 @@ npt_decode_ID3D12Device8_GetResourceAllocationInfo2_args_temp(struct npt_cs_deco
     } else {
         args->pResourceAllocationInfo1 = NULL;
     }
+    args->_cap_pResourceAllocationInfo1 = args->pResourceAllocationInfo1 ? (uint64_t)(args->numResourceDescs) : 0;
 }
 
 static inline void
@@ -9889,12 +9917,15 @@ npt_encode_ID3D12Device8_GetResourceAllocationInfo2_reply(struct npt_cs_encoder 
     };
     npt_cs_encoder_write(enc, sizeof(_reply), &_reply, sizeof(_reply));
     npt_encode_D3D12_RESOURCE_ALLOCATION_INFO(enc, &args->ret);
-    if (args->pResourceAllocationInfo1) {
-        npt_encode_array_count(enc, args->numResourceDescs);
-        for (uint32_t _i = 0; _i < (uint32_t)(args->numResourceDescs); _i++)
-            npt_encode_D3D12_RESOURCE_ALLOCATION_INFO1(enc, &args->pResourceAllocationInfo1[_i]);
-    } else {
-        npt_encode_array_count(enc, 0);
+    {
+        const uint64_t _n_pResourceAllocationInfo1 = (uint64_t)(args->numResourceDescs) < args->_cap_pResourceAllocationInfo1 ? (uint64_t)(args->numResourceDescs) : args->_cap_pResourceAllocationInfo1;
+        if (args->pResourceAllocationInfo1) {
+            npt_encode_array_count(enc, _n_pResourceAllocationInfo1);
+            for (uint32_t _i = 0; _i < (uint32_t)(_n_pResourceAllocationInfo1); _i++)
+                npt_encode_D3D12_RESOURCE_ALLOCATION_INFO1(enc, &args->pResourceAllocationInfo1[_i]);
+        } else {
+            npt_encode_array_count(enc, 0);
+        }
     }
 }
 
@@ -10537,6 +10568,15 @@ struct npt_command_ID3D12Device8_GetCopyableFootprints1 {
     UINT * pNumRows;
     UINT64 * pRowSizeInBytes;
     UINT64 * pTotalBytes;
+    /* Elements allocated for pLayouts at decode; the reply never
+     * encodes more, whatever count the callee wrote back. */
+    uint64_t _cap_pLayouts;
+    /* Elements allocated for pNumRows at decode; the reply never
+     * encodes more, whatever count the callee wrote back. */
+    uint64_t _cap_pNumRows;
+    /* Elements allocated for pRowSizeInBytes at decode; the reply never
+     * encodes more, whatever count the callee wrote back. */
+    uint64_t _cap_pRowSizeInBytes;
 };
 
 static inline void
@@ -10556,10 +10596,6 @@ npt_decode_ID3D12Device8_GetCopyableFootprints1_args_temp(struct npt_cs_decoder 
     npt_decode_UINT(dec, &args->FirstSubresource);
     npt_decode_UINT(dec, &args->NumSubresources);
     npt_decode_UINT64(dec, &args->BaseOffset);
-
-
-
-
     /* Allocate temp storage for output-only parameters */
 
 
@@ -10572,6 +10608,7 @@ npt_decode_ID3D12Device8_GetCopyableFootprints1_args_temp(struct npt_cs_decoder 
     } else {
         args->pLayouts = NULL;
     }
+    args->_cap_pLayouts = args->pLayouts ? (uint64_t)(args->NumSubresources) : 0;
     if (args->NumSubresources) {
         args->pNumRows = npt_cs_decoder_alloc_temp_array(dec, sizeof(UINT), args->NumSubresources);
         if (!args->pNumRows) return;
@@ -10579,6 +10616,7 @@ npt_decode_ID3D12Device8_GetCopyableFootprints1_args_temp(struct npt_cs_decoder 
     } else {
         args->pNumRows = NULL;
     }
+    args->_cap_pNumRows = args->pNumRows ? (uint64_t)(args->NumSubresources) : 0;
     if (args->NumSubresources) {
         args->pRowSizeInBytes = npt_cs_decoder_alloc_temp_array(dec, sizeof(UINT64), args->NumSubresources);
         if (!args->pRowSizeInBytes) return;
@@ -10586,6 +10624,7 @@ npt_decode_ID3D12Device8_GetCopyableFootprints1_args_temp(struct npt_cs_decoder 
     } else {
         args->pRowSizeInBytes = NULL;
     }
+    args->_cap_pRowSizeInBytes = args->pRowSizeInBytes ? (uint64_t)(args->NumSubresources) : 0;
     args->pTotalBytes = npt_cs_decoder_alloc_temp(dec, sizeof(UINT64));
     if (!args->pTotalBytes) return;
     memset(args->pTotalBytes, 0, sizeof(UINT64));
@@ -10606,24 +10645,33 @@ npt_encode_ID3D12Device8_GetCopyableFootprints1_reply(struct npt_cs_encoder *enc
         .cmd_return = 0,
     };
     npt_cs_encoder_write(enc, sizeof(_reply), &_reply, sizeof(_reply));
-    if (args->pLayouts) {
-        npt_encode_array_count(enc, args->NumSubresources);
-        for (uint32_t _i = 0; _i < (uint32_t)(args->NumSubresources); _i++)
-            npt_encode_D3D12_PLACED_SUBRESOURCE_FOOTPRINT(enc, &args->pLayouts[_i]);
-    } else {
-        npt_encode_array_count(enc, 0);
+    {
+        const uint64_t _n_pLayouts = (uint64_t)(args->NumSubresources) < args->_cap_pLayouts ? (uint64_t)(args->NumSubresources) : args->_cap_pLayouts;
+        if (args->pLayouts) {
+            npt_encode_array_count(enc, _n_pLayouts);
+            for (uint32_t _i = 0; _i < (uint32_t)(_n_pLayouts); _i++)
+                npt_encode_D3D12_PLACED_SUBRESOURCE_FOOTPRINT(enc, &args->pLayouts[_i]);
+        } else {
+            npt_encode_array_count(enc, 0);
+        }
     }
-    if (args->pNumRows) {
-        npt_encode_array_count(enc, args->NumSubresources);
-        npt_encode_UINT_array(enc, args->pNumRows, args->NumSubresources);
-    } else {
-        npt_encode_array_count(enc, 0);
+    {
+        const uint64_t _n_pNumRows = (uint64_t)(args->NumSubresources) < args->_cap_pNumRows ? (uint64_t)(args->NumSubresources) : args->_cap_pNumRows;
+        if (args->pNumRows) {
+            npt_encode_array_count(enc, _n_pNumRows);
+            npt_encode_UINT_array(enc, args->pNumRows, _n_pNumRows);
+        } else {
+            npt_encode_array_count(enc, 0);
+        }
     }
-    if (args->pRowSizeInBytes) {
-        npt_encode_array_count(enc, args->NumSubresources);
-        npt_encode_UINT64_array(enc, args->pRowSizeInBytes, args->NumSubresources);
-    } else {
-        npt_encode_array_count(enc, 0);
+    {
+        const uint64_t _n_pRowSizeInBytes = (uint64_t)(args->NumSubresources) < args->_cap_pRowSizeInBytes ? (uint64_t)(args->NumSubresources) : args->_cap_pRowSizeInBytes;
+        if (args->pRowSizeInBytes) {
+            npt_encode_array_count(enc, _n_pRowSizeInBytes);
+            npt_encode_UINT64_array(enc, args->pRowSizeInBytes, _n_pRowSizeInBytes);
+        } else {
+            npt_encode_array_count(enc, 0);
+        }
     }
     if (npt_encode_simple_pointer(enc, args->pTotalBytes))
         npt_encode_UINT64(enc, args->pTotalBytes);
@@ -11262,6 +11310,8 @@ npt_decode_ID3D12Device10_CreateCommittedResource3_args_temp(struct npt_cs_decod
         _has_cnt_pCastableFormats = 1;
         args->pCastableFormats = npt_cs_decoder_alloc_temp_array(dec, sizeof(DXGI_FORMAT), _cnt_pCastableFormats ? _cnt_pCastableFormats : 1);
         if (!args->pCastableFormats) return;
+        /* Present but empty: a callee that walks it anyway reads zeros, not the previous command. */
+        if (!_cnt_pCastableFormats) memset((void *)args->pCastableFormats, 0, sizeof(DXGI_FORMAT));
         npt_decode_DXGI_FORMAT_array(dec, (DXGI_FORMAT *)args->pCastableFormats, _cnt_pCastableFormats);
     } else {
         args->pCastableFormats = NULL;
@@ -11475,6 +11525,8 @@ npt_decode_ID3D12Device10_CreatePlacedResource2_args_temp(struct npt_cs_decoder 
         _has_cnt_pCastableFormats = 1;
         args->pCastableFormats = npt_cs_decoder_alloc_temp_array(dec, sizeof(DXGI_FORMAT), _cnt_pCastableFormats ? _cnt_pCastableFormats : 1);
         if (!args->pCastableFormats) return;
+        /* Present but empty: a callee that walks it anyway reads zeros, not the previous command. */
+        if (!_cnt_pCastableFormats) memset((void *)args->pCastableFormats, 0, sizeof(DXGI_FORMAT));
         npt_decode_DXGI_FORMAT_array(dec, (DXGI_FORMAT *)args->pCastableFormats, _cnt_pCastableFormats);
     } else {
         args->pCastableFormats = NULL;
@@ -11685,6 +11737,8 @@ npt_decode_ID3D12Device10_CreateReservedResource2_args_temp(struct npt_cs_decode
         _has_cnt_pCastableFormats = 1;
         args->pCastableFormats = npt_cs_decoder_alloc_temp_array(dec, sizeof(DXGI_FORMAT), _cnt_pCastableFormats ? _cnt_pCastableFormats : 1);
         if (!args->pCastableFormats) return;
+        /* Present but empty: a callee that walks it anyway reads zeros, not the previous command. */
+        if (!_cnt_pCastableFormats) memset((void *)args->pCastableFormats, 0, sizeof(DXGI_FORMAT));
         npt_decode_DXGI_FORMAT_array(dec, (DXGI_FORMAT *)args->pCastableFormats, _cnt_pCastableFormats);
     } else {
         args->pCastableFormats = NULL;
@@ -11985,6 +12039,9 @@ struct npt_command_ID3D12Device12_GetResourceAllocationInfo3 {
     const UINT32 * pNumCastableFormats;
     const DXGI_FORMAT ** ppCastableFormats;
     D3D12_RESOURCE_ALLOCATION_INFO1 * pResourceAllocationInfo1;
+    /* Elements allocated for pResourceAllocationInfo1 at decode; the reply never
+     * encodes more, whatever count the callee wrote back. */
+    uint64_t _cap_pResourceAllocationInfo1;
     D3D12_RESOURCE_ALLOCATION_INFO ret;
 };
 
@@ -12002,6 +12059,8 @@ npt_decode_ID3D12Device12_GetResourceAllocationInfo3_args_temp(struct npt_cs_dec
         _has_cnt_pResourceDescs = 1;
         args->pResourceDescs = npt_cs_decoder_alloc_temp_array(dec, sizeof(D3D12_RESOURCE_DESC1), _cnt_pResourceDescs ? _cnt_pResourceDescs : 1);
         if (!args->pResourceDescs) return;
+        /* Present but empty: a callee that walks it anyway reads zeros, not the previous command. */
+        if (!_cnt_pResourceDescs) memset((void *)args->pResourceDescs, 0, sizeof(D3D12_RESOURCE_DESC1));
         for (uint32_t _i = 0; _i < (uint32_t)_cnt_pResourceDescs; _i++)
             npt_decode_D3D12_RESOURCE_DESC1(dec, (D3D12_RESOURCE_DESC1 *)&args->pResourceDescs[_i]);
     } else {
@@ -12012,6 +12071,8 @@ npt_decode_ID3D12Device12_GetResourceAllocationInfo3_args_temp(struct npt_cs_dec
         _has_cnt_pNumCastableFormats = 1;
         args->pNumCastableFormats = npt_cs_decoder_alloc_temp_array(dec, sizeof(UINT32), _cnt_pNumCastableFormats ? _cnt_pNumCastableFormats : 1);
         if (!args->pNumCastableFormats) return;
+        /* Present but empty: a callee that walks it anyway reads zeros, not the previous command. */
+        if (!_cnt_pNumCastableFormats) memset((void *)args->pNumCastableFormats, 0, sizeof(UINT32));
         npt_decode_UINT32_array(dec, (UINT32 *)args->pNumCastableFormats, _cnt_pNumCastableFormats);
     } else {
         args->pNumCastableFormats = NULL;
@@ -12019,7 +12080,6 @@ npt_decode_ID3D12Device12_GetResourceAllocationInfo3_args_temp(struct npt_cs_dec
     /* ppCastableFormats: unsized optional, skip */
     (void)npt_decode_array_count_unchecked(dec);
     (void)args->ppCastableFormats;
-
     /* A counted array must hold every element the callee walks. */
     if ((_has_cnt_pResourceDescs > 0 && _cnt_pResourceDescs < (uint64_t)(args->numResourceDescs)) ||
         (_has_cnt_pResourceDescs == 0 && (uint64_t)(args->numResourceDescs) != 0)) {
@@ -12043,6 +12103,7 @@ npt_decode_ID3D12Device12_GetResourceAllocationInfo3_args_temp(struct npt_cs_dec
     } else {
         args->pResourceAllocationInfo1 = NULL;
     }
+    args->_cap_pResourceAllocationInfo1 = args->pResourceAllocationInfo1 ? (uint64_t)(args->numResourceDescs) : 0;
 }
 
 static inline void
@@ -12061,12 +12122,15 @@ npt_encode_ID3D12Device12_GetResourceAllocationInfo3_reply(struct npt_cs_encoder
     };
     npt_cs_encoder_write(enc, sizeof(_reply), &_reply, sizeof(_reply));
     npt_encode_D3D12_RESOURCE_ALLOCATION_INFO(enc, &args->ret);
-    if (args->pResourceAllocationInfo1) {
-        npt_encode_array_count(enc, args->numResourceDescs);
-        for (uint32_t _i = 0; _i < (uint32_t)(args->numResourceDescs); _i++)
-            npt_encode_D3D12_RESOURCE_ALLOCATION_INFO1(enc, &args->pResourceAllocationInfo1[_i]);
-    } else {
-        npt_encode_array_count(enc, 0);
+    {
+        const uint64_t _n_pResourceAllocationInfo1 = (uint64_t)(args->numResourceDescs) < args->_cap_pResourceAllocationInfo1 ? (uint64_t)(args->numResourceDescs) : args->_cap_pResourceAllocationInfo1;
+        if (args->pResourceAllocationInfo1) {
+            npt_encode_array_count(enc, _n_pResourceAllocationInfo1);
+            for (uint32_t _i = 0; _i < (uint32_t)(_n_pResourceAllocationInfo1); _i++)
+                npt_encode_D3D12_RESOURCE_ALLOCATION_INFO1(enc, &args->pResourceAllocationInfo1[_i]);
+        } else {
+            npt_encode_array_count(enc, 0);
+        }
     }
 }
 
@@ -12183,30 +12247,9 @@ npt_decode_ID3D12Device13_OpenExistingHeapFromAddress1_args_temp(struct npt_cs_d
                                                                  struct npt_command_ID3D12Device13_OpenExistingHeapFromAddress1 *args)
 {
     /* Decode input parameters from the wire */
-    /* ERROR: pAddress (void) is not serializable */
+    /* pAddress (void) is not serializable */
+    npt_cs_decoder_set_fatal(dec);
     return;
-    npt_decode_SIZE_T(dec, &args->size);
-    if (npt_decode_simple_pointer(dec)) {
-        args->riid = npt_cs_decoder_alloc_temp(dec, sizeof(IID));
-        if (!args->riid) return;
-        npt_decode_IID(dec, (IID *)args->riid);
-    } else {
-        args->riid = NULL;
-        npt_cs_decoder_set_fatal(dec); /* non-optional pointer is NULL */
-        return;
-    }
-    {
-        uint64_t _gid;
-        npt_decode_uint64_t(dec, &_gid);
-        args->_guest_id_ppvHeap = _gid;
-        if (_gid) {
-            args->ppvHeap = npt_cs_decoder_alloc_temp(dec, sizeof(void *));
-            if (!args->ppvHeap) return;
-            *args->ppvHeap = NULL;
-        } else {
-            args->ppvHeap = NULL;
-        }
-    }
     /* Allocate temp storage for output-only parameters */
 
 

@@ -36,6 +36,11 @@ npt_decode_ID3D11DeviceContext_VSSetConstantBuffers_args_temp(struct npt_cs_deco
     /* Decode input parameters from the wire */
     npt_decode_UINT(dec, &args->StartSlot);
     npt_decode_UINT(dec, &args->NumBuffers);
+    /* A binding run must stay inside the slot table the API fixes. */
+    if ((uint64_t)args->StartSlot + (uint64_t)args->NumBuffers > (uint64_t)(D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT)) {
+        npt_cs_decoder_set_fatal(dec);
+        return;
+    }
     _cnt_ppConstantBuffers = npt_decode_array_count_unchecked(dec);
     _has_cnt_ppConstantBuffers = _cnt_ppConstantBuffers != 0;
     if (_cnt_ppConstantBuffers) {
@@ -189,6 +194,11 @@ npt_decode_ID3D11DeviceContext_PSSetShaderResources_args_temp(struct npt_cs_deco
     /* Decode input parameters from the wire */
     npt_decode_UINT(dec, &args->StartSlot);
     npt_decode_UINT(dec, &args->NumViews);
+    /* A binding run must stay inside the slot table the API fixes. */
+    if ((uint64_t)args->StartSlot + (uint64_t)args->NumViews > (uint64_t)(D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT)) {
+        npt_cs_decoder_set_fatal(dec);
+        return;
+    }
     _cnt_ppShaderResourceViews = npt_decode_array_count_unchecked(dec);
     _has_cnt_ppShaderResourceViews = _cnt_ppShaderResourceViews != 0;
     if (_cnt_ppShaderResourceViews) {
@@ -500,6 +510,11 @@ npt_decode_ID3D11DeviceContext_PSSetSamplers_args_temp(struct npt_cs_decoder *de
     /* Decode input parameters from the wire */
     npt_decode_UINT(dec, &args->StartSlot);
     npt_decode_UINT(dec, &args->NumSamplers);
+    /* A binding run must stay inside the slot table the API fixes. */
+    if ((uint64_t)args->StartSlot + (uint64_t)args->NumSamplers > (uint64_t)(D3D11_COMMONSHADER_SAMPLER_SLOT_COUNT)) {
+        npt_cs_decoder_set_fatal(dec);
+        return;
+    }
     _cnt_ppSamplers = npt_decode_array_count_unchecked(dec);
     _has_cnt_ppSamplers = _cnt_ppSamplers != 0;
     if (_cnt_ppSamplers) {
@@ -1076,7 +1091,6 @@ npt_decode_ID3D11DeviceContext_Map_args_temp(struct npt_cs_decoder *dec,
     npt_decode_UINT(dec, &args->Subresource);
     npt_decode_D3D11_MAP(dec, &args->MapType);
     npt_decode_UINT(dec, &args->MapFlags);
-
     /* Allocate temp storage for output-only parameters */
 
 
@@ -1346,6 +1360,11 @@ npt_decode_ID3D11DeviceContext_PSSetConstantBuffers_args_temp(struct npt_cs_deco
     /* Decode input parameters from the wire */
     npt_decode_UINT(dec, &args->StartSlot);
     npt_decode_UINT(dec, &args->NumBuffers);
+    /* A binding run must stay inside the slot table the API fixes. */
+    if ((uint64_t)args->StartSlot + (uint64_t)args->NumBuffers > (uint64_t)(D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT)) {
+        npt_cs_decoder_set_fatal(dec);
+        return;
+    }
     _cnt_ppConstantBuffers = npt_decode_array_count_unchecked(dec);
     _has_cnt_ppConstantBuffers = _cnt_ppConstantBuffers != 0;
     if (_cnt_ppConstantBuffers) {
@@ -1632,6 +1651,11 @@ npt_decode_ID3D11DeviceContext_IASetVertexBuffers_args_temp(struct npt_cs_decode
     /* Decode input parameters from the wire */
     npt_decode_UINT(dec, &args->StartSlot);
     npt_decode_UINT(dec, &args->NumBuffers);
+    /* A binding run must stay inside the slot table the API fixes. */
+    if ((uint64_t)args->StartSlot + (uint64_t)args->NumBuffers > (uint64_t)(D3D11_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT)) {
+        npt_cs_decoder_set_fatal(dec);
+        return;
+    }
     _cnt_ppVertexBuffers = npt_decode_array_count_unchecked(dec);
     _has_cnt_ppVertexBuffers = _cnt_ppVertexBuffers != 0;
     if (_cnt_ppVertexBuffers) {
@@ -1650,6 +1674,8 @@ npt_decode_ID3D11DeviceContext_IASetVertexBuffers_args_temp(struct npt_cs_decode
         _has_cnt_pStrides = 1;
         args->pStrides = npt_cs_decoder_alloc_temp_array(dec, sizeof(UINT), _cnt_pStrides ? _cnt_pStrides : 1);
         if (!args->pStrides) return;
+        /* Present but empty: a callee that walks it anyway reads zeros, not the previous command. */
+        if (!_cnt_pStrides) memset((void *)args->pStrides, 0, sizeof(UINT));
         npt_decode_UINT_array(dec, (UINT *)args->pStrides, _cnt_pStrides);
     } else {
         args->pStrides = NULL;
@@ -1659,6 +1685,8 @@ npt_decode_ID3D11DeviceContext_IASetVertexBuffers_args_temp(struct npt_cs_decode
         _has_cnt_pOffsets = 1;
         args->pOffsets = npt_cs_decoder_alloc_temp_array(dec, sizeof(UINT), _cnt_pOffsets ? _cnt_pOffsets : 1);
         if (!args->pOffsets) return;
+        /* Present but empty: a callee that walks it anyway reads zeros, not the previous command. */
+        if (!_cnt_pOffsets) memset((void *)args->pOffsets, 0, sizeof(UINT));
         npt_decode_UINT_array(dec, (UINT *)args->pOffsets, _cnt_pOffsets);
     } else {
         args->pOffsets = NULL;
@@ -2217,6 +2245,11 @@ npt_decode_ID3D11DeviceContext_GSSetConstantBuffers_args_temp(struct npt_cs_deco
     /* Decode input parameters from the wire */
     npt_decode_UINT(dec, &args->StartSlot);
     npt_decode_UINT(dec, &args->NumBuffers);
+    /* A binding run must stay inside the slot table the API fixes. */
+    if ((uint64_t)args->StartSlot + (uint64_t)args->NumBuffers > (uint64_t)(D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT)) {
+        npt_cs_decoder_set_fatal(dec);
+        return;
+    }
     _cnt_ppConstantBuffers = npt_decode_array_count_unchecked(dec);
     _has_cnt_ppConstantBuffers = _cnt_ppConstantBuffers != 0;
     if (_cnt_ppConstantBuffers) {
@@ -2652,6 +2685,11 @@ npt_decode_ID3D11DeviceContext_VSSetShaderResources_args_temp(struct npt_cs_deco
     /* Decode input parameters from the wire */
     npt_decode_UINT(dec, &args->StartSlot);
     npt_decode_UINT(dec, &args->NumViews);
+    /* A binding run must stay inside the slot table the API fixes. */
+    if ((uint64_t)args->StartSlot + (uint64_t)args->NumViews > (uint64_t)(D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT)) {
+        npt_cs_decoder_set_fatal(dec);
+        return;
+    }
     _cnt_ppShaderResourceViews = npt_decode_array_count_unchecked(dec);
     _has_cnt_ppShaderResourceViews = _cnt_ppShaderResourceViews != 0;
     if (_cnt_ppShaderResourceViews) {
@@ -2805,6 +2843,11 @@ npt_decode_ID3D11DeviceContext_VSSetSamplers_args_temp(struct npt_cs_decoder *de
     /* Decode input parameters from the wire */
     npt_decode_UINT(dec, &args->StartSlot);
     npt_decode_UINT(dec, &args->NumSamplers);
+    /* A binding run must stay inside the slot table the API fixes. */
+    if ((uint64_t)args->StartSlot + (uint64_t)args->NumSamplers > (uint64_t)(D3D11_COMMONSHADER_SAMPLER_SLOT_COUNT)) {
+        npt_cs_decoder_set_fatal(dec);
+        return;
+    }
     _cnt_ppSamplers = npt_decode_array_count_unchecked(dec);
     _has_cnt_ppSamplers = _cnt_ppSamplers != 0;
     if (_cnt_ppSamplers) {
@@ -3207,6 +3250,9 @@ struct npt_command_ID3D11DeviceContext_GetData {
     void * pData;
     UINT DataSize;
     UINT GetDataFlags;
+    /* Elements allocated for pData at decode; the reply never
+     * encodes more, whatever count the callee wrote back. */
+    uint64_t _cap_pData;
     HRESULT ret;
 };
 
@@ -3220,7 +3266,6 @@ npt_decode_ID3D11DeviceContext_GetData_args_temp(struct npt_cs_decoder *dec,
         npt_decode_uint64_t(dec, &_id);
         args->pAsync = (ID3D11Asynchronous *)npt_object_from_id(_id);
     }
-
     npt_decode_UINT(dec, &args->DataSize);
     npt_decode_UINT(dec, &args->GetDataFlags);
     /* Allocate temp storage for output-only parameters */
@@ -3232,6 +3277,7 @@ npt_decode_ID3D11DeviceContext_GetData_args_temp(struct npt_cs_decoder *dec,
     } else {
         args->pData = NULL;
     }
+    args->_cap_pData = args->pData ? (uint64_t)(args->DataSize) : 0;
 
 
 }
@@ -3252,11 +3298,14 @@ npt_encode_ID3D11DeviceContext_GetData_reply(struct npt_cs_encoder *enc,
         .cmd_return = (uint32_t)args->ret,
     };
     npt_cs_encoder_write(enc, sizeof(_reply), &_reply, sizeof(_reply));
-    if (args->pData) {
-        npt_encode_array_count(enc, args->DataSize);
-        npt_encode_blob_array(enc, args->pData, args->DataSize);
-    } else {
-        npt_encode_array_count(enc, 0);
+    {
+        const uint64_t _n_pData = ((HRESULT)args->ret < 0) ? 0 : ((uint64_t)(args->DataSize) < args->_cap_pData ? (uint64_t)(args->DataSize) : args->_cap_pData);
+        if (args->pData) {
+            npt_encode_array_count(enc, _n_pData);
+            npt_encode_blob_array(enc, args->pData, _n_pData);
+        } else {
+            npt_encode_array_count(enc, 0);
+        }
     }
 }
 
@@ -3499,6 +3548,11 @@ npt_decode_ID3D11DeviceContext_GSSetShaderResources_args_temp(struct npt_cs_deco
     /* Decode input parameters from the wire */
     npt_decode_UINT(dec, &args->StartSlot);
     npt_decode_UINT(dec, &args->NumViews);
+    /* A binding run must stay inside the slot table the API fixes. */
+    if ((uint64_t)args->StartSlot + (uint64_t)args->NumViews > (uint64_t)(D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT)) {
+        npt_cs_decoder_set_fatal(dec);
+        return;
+    }
     _cnt_ppShaderResourceViews = npt_decode_array_count_unchecked(dec);
     _has_cnt_ppShaderResourceViews = _cnt_ppShaderResourceViews != 0;
     if (_cnt_ppShaderResourceViews) {
@@ -3652,6 +3706,11 @@ npt_decode_ID3D11DeviceContext_GSSetSamplers_args_temp(struct npt_cs_decoder *de
     /* Decode input parameters from the wire */
     npt_decode_UINT(dec, &args->StartSlot);
     npt_decode_UINT(dec, &args->NumSamplers);
+    /* A binding run must stay inside the slot table the API fixes. */
+    if ((uint64_t)args->StartSlot + (uint64_t)args->NumSamplers > (uint64_t)(D3D11_COMMONSHADER_SAMPLER_SLOT_COUNT)) {
+        npt_cs_decoder_set_fatal(dec);
+        return;
+    }
     _cnt_ppSamplers = npt_decode_array_count_unchecked(dec);
     _has_cnt_ppSamplers = _cnt_ppSamplers != 0;
     if (_cnt_ppSamplers) {
@@ -3804,6 +3863,11 @@ npt_decode_ID3D11DeviceContext_OMSetRenderTargets_args_temp(struct npt_cs_decode
     uint64_t _cnt_ppRenderTargetViews = 0; int _has_cnt_ppRenderTargetViews = -1;
     /* Decode input parameters from the wire */
     npt_decode_UINT(dec, &args->NumViews);
+    /* A binding run must stay inside the slot table the API fixes. */
+    if ((uint64_t)args->NumViews > (uint64_t)(D3D11_SIMULTANEOUS_RENDER_TARGET_COUNT)) {
+        npt_cs_decoder_set_fatal(dec);
+        return;
+    }
     _cnt_ppRenderTargetViews = npt_decode_array_count_unchecked(dec);
     _has_cnt_ppRenderTargetViews = _cnt_ppRenderTargetViews != 0;
     if (_cnt_ppRenderTargetViews) {
@@ -3968,6 +4032,12 @@ npt_decode_ID3D11DeviceContext_OMSetRenderTargetsAndUnorderedAccessViews_args_te
     uint64_t _cnt_pUAVInitialCounts = 0; int _has_cnt_pUAVInitialCounts = -1;
     /* Decode input parameters from the wire */
     npt_decode_UINT(dec, &args->NumRTVs);
+    /* A binding run must stay inside the slot table the API fixes. */
+    if (args->NumRTVs != (D3D11_KEEP_RENDER_TARGETS_AND_DEPTH_STENCIL) &&
+        (uint64_t)args->NumRTVs > (uint64_t)(D3D11_SIMULTANEOUS_RENDER_TARGET_COUNT)) {
+        npt_cs_decoder_set_fatal(dec);
+        return;
+    }
     _cnt_ppRenderTargetViews = npt_decode_array_count_unchecked(dec);
     _has_cnt_ppRenderTargetViews = _cnt_ppRenderTargetViews != 0;
     if (_cnt_ppRenderTargetViews) {
@@ -3988,6 +4058,13 @@ npt_decode_ID3D11DeviceContext_OMSetRenderTargetsAndUnorderedAccessViews_args_te
     }
     npt_decode_UINT(dec, &args->UAVStartSlot);
     npt_decode_UINT(dec, &args->NumUAVs);
+    /* A binding run must stay inside the slot table the API fixes. */
+    if (args->NumUAVs != (D3D11_KEEP_UNORDERED_ACCESS_VIEWS) &&
+        ((uint64_t)args->UAVStartSlot + (uint64_t)args->NumUAVs > (uint64_t)(D3D11_1_UAV_SLOT_COUNT) ||
+        (args->NumUAVs != 0 && args->NumRTVs != (D3D11_KEEP_RENDER_TARGETS_AND_DEPTH_STENCIL) && (uint64_t)args->UAVStartSlot < (uint64_t)args->NumRTVs))) {
+        npt_cs_decoder_set_fatal(dec);
+        return;
+    }
     _cnt_ppUnorderedAccessViews = npt_decode_array_count_unchecked(dec);
     _has_cnt_ppUnorderedAccessViews = _cnt_ppUnorderedAccessViews != 0;
     if (_cnt_ppUnorderedAccessViews) {
@@ -4006,6 +4083,8 @@ npt_decode_ID3D11DeviceContext_OMSetRenderTargetsAndUnorderedAccessViews_args_te
         _has_cnt_pUAVInitialCounts = 1;
         args->pUAVInitialCounts = npt_cs_decoder_alloc_temp_array(dec, sizeof(UINT), _cnt_pUAVInitialCounts ? _cnt_pUAVInitialCounts : 1);
         if (!args->pUAVInitialCounts) return;
+        /* Present but empty: a callee that walks it anyway reads zeros, not the previous command. */
+        if (!_cnt_pUAVInitialCounts) memset((void *)args->pUAVInitialCounts, 0, sizeof(UINT));
         npt_decode_UINT_array(dec, (UINT *)args->pUAVInitialCounts, _cnt_pUAVInitialCounts);
     } else {
         args->pUAVInitialCounts = NULL;
@@ -4445,6 +4524,11 @@ npt_decode_ID3D11DeviceContext_SOSetTargets_args_temp(struct npt_cs_decoder *dec
     uint64_t _cnt_pOffsets = 0; int _has_cnt_pOffsets = -1;
     /* Decode input parameters from the wire */
     npt_decode_UINT(dec, &args->NumBuffers);
+    /* A binding run must stay inside the slot table the API fixes. */
+    if ((uint64_t)args->NumBuffers > (uint64_t)(D3D11_SO_BUFFER_SLOT_COUNT)) {
+        npt_cs_decoder_set_fatal(dec);
+        return;
+    }
     _cnt_ppSOTargets = npt_decode_array_count_unchecked(dec);
     _has_cnt_ppSOTargets = _cnt_ppSOTargets != 0;
     if (_cnt_ppSOTargets) {
@@ -4463,6 +4547,8 @@ npt_decode_ID3D11DeviceContext_SOSetTargets_args_temp(struct npt_cs_decoder *dec
         _has_cnt_pOffsets = 1;
         args->pOffsets = npt_cs_decoder_alloc_temp_array(dec, sizeof(UINT), _cnt_pOffsets ? _cnt_pOffsets : 1);
         if (!args->pOffsets) return;
+        /* Present but empty: a callee that walks it anyway reads zeros, not the previous command. */
+        if (!_cnt_pOffsets) memset((void *)args->pOffsets, 0, sizeof(UINT));
         npt_decode_UINT_array(dec, (UINT *)args->pOffsets, _cnt_pOffsets);
     } else {
         args->pOffsets = NULL;
@@ -5386,11 +5472,18 @@ npt_decode_ID3D11DeviceContext_RSSetViewports_args_temp(struct npt_cs_decoder *d
     uint64_t _cnt_pViewports = 0; int _has_cnt_pViewports = -1;
     /* Decode input parameters from the wire */
     npt_decode_UINT(dec, &args->NumViewports);
+    /* A binding run must stay inside the slot table the API fixes. */
+    if ((uint64_t)args->NumViewports > (uint64_t)(D3D11_VIEWPORT_AND_SCISSORRECT_OBJECT_COUNT_PER_PIPELINE)) {
+        npt_cs_decoder_set_fatal(dec);
+        return;
+    }
     _has_cnt_pViewports = 0;
     if (npt_decode_counted_pointer_count(dec, &_cnt_pViewports)) {
         _has_cnt_pViewports = 1;
         args->pViewports = npt_cs_decoder_alloc_temp_array(dec, sizeof(D3D11_VIEWPORT), _cnt_pViewports ? _cnt_pViewports : 1);
         if (!args->pViewports) return;
+        /* Present but empty: a callee that walks it anyway reads zeros, not the previous command. */
+        if (!_cnt_pViewports) memset((void *)args->pViewports, 0, sizeof(D3D11_VIEWPORT));
         for (uint32_t _i = 0; _i < (uint32_t)_cnt_pViewports; _i++)
             npt_decode_D3D11_VIEWPORT(dec, (D3D11_VIEWPORT *)&args->pViewports[_i]);
     } else {
@@ -5528,11 +5621,18 @@ npt_decode_ID3D11DeviceContext_RSSetScissorRects_args_temp(struct npt_cs_decoder
     uint64_t _cnt_pRects = 0; int _has_cnt_pRects = -1;
     /* Decode input parameters from the wire */
     npt_decode_UINT(dec, &args->NumRects);
+    /* A binding run must stay inside the slot table the API fixes. */
+    if ((uint64_t)args->NumRects > (uint64_t)(D3D11_VIEWPORT_AND_SCISSORRECT_OBJECT_COUNT_PER_PIPELINE)) {
+        npt_cs_decoder_set_fatal(dec);
+        return;
+    }
     _has_cnt_pRects = 0;
     if (npt_decode_counted_pointer_count(dec, &_cnt_pRects)) {
         _has_cnt_pRects = 1;
         args->pRects = npt_cs_decoder_alloc_temp_array(dec, sizeof(D3D11_RECT), _cnt_pRects ? _cnt_pRects : 1);
         if (!args->pRects) return;
+        /* Present but empty: a callee that walks it anyway reads zeros, not the previous command. */
+        if (!_cnt_pRects) memset((void *)args->pRects, 0, sizeof(D3D11_RECT));
         for (uint32_t _i = 0; _i < (uint32_t)_cnt_pRects; _i++)
             npt_decode_D3D11_RECT(dec, (D3D11_RECT *)&args->pRects[_i]);
     } else {
@@ -5983,10 +6083,9 @@ npt_decode_ID3D11DeviceContext_UpdateSubresource_args_temp(struct npt_cs_decoder
     } else {
         args->pDstBox = NULL;
     }
-    /* ERROR: pSrcData (void) is not serializable */
+    /* pSrcData (void) is not serializable */
+    npt_cs_decoder_set_fatal(dec);
     return;
-    npt_decode_UINT(dec, &args->SrcRowPitch);
-    npt_decode_UINT(dec, &args->SrcDepthPitch);
     /* Allocate temp storage for output-only parameters */
 
 
@@ -7473,6 +7572,11 @@ npt_decode_ID3D11DeviceContext_HSSetShaderResources_args_temp(struct npt_cs_deco
     /* Decode input parameters from the wire */
     npt_decode_UINT(dec, &args->StartSlot);
     npt_decode_UINT(dec, &args->NumViews);
+    /* A binding run must stay inside the slot table the API fixes. */
+    if ((uint64_t)args->StartSlot + (uint64_t)args->NumViews > (uint64_t)(D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT)) {
+        npt_cs_decoder_set_fatal(dec);
+        return;
+    }
     _cnt_ppShaderResourceViews = npt_decode_array_count_unchecked(dec);
     _has_cnt_ppShaderResourceViews = _cnt_ppShaderResourceViews != 0;
     if (_cnt_ppShaderResourceViews) {
@@ -7784,6 +7888,11 @@ npt_decode_ID3D11DeviceContext_HSSetSamplers_args_temp(struct npt_cs_decoder *de
     /* Decode input parameters from the wire */
     npt_decode_UINT(dec, &args->StartSlot);
     npt_decode_UINT(dec, &args->NumSamplers);
+    /* A binding run must stay inside the slot table the API fixes. */
+    if ((uint64_t)args->StartSlot + (uint64_t)args->NumSamplers > (uint64_t)(D3D11_COMMONSHADER_SAMPLER_SLOT_COUNT)) {
+        npt_cs_decoder_set_fatal(dec);
+        return;
+    }
     _cnt_ppSamplers = npt_decode_array_count_unchecked(dec);
     _has_cnt_ppSamplers = _cnt_ppSamplers != 0;
     if (_cnt_ppSamplers) {
@@ -7937,6 +8046,11 @@ npt_decode_ID3D11DeviceContext_HSSetConstantBuffers_args_temp(struct npt_cs_deco
     /* Decode input parameters from the wire */
     npt_decode_UINT(dec, &args->StartSlot);
     npt_decode_UINT(dec, &args->NumBuffers);
+    /* A binding run must stay inside the slot table the API fixes. */
+    if ((uint64_t)args->StartSlot + (uint64_t)args->NumBuffers > (uint64_t)(D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT)) {
+        npt_cs_decoder_set_fatal(dec);
+        return;
+    }
     _cnt_ppConstantBuffers = npt_decode_array_count_unchecked(dec);
     _has_cnt_ppConstantBuffers = _cnt_ppConstantBuffers != 0;
     if (_cnt_ppConstantBuffers) {
@@ -8090,6 +8204,11 @@ npt_decode_ID3D11DeviceContext_DSSetShaderResources_args_temp(struct npt_cs_deco
     /* Decode input parameters from the wire */
     npt_decode_UINT(dec, &args->StartSlot);
     npt_decode_UINT(dec, &args->NumViews);
+    /* A binding run must stay inside the slot table the API fixes. */
+    if ((uint64_t)args->StartSlot + (uint64_t)args->NumViews > (uint64_t)(D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT)) {
+        npt_cs_decoder_set_fatal(dec);
+        return;
+    }
     _cnt_ppShaderResourceViews = npt_decode_array_count_unchecked(dec);
     _has_cnt_ppShaderResourceViews = _cnt_ppShaderResourceViews != 0;
     if (_cnt_ppShaderResourceViews) {
@@ -8401,6 +8520,11 @@ npt_decode_ID3D11DeviceContext_DSSetSamplers_args_temp(struct npt_cs_decoder *de
     /* Decode input parameters from the wire */
     npt_decode_UINT(dec, &args->StartSlot);
     npt_decode_UINT(dec, &args->NumSamplers);
+    /* A binding run must stay inside the slot table the API fixes. */
+    if ((uint64_t)args->StartSlot + (uint64_t)args->NumSamplers > (uint64_t)(D3D11_COMMONSHADER_SAMPLER_SLOT_COUNT)) {
+        npt_cs_decoder_set_fatal(dec);
+        return;
+    }
     _cnt_ppSamplers = npt_decode_array_count_unchecked(dec);
     _has_cnt_ppSamplers = _cnt_ppSamplers != 0;
     if (_cnt_ppSamplers) {
@@ -8554,6 +8678,11 @@ npt_decode_ID3D11DeviceContext_DSSetConstantBuffers_args_temp(struct npt_cs_deco
     /* Decode input parameters from the wire */
     npt_decode_UINT(dec, &args->StartSlot);
     npt_decode_UINT(dec, &args->NumBuffers);
+    /* A binding run must stay inside the slot table the API fixes. */
+    if ((uint64_t)args->StartSlot + (uint64_t)args->NumBuffers > (uint64_t)(D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT)) {
+        npt_cs_decoder_set_fatal(dec);
+        return;
+    }
     _cnt_ppConstantBuffers = npt_decode_array_count_unchecked(dec);
     _has_cnt_ppConstantBuffers = _cnt_ppConstantBuffers != 0;
     if (_cnt_ppConstantBuffers) {
@@ -8707,6 +8836,11 @@ npt_decode_ID3D11DeviceContext_CSSetShaderResources_args_temp(struct npt_cs_deco
     /* Decode input parameters from the wire */
     npt_decode_UINT(dec, &args->StartSlot);
     npt_decode_UINT(dec, &args->NumViews);
+    /* A binding run must stay inside the slot table the API fixes. */
+    if ((uint64_t)args->StartSlot + (uint64_t)args->NumViews > (uint64_t)(D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT)) {
+        npt_cs_decoder_set_fatal(dec);
+        return;
+    }
     _cnt_ppShaderResourceViews = npt_decode_array_count_unchecked(dec);
     _has_cnt_ppShaderResourceViews = _cnt_ppShaderResourceViews != 0;
     if (_cnt_ppShaderResourceViews) {
@@ -8862,6 +8996,11 @@ npt_decode_ID3D11DeviceContext_CSSetUnorderedAccessViews_args_temp(struct npt_cs
     /* Decode input parameters from the wire */
     npt_decode_UINT(dec, &args->StartSlot);
     npt_decode_UINT(dec, &args->NumUAVs);
+    /* A binding run must stay inside the slot table the API fixes. */
+    if ((uint64_t)args->StartSlot + (uint64_t)args->NumUAVs > (uint64_t)(D3D11_1_UAV_SLOT_COUNT)) {
+        npt_cs_decoder_set_fatal(dec);
+        return;
+    }
     _cnt_ppUnorderedAccessViews = npt_decode_array_count_unchecked(dec);
     _has_cnt_ppUnorderedAccessViews = _cnt_ppUnorderedAccessViews != 0;
     if (_cnt_ppUnorderedAccessViews) {
@@ -8880,6 +9019,8 @@ npt_decode_ID3D11DeviceContext_CSSetUnorderedAccessViews_args_temp(struct npt_cs
         _has_cnt_pUAVInitialCounts = 1;
         args->pUAVInitialCounts = npt_cs_decoder_alloc_temp_array(dec, sizeof(UINT), _cnt_pUAVInitialCounts ? _cnt_pUAVInitialCounts : 1);
         if (!args->pUAVInitialCounts) return;
+        /* Present but empty: a callee that walks it anyway reads zeros, not the previous command. */
+        if (!_cnt_pUAVInitialCounts) memset((void *)args->pUAVInitialCounts, 0, sizeof(UINT));
         npt_decode_UINT_array(dec, (UINT *)args->pUAVInitialCounts, _cnt_pUAVInitialCounts);
     } else {
         args->pUAVInitialCounts = NULL;
@@ -9187,6 +9328,11 @@ npt_decode_ID3D11DeviceContext_CSSetSamplers_args_temp(struct npt_cs_decoder *de
     /* Decode input parameters from the wire */
     npt_decode_UINT(dec, &args->StartSlot);
     npt_decode_UINT(dec, &args->NumSamplers);
+    /* A binding run must stay inside the slot table the API fixes. */
+    if ((uint64_t)args->StartSlot + (uint64_t)args->NumSamplers > (uint64_t)(D3D11_COMMONSHADER_SAMPLER_SLOT_COUNT)) {
+        npt_cs_decoder_set_fatal(dec);
+        return;
+    }
     _cnt_ppSamplers = npt_decode_array_count_unchecked(dec);
     _has_cnt_ppSamplers = _cnt_ppSamplers != 0;
     if (_cnt_ppSamplers) {
@@ -9340,6 +9486,11 @@ npt_decode_ID3D11DeviceContext_CSSetConstantBuffers_args_temp(struct npt_cs_deco
     /* Decode input parameters from the wire */
     npt_decode_UINT(dec, &args->StartSlot);
     npt_decode_UINT(dec, &args->NumBuffers);
+    /* A binding run must stay inside the slot table the API fixes. */
+    if ((uint64_t)args->StartSlot + (uint64_t)args->NumBuffers > (uint64_t)(D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT)) {
+        npt_cs_decoder_set_fatal(dec);
+        return;
+    }
     _cnt_ppConstantBuffers = npt_decode_array_count_unchecked(dec);
     _has_cnt_ppConstantBuffers = _cnt_ppConstantBuffers != 0;
     if (_cnt_ppConstantBuffers) {
@@ -9499,6 +9650,11 @@ npt_decode_ID3D11DeviceContext_VSGetConstantBuffers_args_temp(struct npt_cs_deco
     /* Decode input parameters from the wire */
     npt_decode_UINT(dec, &args->StartSlot);
     npt_decode_UINT(dec, &args->NumBuffers);
+    /* A binding run must stay inside the slot table the API fixes. */
+    if ((uint64_t)args->StartSlot + (uint64_t)args->NumBuffers > (uint64_t)(D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT)) {
+        npt_cs_decoder_set_fatal(dec);
+        return;
+    }
     _cnt_ppConstantBuffers = npt_decode_array_count_unchecked(dec);
     _has_cnt_ppConstantBuffers = _cnt_ppConstantBuffers != 0;
     args->_guest_id_count_ppConstantBuffers = (uint32_t)_cnt_ppConstantBuffers;
@@ -9670,6 +9826,11 @@ npt_decode_ID3D11DeviceContext_PSGetShaderResources_args_temp(struct npt_cs_deco
     /* Decode input parameters from the wire */
     npt_decode_UINT(dec, &args->StartSlot);
     npt_decode_UINT(dec, &args->NumViews);
+    /* A binding run must stay inside the slot table the API fixes. */
+    if ((uint64_t)args->StartSlot + (uint64_t)args->NumViews > (uint64_t)(D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT)) {
+        npt_cs_decoder_set_fatal(dec);
+        return;
+    }
     _cnt_ppShaderResourceViews = npt_decode_array_count_unchecked(dec);
     _has_cnt_ppShaderResourceViews = _cnt_ppShaderResourceViews != 0;
     args->_guest_id_count_ppShaderResourceViews = (uint32_t)_cnt_ppShaderResourceViews;
@@ -10042,6 +10203,11 @@ npt_decode_ID3D11DeviceContext_PSGetSamplers_args_temp(struct npt_cs_decoder *de
     /* Decode input parameters from the wire */
     npt_decode_UINT(dec, &args->StartSlot);
     npt_decode_UINT(dec, &args->NumSamplers);
+    /* A binding run must stay inside the slot table the API fixes. */
+    if ((uint64_t)args->StartSlot + (uint64_t)args->NumSamplers > (uint64_t)(D3D11_COMMONSHADER_SAMPLER_SLOT_COUNT)) {
+        npt_cs_decoder_set_fatal(dec);
+        return;
+    }
     _cnt_ppSamplers = npt_decode_array_count_unchecked(dec);
     _has_cnt_ppSamplers = _cnt_ppSamplers != 0;
     args->_guest_id_count_ppSamplers = (uint32_t)_cnt_ppSamplers;
@@ -10414,6 +10580,11 @@ npt_decode_ID3D11DeviceContext_PSGetConstantBuffers_args_temp(struct npt_cs_deco
     /* Decode input parameters from the wire */
     npt_decode_UINT(dec, &args->StartSlot);
     npt_decode_UINT(dec, &args->NumBuffers);
+    /* A binding run must stay inside the slot table the API fixes. */
+    if ((uint64_t)args->StartSlot + (uint64_t)args->NumBuffers > (uint64_t)(D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT)) {
+        npt_cs_decoder_set_fatal(dec);
+        return;
+    }
     _cnt_ppConstantBuffers = npt_decode_array_count_unchecked(dec);
     _has_cnt_ppConstantBuffers = _cnt_ppConstantBuffers != 0;
     args->_guest_id_count_ppConstantBuffers = (uint32_t)_cnt_ppConstantBuffers;
@@ -10721,6 +10892,12 @@ struct npt_command_ID3D11DeviceContext_IAGetVertexBuffers {
     uint64_t *_guest_ids_ppVertexBuffers;
     uint32_t _guest_id_count_ppVertexBuffers;
     struct npt_wire_object_ref *_refs_ppVertexBuffers;
+    /* Elements allocated for pStrides at decode; the reply never
+     * encodes more, whatever count the callee wrote back. */
+    uint64_t _cap_pStrides;
+    /* Elements allocated for pOffsets at decode; the reply never
+     * encodes more, whatever count the callee wrote back. */
+    uint64_t _cap_pOffsets;
 };
 
 static inline void
@@ -10731,6 +10908,11 @@ npt_decode_ID3D11DeviceContext_IAGetVertexBuffers_args_temp(struct npt_cs_decode
     /* Decode input parameters from the wire */
     npt_decode_UINT(dec, &args->StartSlot);
     npt_decode_UINT(dec, &args->NumBuffers);
+    /* A binding run must stay inside the slot table the API fixes. */
+    if ((uint64_t)args->StartSlot + (uint64_t)args->NumBuffers > (uint64_t)(D3D11_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT)) {
+        npt_cs_decoder_set_fatal(dec);
+        return;
+    }
     _cnt_ppVertexBuffers = npt_decode_array_count_unchecked(dec);
     _has_cnt_ppVertexBuffers = _cnt_ppVertexBuffers != 0;
     args->_guest_id_count_ppVertexBuffers = (uint32_t)_cnt_ppVertexBuffers;
@@ -10747,8 +10929,6 @@ npt_decode_ID3D11DeviceContext_IAGetVertexBuffers_args_temp(struct npt_cs_decode
     } else {
         args->ppVertexBuffers = NULL;
     }
-
-
     /* A counted array must hold every element the callee walks. */
     if ((_has_cnt_ppVertexBuffers > 0 && _cnt_ppVertexBuffers != (uint64_t)(args->NumBuffers))) {
         npt_cs_decoder_set_fatal(dec);
@@ -10765,6 +10945,7 @@ npt_decode_ID3D11DeviceContext_IAGetVertexBuffers_args_temp(struct npt_cs_decode
     } else {
         args->pStrides = NULL;
     }
+    args->_cap_pStrides = args->pStrides ? (uint64_t)(args->NumBuffers) : 0;
     if (args->NumBuffers) {
         args->pOffsets = npt_cs_decoder_alloc_temp_array(dec, sizeof(UINT), args->NumBuffers);
         if (!args->pOffsets) return;
@@ -10772,6 +10953,7 @@ npt_decode_ID3D11DeviceContext_IAGetVertexBuffers_args_temp(struct npt_cs_decode
     } else {
         args->pOffsets = NULL;
     }
+    args->_cap_pOffsets = args->pOffsets ? (uint64_t)(args->NumBuffers) : 0;
 }
 
 static inline void
@@ -10795,17 +10977,23 @@ npt_encode_ID3D11DeviceContext_IAGetVertexBuffers_reply(struct npt_cs_encoder *e
     for (uint32_t _i = 0; _i < _n; _i++)
         npt_encode_npt_wire_object_ref(enc, &args->_refs_ppVertexBuffers[_i]);
 }
-    if (args->pStrides) {
-        npt_encode_array_count(enc, args->NumBuffers);
-        npt_encode_UINT_array(enc, args->pStrides, args->NumBuffers);
-    } else {
-        npt_encode_array_count(enc, 0);
+    {
+        const uint64_t _n_pStrides = (uint64_t)(args->NumBuffers) < args->_cap_pStrides ? (uint64_t)(args->NumBuffers) : args->_cap_pStrides;
+        if (args->pStrides) {
+            npt_encode_array_count(enc, _n_pStrides);
+            npt_encode_UINT_array(enc, args->pStrides, _n_pStrides);
+        } else {
+            npt_encode_array_count(enc, 0);
+        }
     }
-    if (args->pOffsets) {
-        npt_encode_array_count(enc, args->NumBuffers);
-        npt_encode_UINT_array(enc, args->pOffsets, args->NumBuffers);
-    } else {
-        npt_encode_array_count(enc, 0);
+    {
+        const uint64_t _n_pOffsets = (uint64_t)(args->NumBuffers) < args->_cap_pOffsets ? (uint64_t)(args->NumBuffers) : args->_cap_pOffsets;
+        if (args->pOffsets) {
+            npt_encode_array_count(enc, _n_pOffsets);
+            npt_encode_UINT_array(enc, args->pOffsets, _n_pOffsets);
+        } else {
+            npt_encode_array_count(enc, 0);
+        }
     }
 }
 
@@ -10939,8 +11127,6 @@ npt_decode_ID3D11DeviceContext_IAGetIndexBuffer_args_temp(struct npt_cs_decoder 
             args->pIndexBuffer = NULL;
         }
     }
-
-
     /* Allocate temp storage for output-only parameters */
 
     args->Format = npt_cs_decoder_alloc_temp(dec, sizeof(DXGI_FORMAT));
@@ -11088,6 +11274,11 @@ npt_decode_ID3D11DeviceContext_GSGetConstantBuffers_args_temp(struct npt_cs_deco
     /* Decode input parameters from the wire */
     npt_decode_UINT(dec, &args->StartSlot);
     npt_decode_UINT(dec, &args->NumBuffers);
+    /* A binding run must stay inside the slot table the API fixes. */
+    if ((uint64_t)args->StartSlot + (uint64_t)args->NumBuffers > (uint64_t)(D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT)) {
+        npt_cs_decoder_set_fatal(dec);
+        return;
+    }
     _cnt_ppConstantBuffers = npt_decode_array_count_unchecked(dec);
     _has_cnt_ppConstantBuffers = _cnt_ppConstantBuffers != 0;
     args->_guest_id_count_ppConstantBuffers = (uint32_t)_cnt_ppConstantBuffers;
@@ -11588,6 +11779,11 @@ npt_decode_ID3D11DeviceContext_VSGetShaderResources_args_temp(struct npt_cs_deco
     /* Decode input parameters from the wire */
     npt_decode_UINT(dec, &args->StartSlot);
     npt_decode_UINT(dec, &args->NumViews);
+    /* A binding run must stay inside the slot table the API fixes. */
+    if ((uint64_t)args->StartSlot + (uint64_t)args->NumViews > (uint64_t)(D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT)) {
+        npt_cs_decoder_set_fatal(dec);
+        return;
+    }
     _cnt_ppShaderResourceViews = npt_decode_array_count_unchecked(dec);
     _has_cnt_ppShaderResourceViews = _cnt_ppShaderResourceViews != 0;
     args->_guest_id_count_ppShaderResourceViews = (uint32_t)_cnt_ppShaderResourceViews;
@@ -11759,6 +11955,11 @@ npt_decode_ID3D11DeviceContext_VSGetSamplers_args_temp(struct npt_cs_decoder *de
     /* Decode input parameters from the wire */
     npt_decode_UINT(dec, &args->StartSlot);
     npt_decode_UINT(dec, &args->NumSamplers);
+    /* A binding run must stay inside the slot table the API fixes. */
+    if ((uint64_t)args->StartSlot + (uint64_t)args->NumSamplers > (uint64_t)(D3D11_COMMONSHADER_SAMPLER_SLOT_COUNT)) {
+        npt_cs_decoder_set_fatal(dec);
+        return;
+    }
     _cnt_ppSamplers = npt_decode_array_count_unchecked(dec);
     _has_cnt_ppSamplers = _cnt_ppSamplers != 0;
     args->_guest_id_count_ppSamplers = (uint32_t)_cnt_ppSamplers;
@@ -11938,7 +12139,6 @@ npt_decode_ID3D11DeviceContext_GetPredication_args_temp(struct npt_cs_decoder *d
             args->ppPredicate = NULL;
         }
     }
-
     /* Allocate temp storage for output-only parameters */
 
     args->pPredicateValue = npt_cs_decoder_alloc_temp(dec, sizeof(BOOL));
@@ -12081,6 +12281,11 @@ npt_decode_ID3D11DeviceContext_GSGetShaderResources_args_temp(struct npt_cs_deco
     /* Decode input parameters from the wire */
     npt_decode_UINT(dec, &args->StartSlot);
     npt_decode_UINT(dec, &args->NumViews);
+    /* A binding run must stay inside the slot table the API fixes. */
+    if ((uint64_t)args->StartSlot + (uint64_t)args->NumViews > (uint64_t)(D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT)) {
+        npt_cs_decoder_set_fatal(dec);
+        return;
+    }
     _cnt_ppShaderResourceViews = npt_decode_array_count_unchecked(dec);
     _has_cnt_ppShaderResourceViews = _cnt_ppShaderResourceViews != 0;
     args->_guest_id_count_ppShaderResourceViews = (uint32_t)_cnt_ppShaderResourceViews;
@@ -12252,6 +12457,11 @@ npt_decode_ID3D11DeviceContext_GSGetSamplers_args_temp(struct npt_cs_decoder *de
     /* Decode input parameters from the wire */
     npt_decode_UINT(dec, &args->StartSlot);
     npt_decode_UINT(dec, &args->NumSamplers);
+    /* A binding run must stay inside the slot table the API fixes. */
+    if ((uint64_t)args->StartSlot + (uint64_t)args->NumSamplers > (uint64_t)(D3D11_COMMONSHADER_SAMPLER_SLOT_COUNT)) {
+        npt_cs_decoder_set_fatal(dec);
+        return;
+    }
     _cnt_ppSamplers = npt_decode_array_count_unchecked(dec);
     _has_cnt_ppSamplers = _cnt_ppSamplers != 0;
     args->_guest_id_count_ppSamplers = (uint32_t)_cnt_ppSamplers;
@@ -12428,6 +12638,11 @@ npt_decode_ID3D11DeviceContext_OMGetRenderTargets_args_temp(struct npt_cs_decode
     uint64_t _cnt_ppRenderTargetViews = 0; int _has_cnt_ppRenderTargetViews = -1;
     /* Decode input parameters from the wire */
     npt_decode_UINT(dec, &args->NumViews);
+    /* A binding run must stay inside the slot table the API fixes. */
+    if ((uint64_t)args->NumViews > (uint64_t)(D3D11_SIMULTANEOUS_RENDER_TARGET_COUNT)) {
+        npt_cs_decoder_set_fatal(dec);
+        return;
+    }
     _cnt_ppRenderTargetViews = npt_decode_array_count_unchecked(dec);
     _has_cnt_ppRenderTargetViews = _cnt_ppRenderTargetViews != 0;
     args->_guest_id_count_ppRenderTargetViews = (uint32_t)_cnt_ppRenderTargetViews;
@@ -12631,6 +12846,11 @@ npt_decode_ID3D11DeviceContext_OMGetRenderTargetsAndUnorderedAccessViews_args_te
     uint64_t _cnt_ppUnorderedAccessViews = 0; int _has_cnt_ppUnorderedAccessViews = -1;
     /* Decode input parameters from the wire */
     npt_decode_UINT(dec, &args->NumRTVs);
+    /* A binding run must stay inside the slot table the API fixes. */
+    if ((uint64_t)args->NumRTVs > (uint64_t)(D3D11_SIMULTANEOUS_RENDER_TARGET_COUNT)) {
+        npt_cs_decoder_set_fatal(dec);
+        return;
+    }
     _cnt_ppRenderTargetViews = npt_decode_array_count_unchecked(dec);
     _has_cnt_ppRenderTargetViews = _cnt_ppRenderTargetViews != 0;
     args->_guest_id_count_ppRenderTargetViews = (uint32_t)_cnt_ppRenderTargetViews;
@@ -12661,6 +12881,11 @@ npt_decode_ID3D11DeviceContext_OMGetRenderTargetsAndUnorderedAccessViews_args_te
     }
     npt_decode_UINT(dec, &args->UAVStartSlot);
     npt_decode_UINT(dec, &args->NumUAVs);
+    /* A binding run must stay inside the slot table the API fixes. */
+    if ((uint64_t)args->UAVStartSlot + (uint64_t)args->NumUAVs > (uint64_t)(D3D11_1_UAV_SLOT_COUNT)) {
+        npt_cs_decoder_set_fatal(dec);
+        return;
+    }
     _cnt_ppUnorderedAccessViews = npt_decode_array_count_unchecked(dec);
     _has_cnt_ppUnorderedAccessViews = _cnt_ppUnorderedAccessViews != 0;
     args->_guest_id_count_ppUnorderedAccessViews = (uint32_t)_cnt_ppUnorderedAccessViews;
@@ -12869,8 +13094,6 @@ npt_decode_ID3D11DeviceContext_OMGetBlendState_args_temp(struct npt_cs_decoder *
             args->ppBlendState = NULL;
         }
     }
-
-
     /* Allocate temp storage for output-only parameters */
 
     args->BlendFactor = npt_cs_decoder_alloc_temp_array(dec, sizeof(FLOAT), 4);
@@ -13030,7 +13253,6 @@ npt_decode_ID3D11DeviceContext_OMGetDepthStencilState_args_temp(struct npt_cs_de
             args->ppDepthStencilState = NULL;
         }
     }
-
     /* Allocate temp storage for output-only parameters */
 
     args->pStencilRef = npt_cs_decoder_alloc_temp(dec, sizeof(UINT));
@@ -13171,6 +13393,11 @@ npt_decode_ID3D11DeviceContext_SOGetTargets_args_temp(struct npt_cs_decoder *dec
     uint64_t _cnt_ppSOTargets = 0; int _has_cnt_ppSOTargets = -1;
     /* Decode input parameters from the wire */
     npt_decode_UINT(dec, &args->NumBuffers);
+    /* A binding run must stay inside the slot table the API fixes. */
+    if ((uint64_t)args->NumBuffers > (uint64_t)(D3D11_SO_BUFFER_SLOT_COUNT)) {
+        npt_cs_decoder_set_fatal(dec);
+        return;
+    }
     _cnt_ppSOTargets = npt_decode_array_count_unchecked(dec);
     _has_cnt_ppSOTargets = _cnt_ppSOTargets != 0;
     args->_guest_id_count_ppSOTargets = (uint32_t)_cnt_ppSOTargets;
@@ -13468,6 +13695,9 @@ struct npt_command_ID3D11DeviceContext_RSGetViewports {
     void *_self;
     UINT * pNumViewports;
     D3D11_VIEWPORT * pViewports;
+    /* Elements allocated for pViewports at decode; the reply never
+     * encodes more, whatever count the callee wrote back. */
+    uint64_t _cap_pViewports;
 };
 
 static inline void
@@ -13484,7 +13714,6 @@ npt_decode_ID3D11DeviceContext_RSGetViewports_args_temp(struct npt_cs_decoder *d
         npt_cs_decoder_set_fatal(dec); /* non-optional pointer is NULL */
         return;
     }
-
     /* Allocate temp storage for output-only parameters */
 
     if (*args->pNumViewports) {
@@ -13494,6 +13723,7 @@ npt_decode_ID3D11DeviceContext_RSGetViewports_args_temp(struct npt_cs_decoder *d
     } else {
         args->pViewports = NULL;
     }
+    args->_cap_pViewports = args->pViewports ? (uint64_t)(*args->pNumViewports) : 0;
 }
 
 static inline void
@@ -13513,12 +13743,15 @@ npt_encode_ID3D11DeviceContext_RSGetViewports_reply(struct npt_cs_encoder *enc,
     npt_cs_encoder_write(enc, sizeof(_reply), &_reply, sizeof(_reply));
     if (npt_encode_simple_pointer(enc, args->pNumViewports))
         npt_encode_UINT(enc, args->pNumViewports);
-    if (args->pViewports) {
-        npt_encode_array_count(enc, *args->pNumViewports);
-        for (uint32_t _i = 0; _i < (uint32_t)(*args->pNumViewports); _i++)
-            npt_encode_D3D11_VIEWPORT(enc, &args->pViewports[_i]);
-    } else {
-        npt_encode_array_count(enc, 0);
+    {
+        const uint64_t _n_pViewports = (uint64_t)(*args->pNumViewports) < args->_cap_pViewports ? (uint64_t)(*args->pNumViewports) : args->_cap_pViewports;
+        if (args->pViewports) {
+            npt_encode_array_count(enc, _n_pViewports);
+            for (uint32_t _i = 0; _i < (uint32_t)(_n_pViewports); _i++)
+                npt_encode_D3D11_VIEWPORT(enc, &args->pViewports[_i]);
+        } else {
+            npt_encode_array_count(enc, 0);
+        }
     }
 }
 
@@ -13618,6 +13851,9 @@ struct npt_command_ID3D11DeviceContext_RSGetScissorRects {
     void *_self;
     UINT * pNumRects;
     D3D11_RECT * pRects;
+    /* Elements allocated for pRects at decode; the reply never
+     * encodes more, whatever count the callee wrote back. */
+    uint64_t _cap_pRects;
 };
 
 static inline void
@@ -13634,7 +13870,6 @@ npt_decode_ID3D11DeviceContext_RSGetScissorRects_args_temp(struct npt_cs_decoder
         npt_cs_decoder_set_fatal(dec); /* non-optional pointer is NULL */
         return;
     }
-
     /* Allocate temp storage for output-only parameters */
 
     if (*args->pNumRects) {
@@ -13644,6 +13879,7 @@ npt_decode_ID3D11DeviceContext_RSGetScissorRects_args_temp(struct npt_cs_decoder
     } else {
         args->pRects = NULL;
     }
+    args->_cap_pRects = args->pRects ? (uint64_t)(*args->pNumRects) : 0;
 }
 
 static inline void
@@ -13663,12 +13899,15 @@ npt_encode_ID3D11DeviceContext_RSGetScissorRects_reply(struct npt_cs_encoder *en
     npt_cs_encoder_write(enc, sizeof(_reply), &_reply, sizeof(_reply));
     if (npt_encode_simple_pointer(enc, args->pNumRects))
         npt_encode_UINT(enc, args->pNumRects);
-    if (args->pRects) {
-        npt_encode_array_count(enc, *args->pNumRects);
-        for (uint32_t _i = 0; _i < (uint32_t)(*args->pNumRects); _i++)
-            npt_encode_D3D11_RECT(enc, &args->pRects[_i]);
-    } else {
-        npt_encode_array_count(enc, 0);
+    {
+        const uint64_t _n_pRects = (uint64_t)(*args->pNumRects) < args->_cap_pRects ? (uint64_t)(*args->pNumRects) : args->_cap_pRects;
+        if (args->pRects) {
+            npt_encode_array_count(enc, _n_pRects);
+            for (uint32_t _i = 0; _i < (uint32_t)(_n_pRects); _i++)
+                npt_encode_D3D11_RECT(enc, &args->pRects[_i]);
+        } else {
+            npt_encode_array_count(enc, 0);
+        }
     }
 }
 
@@ -13785,6 +14024,11 @@ npt_decode_ID3D11DeviceContext_HSGetShaderResources_args_temp(struct npt_cs_deco
     /* Decode input parameters from the wire */
     npt_decode_UINT(dec, &args->StartSlot);
     npt_decode_UINT(dec, &args->NumViews);
+    /* A binding run must stay inside the slot table the API fixes. */
+    if ((uint64_t)args->StartSlot + (uint64_t)args->NumViews > (uint64_t)(D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT)) {
+        npt_cs_decoder_set_fatal(dec);
+        return;
+    }
     _cnt_ppShaderResourceViews = npt_decode_array_count_unchecked(dec);
     _has_cnt_ppShaderResourceViews = _cnt_ppShaderResourceViews != 0;
     args->_guest_id_count_ppShaderResourceViews = (uint32_t)_cnt_ppShaderResourceViews;
@@ -14157,6 +14401,11 @@ npt_decode_ID3D11DeviceContext_HSGetSamplers_args_temp(struct npt_cs_decoder *de
     /* Decode input parameters from the wire */
     npt_decode_UINT(dec, &args->StartSlot);
     npt_decode_UINT(dec, &args->NumSamplers);
+    /* A binding run must stay inside the slot table the API fixes. */
+    if ((uint64_t)args->StartSlot + (uint64_t)args->NumSamplers > (uint64_t)(D3D11_COMMONSHADER_SAMPLER_SLOT_COUNT)) {
+        npt_cs_decoder_set_fatal(dec);
+        return;
+    }
     _cnt_ppSamplers = npt_decode_array_count_unchecked(dec);
     _has_cnt_ppSamplers = _cnt_ppSamplers != 0;
     args->_guest_id_count_ppSamplers = (uint32_t)_cnt_ppSamplers;
@@ -14328,6 +14577,11 @@ npt_decode_ID3D11DeviceContext_HSGetConstantBuffers_args_temp(struct npt_cs_deco
     /* Decode input parameters from the wire */
     npt_decode_UINT(dec, &args->StartSlot);
     npt_decode_UINT(dec, &args->NumBuffers);
+    /* A binding run must stay inside the slot table the API fixes. */
+    if ((uint64_t)args->StartSlot + (uint64_t)args->NumBuffers > (uint64_t)(D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT)) {
+        npt_cs_decoder_set_fatal(dec);
+        return;
+    }
     _cnt_ppConstantBuffers = npt_decode_array_count_unchecked(dec);
     _has_cnt_ppConstantBuffers = _cnt_ppConstantBuffers != 0;
     args->_guest_id_count_ppConstantBuffers = (uint32_t)_cnt_ppConstantBuffers;
@@ -14499,6 +14753,11 @@ npt_decode_ID3D11DeviceContext_DSGetShaderResources_args_temp(struct npt_cs_deco
     /* Decode input parameters from the wire */
     npt_decode_UINT(dec, &args->StartSlot);
     npt_decode_UINT(dec, &args->NumViews);
+    /* A binding run must stay inside the slot table the API fixes. */
+    if ((uint64_t)args->StartSlot + (uint64_t)args->NumViews > (uint64_t)(D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT)) {
+        npt_cs_decoder_set_fatal(dec);
+        return;
+    }
     _cnt_ppShaderResourceViews = npt_decode_array_count_unchecked(dec);
     _has_cnt_ppShaderResourceViews = _cnt_ppShaderResourceViews != 0;
     args->_guest_id_count_ppShaderResourceViews = (uint32_t)_cnt_ppShaderResourceViews;
@@ -14871,6 +15130,11 @@ npt_decode_ID3D11DeviceContext_DSGetSamplers_args_temp(struct npt_cs_decoder *de
     /* Decode input parameters from the wire */
     npt_decode_UINT(dec, &args->StartSlot);
     npt_decode_UINT(dec, &args->NumSamplers);
+    /* A binding run must stay inside the slot table the API fixes. */
+    if ((uint64_t)args->StartSlot + (uint64_t)args->NumSamplers > (uint64_t)(D3D11_COMMONSHADER_SAMPLER_SLOT_COUNT)) {
+        npt_cs_decoder_set_fatal(dec);
+        return;
+    }
     _cnt_ppSamplers = npt_decode_array_count_unchecked(dec);
     _has_cnt_ppSamplers = _cnt_ppSamplers != 0;
     args->_guest_id_count_ppSamplers = (uint32_t)_cnt_ppSamplers;
@@ -15042,6 +15306,11 @@ npt_decode_ID3D11DeviceContext_DSGetConstantBuffers_args_temp(struct npt_cs_deco
     /* Decode input parameters from the wire */
     npt_decode_UINT(dec, &args->StartSlot);
     npt_decode_UINT(dec, &args->NumBuffers);
+    /* A binding run must stay inside the slot table the API fixes. */
+    if ((uint64_t)args->StartSlot + (uint64_t)args->NumBuffers > (uint64_t)(D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT)) {
+        npt_cs_decoder_set_fatal(dec);
+        return;
+    }
     _cnt_ppConstantBuffers = npt_decode_array_count_unchecked(dec);
     _has_cnt_ppConstantBuffers = _cnt_ppConstantBuffers != 0;
     args->_guest_id_count_ppConstantBuffers = (uint32_t)_cnt_ppConstantBuffers;
@@ -15213,6 +15482,11 @@ npt_decode_ID3D11DeviceContext_CSGetShaderResources_args_temp(struct npt_cs_deco
     /* Decode input parameters from the wire */
     npt_decode_UINT(dec, &args->StartSlot);
     npt_decode_UINT(dec, &args->NumViews);
+    /* A binding run must stay inside the slot table the API fixes. */
+    if ((uint64_t)args->StartSlot + (uint64_t)args->NumViews > (uint64_t)(D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT)) {
+        npt_cs_decoder_set_fatal(dec);
+        return;
+    }
     _cnt_ppShaderResourceViews = npt_decode_array_count_unchecked(dec);
     _has_cnt_ppShaderResourceViews = _cnt_ppShaderResourceViews != 0;
     args->_guest_id_count_ppShaderResourceViews = (uint32_t)_cnt_ppShaderResourceViews;
@@ -15384,6 +15658,11 @@ npt_decode_ID3D11DeviceContext_CSGetUnorderedAccessViews_args_temp(struct npt_cs
     /* Decode input parameters from the wire */
     npt_decode_UINT(dec, &args->StartSlot);
     npt_decode_UINT(dec, &args->NumUAVs);
+    /* A binding run must stay inside the slot table the API fixes. */
+    if ((uint64_t)args->StartSlot + (uint64_t)args->NumUAVs > (uint64_t)(D3D11_1_UAV_SLOT_COUNT)) {
+        npt_cs_decoder_set_fatal(dec);
+        return;
+    }
     _cnt_ppUnorderedAccessViews = npt_decode_array_count_unchecked(dec);
     _has_cnt_ppUnorderedAccessViews = _cnt_ppUnorderedAccessViews != 0;
     args->_guest_id_count_ppUnorderedAccessViews = (uint32_t)_cnt_ppUnorderedAccessViews;
@@ -15756,6 +16035,11 @@ npt_decode_ID3D11DeviceContext_CSGetSamplers_args_temp(struct npt_cs_decoder *de
     /* Decode input parameters from the wire */
     npt_decode_UINT(dec, &args->StartSlot);
     npt_decode_UINT(dec, &args->NumSamplers);
+    /* A binding run must stay inside the slot table the API fixes. */
+    if ((uint64_t)args->StartSlot + (uint64_t)args->NumSamplers > (uint64_t)(D3D11_COMMONSHADER_SAMPLER_SLOT_COUNT)) {
+        npt_cs_decoder_set_fatal(dec);
+        return;
+    }
     _cnt_ppSamplers = npt_decode_array_count_unchecked(dec);
     _has_cnt_ppSamplers = _cnt_ppSamplers != 0;
     args->_guest_id_count_ppSamplers = (uint32_t)_cnt_ppSamplers;
@@ -15927,6 +16211,11 @@ npt_decode_ID3D11DeviceContext_CSGetConstantBuffers_args_temp(struct npt_cs_deco
     /* Decode input parameters from the wire */
     npt_decode_UINT(dec, &args->StartSlot);
     npt_decode_UINT(dec, &args->NumBuffers);
+    /* A binding run must stay inside the slot table the API fixes. */
+    if ((uint64_t)args->StartSlot + (uint64_t)args->NumBuffers > (uint64_t)(D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT)) {
+        npt_cs_decoder_set_fatal(dec);
+        return;
+    }
     _cnt_ppConstantBuffers = npt_decode_array_count_unchecked(dec);
     _has_cnt_ppConstantBuffers = _cnt_ppConstantBuffers != 0;
     args->_guest_id_count_ppConstantBuffers = (uint32_t)_cnt_ppConstantBuffers;
@@ -16908,11 +17197,9 @@ npt_decode_ID3D11DeviceContext1_UpdateSubresource1_args_temp(struct npt_cs_decod
     } else {
         args->pDstBox = NULL;
     }
-    /* ERROR: pSrcData (void) is not serializable */
+    /* pSrcData (void) is not serializable */
+    npt_cs_decoder_set_fatal(dec);
     return;
-    npt_decode_UINT(dec, &args->SrcRowPitch);
-    npt_decode_UINT(dec, &args->SrcDepthPitch);
-    npt_decode_UINT(dec, &args->CopyFlags);
     /* Allocate temp storage for output-only parameters */
 
 
@@ -17310,6 +17597,11 @@ npt_decode_ID3D11DeviceContext1_VSSetConstantBuffers1_args_temp(struct npt_cs_de
     /* Decode input parameters from the wire */
     npt_decode_UINT(dec, &args->StartSlot);
     npt_decode_UINT(dec, &args->NumBuffers);
+    /* A binding run must stay inside the slot table the API fixes. */
+    if ((uint64_t)args->StartSlot + (uint64_t)args->NumBuffers > (uint64_t)(D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT)) {
+        npt_cs_decoder_set_fatal(dec);
+        return;
+    }
     _cnt_ppConstantBuffers = npt_decode_array_count_unchecked(dec);
     _has_cnt_ppConstantBuffers = _cnt_ppConstantBuffers != 0;
     if (_cnt_ppConstantBuffers) {
@@ -17328,6 +17620,8 @@ npt_decode_ID3D11DeviceContext1_VSSetConstantBuffers1_args_temp(struct npt_cs_de
         _has_cnt_pFirstConstant = 1;
         args->pFirstConstant = npt_cs_decoder_alloc_temp_array(dec, sizeof(UINT), _cnt_pFirstConstant ? _cnt_pFirstConstant : 1);
         if (!args->pFirstConstant) return;
+        /* Present but empty: a callee that walks it anyway reads zeros, not the previous command. */
+        if (!_cnt_pFirstConstant) memset((void *)args->pFirstConstant, 0, sizeof(UINT));
         npt_decode_UINT_array(dec, (UINT *)args->pFirstConstant, _cnt_pFirstConstant);
     } else {
         args->pFirstConstant = NULL;
@@ -17337,6 +17631,8 @@ npt_decode_ID3D11DeviceContext1_VSSetConstantBuffers1_args_temp(struct npt_cs_de
         _has_cnt_pNumConstants = 1;
         args->pNumConstants = npt_cs_decoder_alloc_temp_array(dec, sizeof(UINT), _cnt_pNumConstants ? _cnt_pNumConstants : 1);
         if (!args->pNumConstants) return;
+        /* Present but empty: a callee that walks it anyway reads zeros, not the previous command. */
+        if (!_cnt_pNumConstants) memset((void *)args->pNumConstants, 0, sizeof(UINT));
         npt_decode_UINT_array(dec, (UINT *)args->pNumConstants, _cnt_pNumConstants);
     } else {
         args->pNumConstants = NULL;
@@ -17495,6 +17791,11 @@ npt_decode_ID3D11DeviceContext1_HSSetConstantBuffers1_args_temp(struct npt_cs_de
     /* Decode input parameters from the wire */
     npt_decode_UINT(dec, &args->StartSlot);
     npt_decode_UINT(dec, &args->NumBuffers);
+    /* A binding run must stay inside the slot table the API fixes. */
+    if ((uint64_t)args->StartSlot + (uint64_t)args->NumBuffers > (uint64_t)(D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT)) {
+        npt_cs_decoder_set_fatal(dec);
+        return;
+    }
     _cnt_ppConstantBuffers = npt_decode_array_count_unchecked(dec);
     _has_cnt_ppConstantBuffers = _cnt_ppConstantBuffers != 0;
     if (_cnt_ppConstantBuffers) {
@@ -17513,6 +17814,8 @@ npt_decode_ID3D11DeviceContext1_HSSetConstantBuffers1_args_temp(struct npt_cs_de
         _has_cnt_pFirstConstant = 1;
         args->pFirstConstant = npt_cs_decoder_alloc_temp_array(dec, sizeof(UINT), _cnt_pFirstConstant ? _cnt_pFirstConstant : 1);
         if (!args->pFirstConstant) return;
+        /* Present but empty: a callee that walks it anyway reads zeros, not the previous command. */
+        if (!_cnt_pFirstConstant) memset((void *)args->pFirstConstant, 0, sizeof(UINT));
         npt_decode_UINT_array(dec, (UINT *)args->pFirstConstant, _cnt_pFirstConstant);
     } else {
         args->pFirstConstant = NULL;
@@ -17522,6 +17825,8 @@ npt_decode_ID3D11DeviceContext1_HSSetConstantBuffers1_args_temp(struct npt_cs_de
         _has_cnt_pNumConstants = 1;
         args->pNumConstants = npt_cs_decoder_alloc_temp_array(dec, sizeof(UINT), _cnt_pNumConstants ? _cnt_pNumConstants : 1);
         if (!args->pNumConstants) return;
+        /* Present but empty: a callee that walks it anyway reads zeros, not the previous command. */
+        if (!_cnt_pNumConstants) memset((void *)args->pNumConstants, 0, sizeof(UINT));
         npt_decode_UINT_array(dec, (UINT *)args->pNumConstants, _cnt_pNumConstants);
     } else {
         args->pNumConstants = NULL;
@@ -17680,6 +17985,11 @@ npt_decode_ID3D11DeviceContext1_DSSetConstantBuffers1_args_temp(struct npt_cs_de
     /* Decode input parameters from the wire */
     npt_decode_UINT(dec, &args->StartSlot);
     npt_decode_UINT(dec, &args->NumBuffers);
+    /* A binding run must stay inside the slot table the API fixes. */
+    if ((uint64_t)args->StartSlot + (uint64_t)args->NumBuffers > (uint64_t)(D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT)) {
+        npt_cs_decoder_set_fatal(dec);
+        return;
+    }
     _cnt_ppConstantBuffers = npt_decode_array_count_unchecked(dec);
     _has_cnt_ppConstantBuffers = _cnt_ppConstantBuffers != 0;
     if (_cnt_ppConstantBuffers) {
@@ -17698,6 +18008,8 @@ npt_decode_ID3D11DeviceContext1_DSSetConstantBuffers1_args_temp(struct npt_cs_de
         _has_cnt_pFirstConstant = 1;
         args->pFirstConstant = npt_cs_decoder_alloc_temp_array(dec, sizeof(UINT), _cnt_pFirstConstant ? _cnt_pFirstConstant : 1);
         if (!args->pFirstConstant) return;
+        /* Present but empty: a callee that walks it anyway reads zeros, not the previous command. */
+        if (!_cnt_pFirstConstant) memset((void *)args->pFirstConstant, 0, sizeof(UINT));
         npt_decode_UINT_array(dec, (UINT *)args->pFirstConstant, _cnt_pFirstConstant);
     } else {
         args->pFirstConstant = NULL;
@@ -17707,6 +18019,8 @@ npt_decode_ID3D11DeviceContext1_DSSetConstantBuffers1_args_temp(struct npt_cs_de
         _has_cnt_pNumConstants = 1;
         args->pNumConstants = npt_cs_decoder_alloc_temp_array(dec, sizeof(UINT), _cnt_pNumConstants ? _cnt_pNumConstants : 1);
         if (!args->pNumConstants) return;
+        /* Present but empty: a callee that walks it anyway reads zeros, not the previous command. */
+        if (!_cnt_pNumConstants) memset((void *)args->pNumConstants, 0, sizeof(UINT));
         npt_decode_UINT_array(dec, (UINT *)args->pNumConstants, _cnt_pNumConstants);
     } else {
         args->pNumConstants = NULL;
@@ -17865,6 +18179,11 @@ npt_decode_ID3D11DeviceContext1_GSSetConstantBuffers1_args_temp(struct npt_cs_de
     /* Decode input parameters from the wire */
     npt_decode_UINT(dec, &args->StartSlot);
     npt_decode_UINT(dec, &args->NumBuffers);
+    /* A binding run must stay inside the slot table the API fixes. */
+    if ((uint64_t)args->StartSlot + (uint64_t)args->NumBuffers > (uint64_t)(D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT)) {
+        npt_cs_decoder_set_fatal(dec);
+        return;
+    }
     _cnt_ppConstantBuffers = npt_decode_array_count_unchecked(dec);
     _has_cnt_ppConstantBuffers = _cnt_ppConstantBuffers != 0;
     if (_cnt_ppConstantBuffers) {
@@ -17883,6 +18202,8 @@ npt_decode_ID3D11DeviceContext1_GSSetConstantBuffers1_args_temp(struct npt_cs_de
         _has_cnt_pFirstConstant = 1;
         args->pFirstConstant = npt_cs_decoder_alloc_temp_array(dec, sizeof(UINT), _cnt_pFirstConstant ? _cnt_pFirstConstant : 1);
         if (!args->pFirstConstant) return;
+        /* Present but empty: a callee that walks it anyway reads zeros, not the previous command. */
+        if (!_cnt_pFirstConstant) memset((void *)args->pFirstConstant, 0, sizeof(UINT));
         npt_decode_UINT_array(dec, (UINT *)args->pFirstConstant, _cnt_pFirstConstant);
     } else {
         args->pFirstConstant = NULL;
@@ -17892,6 +18213,8 @@ npt_decode_ID3D11DeviceContext1_GSSetConstantBuffers1_args_temp(struct npt_cs_de
         _has_cnt_pNumConstants = 1;
         args->pNumConstants = npt_cs_decoder_alloc_temp_array(dec, sizeof(UINT), _cnt_pNumConstants ? _cnt_pNumConstants : 1);
         if (!args->pNumConstants) return;
+        /* Present but empty: a callee that walks it anyway reads zeros, not the previous command. */
+        if (!_cnt_pNumConstants) memset((void *)args->pNumConstants, 0, sizeof(UINT));
         npt_decode_UINT_array(dec, (UINT *)args->pNumConstants, _cnt_pNumConstants);
     } else {
         args->pNumConstants = NULL;
@@ -18050,6 +18373,11 @@ npt_decode_ID3D11DeviceContext1_PSSetConstantBuffers1_args_temp(struct npt_cs_de
     /* Decode input parameters from the wire */
     npt_decode_UINT(dec, &args->StartSlot);
     npt_decode_UINT(dec, &args->NumBuffers);
+    /* A binding run must stay inside the slot table the API fixes. */
+    if ((uint64_t)args->StartSlot + (uint64_t)args->NumBuffers > (uint64_t)(D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT)) {
+        npt_cs_decoder_set_fatal(dec);
+        return;
+    }
     _cnt_ppConstantBuffers = npt_decode_array_count_unchecked(dec);
     _has_cnt_ppConstantBuffers = _cnt_ppConstantBuffers != 0;
     if (_cnt_ppConstantBuffers) {
@@ -18068,6 +18396,8 @@ npt_decode_ID3D11DeviceContext1_PSSetConstantBuffers1_args_temp(struct npt_cs_de
         _has_cnt_pFirstConstant = 1;
         args->pFirstConstant = npt_cs_decoder_alloc_temp_array(dec, sizeof(UINT), _cnt_pFirstConstant ? _cnt_pFirstConstant : 1);
         if (!args->pFirstConstant) return;
+        /* Present but empty: a callee that walks it anyway reads zeros, not the previous command. */
+        if (!_cnt_pFirstConstant) memset((void *)args->pFirstConstant, 0, sizeof(UINT));
         npt_decode_UINT_array(dec, (UINT *)args->pFirstConstant, _cnt_pFirstConstant);
     } else {
         args->pFirstConstant = NULL;
@@ -18077,6 +18407,8 @@ npt_decode_ID3D11DeviceContext1_PSSetConstantBuffers1_args_temp(struct npt_cs_de
         _has_cnt_pNumConstants = 1;
         args->pNumConstants = npt_cs_decoder_alloc_temp_array(dec, sizeof(UINT), _cnt_pNumConstants ? _cnt_pNumConstants : 1);
         if (!args->pNumConstants) return;
+        /* Present but empty: a callee that walks it anyway reads zeros, not the previous command. */
+        if (!_cnt_pNumConstants) memset((void *)args->pNumConstants, 0, sizeof(UINT));
         npt_decode_UINT_array(dec, (UINT *)args->pNumConstants, _cnt_pNumConstants);
     } else {
         args->pNumConstants = NULL;
@@ -18235,6 +18567,11 @@ npt_decode_ID3D11DeviceContext1_CSSetConstantBuffers1_args_temp(struct npt_cs_de
     /* Decode input parameters from the wire */
     npt_decode_UINT(dec, &args->StartSlot);
     npt_decode_UINT(dec, &args->NumBuffers);
+    /* A binding run must stay inside the slot table the API fixes. */
+    if ((uint64_t)args->StartSlot + (uint64_t)args->NumBuffers > (uint64_t)(D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT)) {
+        npt_cs_decoder_set_fatal(dec);
+        return;
+    }
     _cnt_ppConstantBuffers = npt_decode_array_count_unchecked(dec);
     _has_cnt_ppConstantBuffers = _cnt_ppConstantBuffers != 0;
     if (_cnt_ppConstantBuffers) {
@@ -18253,6 +18590,8 @@ npt_decode_ID3D11DeviceContext1_CSSetConstantBuffers1_args_temp(struct npt_cs_de
         _has_cnt_pFirstConstant = 1;
         args->pFirstConstant = npt_cs_decoder_alloc_temp_array(dec, sizeof(UINT), _cnt_pFirstConstant ? _cnt_pFirstConstant : 1);
         if (!args->pFirstConstant) return;
+        /* Present but empty: a callee that walks it anyway reads zeros, not the previous command. */
+        if (!_cnt_pFirstConstant) memset((void *)args->pFirstConstant, 0, sizeof(UINT));
         npt_decode_UINT_array(dec, (UINT *)args->pFirstConstant, _cnt_pFirstConstant);
     } else {
         args->pFirstConstant = NULL;
@@ -18262,6 +18601,8 @@ npt_decode_ID3D11DeviceContext1_CSSetConstantBuffers1_args_temp(struct npt_cs_de
         _has_cnt_pNumConstants = 1;
         args->pNumConstants = npt_cs_decoder_alloc_temp_array(dec, sizeof(UINT), _cnt_pNumConstants ? _cnt_pNumConstants : 1);
         if (!args->pNumConstants) return;
+        /* Present but empty: a callee that walks it anyway reads zeros, not the previous command. */
+        if (!_cnt_pNumConstants) memset((void *)args->pNumConstants, 0, sizeof(UINT));
         npt_decode_UINT_array(dec, (UINT *)args->pNumConstants, _cnt_pNumConstants);
     } else {
         args->pNumConstants = NULL;
@@ -18414,6 +18755,12 @@ struct npt_command_ID3D11DeviceContext1_VSGetConstantBuffers1 {
     uint64_t *_guest_ids_ppConstantBuffers;
     uint32_t _guest_id_count_ppConstantBuffers;
     struct npt_wire_object_ref *_refs_ppConstantBuffers;
+    /* Elements allocated for pFirstConstant at decode; the reply never
+     * encodes more, whatever count the callee wrote back. */
+    uint64_t _cap_pFirstConstant;
+    /* Elements allocated for pNumConstants at decode; the reply never
+     * encodes more, whatever count the callee wrote back. */
+    uint64_t _cap_pNumConstants;
 };
 
 static inline void
@@ -18424,6 +18771,11 @@ npt_decode_ID3D11DeviceContext1_VSGetConstantBuffers1_args_temp(struct npt_cs_de
     /* Decode input parameters from the wire */
     npt_decode_UINT(dec, &args->StartSlot);
     npt_decode_UINT(dec, &args->NumBuffers);
+    /* A binding run must stay inside the slot table the API fixes. */
+    if ((uint64_t)args->StartSlot + (uint64_t)args->NumBuffers > (uint64_t)(D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT)) {
+        npt_cs_decoder_set_fatal(dec);
+        return;
+    }
     _cnt_ppConstantBuffers = npt_decode_array_count_unchecked(dec);
     _has_cnt_ppConstantBuffers = _cnt_ppConstantBuffers != 0;
     args->_guest_id_count_ppConstantBuffers = (uint32_t)_cnt_ppConstantBuffers;
@@ -18440,8 +18792,6 @@ npt_decode_ID3D11DeviceContext1_VSGetConstantBuffers1_args_temp(struct npt_cs_de
     } else {
         args->ppConstantBuffers = NULL;
     }
-
-
     /* A counted array must hold every element the callee walks. */
     if ((_has_cnt_ppConstantBuffers > 0 && _cnt_ppConstantBuffers != (uint64_t)(args->NumBuffers))) {
         npt_cs_decoder_set_fatal(dec);
@@ -18458,6 +18808,7 @@ npt_decode_ID3D11DeviceContext1_VSGetConstantBuffers1_args_temp(struct npt_cs_de
     } else {
         args->pFirstConstant = NULL;
     }
+    args->_cap_pFirstConstant = args->pFirstConstant ? (uint64_t)(args->NumBuffers) : 0;
     if (args->NumBuffers) {
         args->pNumConstants = npt_cs_decoder_alloc_temp_array(dec, sizeof(UINT), args->NumBuffers);
         if (!args->pNumConstants) return;
@@ -18465,6 +18816,7 @@ npt_decode_ID3D11DeviceContext1_VSGetConstantBuffers1_args_temp(struct npt_cs_de
     } else {
         args->pNumConstants = NULL;
     }
+    args->_cap_pNumConstants = args->pNumConstants ? (uint64_t)(args->NumBuffers) : 0;
 }
 
 static inline void
@@ -18488,17 +18840,23 @@ npt_encode_ID3D11DeviceContext1_VSGetConstantBuffers1_reply(struct npt_cs_encode
     for (uint32_t _i = 0; _i < _n; _i++)
         npt_encode_npt_wire_object_ref(enc, &args->_refs_ppConstantBuffers[_i]);
 }
-    if (args->pFirstConstant) {
-        npt_encode_array_count(enc, args->NumBuffers);
-        npt_encode_UINT_array(enc, args->pFirstConstant, args->NumBuffers);
-    } else {
-        npt_encode_array_count(enc, 0);
+    {
+        const uint64_t _n_pFirstConstant = (uint64_t)(args->NumBuffers) < args->_cap_pFirstConstant ? (uint64_t)(args->NumBuffers) : args->_cap_pFirstConstant;
+        if (args->pFirstConstant) {
+            npt_encode_array_count(enc, _n_pFirstConstant);
+            npt_encode_UINT_array(enc, args->pFirstConstant, _n_pFirstConstant);
+        } else {
+            npt_encode_array_count(enc, 0);
+        }
     }
-    if (args->pNumConstants) {
-        npt_encode_array_count(enc, args->NumBuffers);
-        npt_encode_UINT_array(enc, args->pNumConstants, args->NumBuffers);
-    } else {
-        npt_encode_array_count(enc, 0);
+    {
+        const uint64_t _n_pNumConstants = (uint64_t)(args->NumBuffers) < args->_cap_pNumConstants ? (uint64_t)(args->NumBuffers) : args->_cap_pNumConstants;
+        if (args->pNumConstants) {
+            npt_encode_array_count(enc, _n_pNumConstants);
+            npt_encode_UINT_array(enc, args->pNumConstants, _n_pNumConstants);
+        } else {
+            npt_encode_array_count(enc, 0);
+        }
     }
 }
 
@@ -18615,6 +18973,12 @@ struct npt_command_ID3D11DeviceContext1_HSGetConstantBuffers1 {
     uint64_t *_guest_ids_ppConstantBuffers;
     uint32_t _guest_id_count_ppConstantBuffers;
     struct npt_wire_object_ref *_refs_ppConstantBuffers;
+    /* Elements allocated for pFirstConstant at decode; the reply never
+     * encodes more, whatever count the callee wrote back. */
+    uint64_t _cap_pFirstConstant;
+    /* Elements allocated for pNumConstants at decode; the reply never
+     * encodes more, whatever count the callee wrote back. */
+    uint64_t _cap_pNumConstants;
 };
 
 static inline void
@@ -18625,6 +18989,11 @@ npt_decode_ID3D11DeviceContext1_HSGetConstantBuffers1_args_temp(struct npt_cs_de
     /* Decode input parameters from the wire */
     npt_decode_UINT(dec, &args->StartSlot);
     npt_decode_UINT(dec, &args->NumBuffers);
+    /* A binding run must stay inside the slot table the API fixes. */
+    if ((uint64_t)args->StartSlot + (uint64_t)args->NumBuffers > (uint64_t)(D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT)) {
+        npt_cs_decoder_set_fatal(dec);
+        return;
+    }
     _cnt_ppConstantBuffers = npt_decode_array_count_unchecked(dec);
     _has_cnt_ppConstantBuffers = _cnt_ppConstantBuffers != 0;
     args->_guest_id_count_ppConstantBuffers = (uint32_t)_cnt_ppConstantBuffers;
@@ -18641,8 +19010,6 @@ npt_decode_ID3D11DeviceContext1_HSGetConstantBuffers1_args_temp(struct npt_cs_de
     } else {
         args->ppConstantBuffers = NULL;
     }
-
-
     /* A counted array must hold every element the callee walks. */
     if ((_has_cnt_ppConstantBuffers > 0 && _cnt_ppConstantBuffers != (uint64_t)(args->NumBuffers))) {
         npt_cs_decoder_set_fatal(dec);
@@ -18659,6 +19026,7 @@ npt_decode_ID3D11DeviceContext1_HSGetConstantBuffers1_args_temp(struct npt_cs_de
     } else {
         args->pFirstConstant = NULL;
     }
+    args->_cap_pFirstConstant = args->pFirstConstant ? (uint64_t)(args->NumBuffers) : 0;
     if (args->NumBuffers) {
         args->pNumConstants = npt_cs_decoder_alloc_temp_array(dec, sizeof(UINT), args->NumBuffers);
         if (!args->pNumConstants) return;
@@ -18666,6 +19034,7 @@ npt_decode_ID3D11DeviceContext1_HSGetConstantBuffers1_args_temp(struct npt_cs_de
     } else {
         args->pNumConstants = NULL;
     }
+    args->_cap_pNumConstants = args->pNumConstants ? (uint64_t)(args->NumBuffers) : 0;
 }
 
 static inline void
@@ -18689,17 +19058,23 @@ npt_encode_ID3D11DeviceContext1_HSGetConstantBuffers1_reply(struct npt_cs_encode
     for (uint32_t _i = 0; _i < _n; _i++)
         npt_encode_npt_wire_object_ref(enc, &args->_refs_ppConstantBuffers[_i]);
 }
-    if (args->pFirstConstant) {
-        npt_encode_array_count(enc, args->NumBuffers);
-        npt_encode_UINT_array(enc, args->pFirstConstant, args->NumBuffers);
-    } else {
-        npt_encode_array_count(enc, 0);
+    {
+        const uint64_t _n_pFirstConstant = (uint64_t)(args->NumBuffers) < args->_cap_pFirstConstant ? (uint64_t)(args->NumBuffers) : args->_cap_pFirstConstant;
+        if (args->pFirstConstant) {
+            npt_encode_array_count(enc, _n_pFirstConstant);
+            npt_encode_UINT_array(enc, args->pFirstConstant, _n_pFirstConstant);
+        } else {
+            npt_encode_array_count(enc, 0);
+        }
     }
-    if (args->pNumConstants) {
-        npt_encode_array_count(enc, args->NumBuffers);
-        npt_encode_UINT_array(enc, args->pNumConstants, args->NumBuffers);
-    } else {
-        npt_encode_array_count(enc, 0);
+    {
+        const uint64_t _n_pNumConstants = (uint64_t)(args->NumBuffers) < args->_cap_pNumConstants ? (uint64_t)(args->NumBuffers) : args->_cap_pNumConstants;
+        if (args->pNumConstants) {
+            npt_encode_array_count(enc, _n_pNumConstants);
+            npt_encode_UINT_array(enc, args->pNumConstants, _n_pNumConstants);
+        } else {
+            npt_encode_array_count(enc, 0);
+        }
     }
 }
 
@@ -18816,6 +19191,12 @@ struct npt_command_ID3D11DeviceContext1_DSGetConstantBuffers1 {
     uint64_t *_guest_ids_ppConstantBuffers;
     uint32_t _guest_id_count_ppConstantBuffers;
     struct npt_wire_object_ref *_refs_ppConstantBuffers;
+    /* Elements allocated for pFirstConstant at decode; the reply never
+     * encodes more, whatever count the callee wrote back. */
+    uint64_t _cap_pFirstConstant;
+    /* Elements allocated for pNumConstants at decode; the reply never
+     * encodes more, whatever count the callee wrote back. */
+    uint64_t _cap_pNumConstants;
 };
 
 static inline void
@@ -18826,6 +19207,11 @@ npt_decode_ID3D11DeviceContext1_DSGetConstantBuffers1_args_temp(struct npt_cs_de
     /* Decode input parameters from the wire */
     npt_decode_UINT(dec, &args->StartSlot);
     npt_decode_UINT(dec, &args->NumBuffers);
+    /* A binding run must stay inside the slot table the API fixes. */
+    if ((uint64_t)args->StartSlot + (uint64_t)args->NumBuffers > (uint64_t)(D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT)) {
+        npt_cs_decoder_set_fatal(dec);
+        return;
+    }
     _cnt_ppConstantBuffers = npt_decode_array_count_unchecked(dec);
     _has_cnt_ppConstantBuffers = _cnt_ppConstantBuffers != 0;
     args->_guest_id_count_ppConstantBuffers = (uint32_t)_cnt_ppConstantBuffers;
@@ -18842,8 +19228,6 @@ npt_decode_ID3D11DeviceContext1_DSGetConstantBuffers1_args_temp(struct npt_cs_de
     } else {
         args->ppConstantBuffers = NULL;
     }
-
-
     /* A counted array must hold every element the callee walks. */
     if ((_has_cnt_ppConstantBuffers > 0 && _cnt_ppConstantBuffers != (uint64_t)(args->NumBuffers))) {
         npt_cs_decoder_set_fatal(dec);
@@ -18860,6 +19244,7 @@ npt_decode_ID3D11DeviceContext1_DSGetConstantBuffers1_args_temp(struct npt_cs_de
     } else {
         args->pFirstConstant = NULL;
     }
+    args->_cap_pFirstConstant = args->pFirstConstant ? (uint64_t)(args->NumBuffers) : 0;
     if (args->NumBuffers) {
         args->pNumConstants = npt_cs_decoder_alloc_temp_array(dec, sizeof(UINT), args->NumBuffers);
         if (!args->pNumConstants) return;
@@ -18867,6 +19252,7 @@ npt_decode_ID3D11DeviceContext1_DSGetConstantBuffers1_args_temp(struct npt_cs_de
     } else {
         args->pNumConstants = NULL;
     }
+    args->_cap_pNumConstants = args->pNumConstants ? (uint64_t)(args->NumBuffers) : 0;
 }
 
 static inline void
@@ -18890,17 +19276,23 @@ npt_encode_ID3D11DeviceContext1_DSGetConstantBuffers1_reply(struct npt_cs_encode
     for (uint32_t _i = 0; _i < _n; _i++)
         npt_encode_npt_wire_object_ref(enc, &args->_refs_ppConstantBuffers[_i]);
 }
-    if (args->pFirstConstant) {
-        npt_encode_array_count(enc, args->NumBuffers);
-        npt_encode_UINT_array(enc, args->pFirstConstant, args->NumBuffers);
-    } else {
-        npt_encode_array_count(enc, 0);
+    {
+        const uint64_t _n_pFirstConstant = (uint64_t)(args->NumBuffers) < args->_cap_pFirstConstant ? (uint64_t)(args->NumBuffers) : args->_cap_pFirstConstant;
+        if (args->pFirstConstant) {
+            npt_encode_array_count(enc, _n_pFirstConstant);
+            npt_encode_UINT_array(enc, args->pFirstConstant, _n_pFirstConstant);
+        } else {
+            npt_encode_array_count(enc, 0);
+        }
     }
-    if (args->pNumConstants) {
-        npt_encode_array_count(enc, args->NumBuffers);
-        npt_encode_UINT_array(enc, args->pNumConstants, args->NumBuffers);
-    } else {
-        npt_encode_array_count(enc, 0);
+    {
+        const uint64_t _n_pNumConstants = (uint64_t)(args->NumBuffers) < args->_cap_pNumConstants ? (uint64_t)(args->NumBuffers) : args->_cap_pNumConstants;
+        if (args->pNumConstants) {
+            npt_encode_array_count(enc, _n_pNumConstants);
+            npt_encode_UINT_array(enc, args->pNumConstants, _n_pNumConstants);
+        } else {
+            npt_encode_array_count(enc, 0);
+        }
     }
 }
 
@@ -19017,6 +19409,12 @@ struct npt_command_ID3D11DeviceContext1_GSGetConstantBuffers1 {
     uint64_t *_guest_ids_ppConstantBuffers;
     uint32_t _guest_id_count_ppConstantBuffers;
     struct npt_wire_object_ref *_refs_ppConstantBuffers;
+    /* Elements allocated for pFirstConstant at decode; the reply never
+     * encodes more, whatever count the callee wrote back. */
+    uint64_t _cap_pFirstConstant;
+    /* Elements allocated for pNumConstants at decode; the reply never
+     * encodes more, whatever count the callee wrote back. */
+    uint64_t _cap_pNumConstants;
 };
 
 static inline void
@@ -19027,6 +19425,11 @@ npt_decode_ID3D11DeviceContext1_GSGetConstantBuffers1_args_temp(struct npt_cs_de
     /* Decode input parameters from the wire */
     npt_decode_UINT(dec, &args->StartSlot);
     npt_decode_UINT(dec, &args->NumBuffers);
+    /* A binding run must stay inside the slot table the API fixes. */
+    if ((uint64_t)args->StartSlot + (uint64_t)args->NumBuffers > (uint64_t)(D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT)) {
+        npt_cs_decoder_set_fatal(dec);
+        return;
+    }
     _cnt_ppConstantBuffers = npt_decode_array_count_unchecked(dec);
     _has_cnt_ppConstantBuffers = _cnt_ppConstantBuffers != 0;
     args->_guest_id_count_ppConstantBuffers = (uint32_t)_cnt_ppConstantBuffers;
@@ -19043,8 +19446,6 @@ npt_decode_ID3D11DeviceContext1_GSGetConstantBuffers1_args_temp(struct npt_cs_de
     } else {
         args->ppConstantBuffers = NULL;
     }
-
-
     /* A counted array must hold every element the callee walks. */
     if ((_has_cnt_ppConstantBuffers > 0 && _cnt_ppConstantBuffers != (uint64_t)(args->NumBuffers))) {
         npt_cs_decoder_set_fatal(dec);
@@ -19061,6 +19462,7 @@ npt_decode_ID3D11DeviceContext1_GSGetConstantBuffers1_args_temp(struct npt_cs_de
     } else {
         args->pFirstConstant = NULL;
     }
+    args->_cap_pFirstConstant = args->pFirstConstant ? (uint64_t)(args->NumBuffers) : 0;
     if (args->NumBuffers) {
         args->pNumConstants = npt_cs_decoder_alloc_temp_array(dec, sizeof(UINT), args->NumBuffers);
         if (!args->pNumConstants) return;
@@ -19068,6 +19470,7 @@ npt_decode_ID3D11DeviceContext1_GSGetConstantBuffers1_args_temp(struct npt_cs_de
     } else {
         args->pNumConstants = NULL;
     }
+    args->_cap_pNumConstants = args->pNumConstants ? (uint64_t)(args->NumBuffers) : 0;
 }
 
 static inline void
@@ -19091,17 +19494,23 @@ npt_encode_ID3D11DeviceContext1_GSGetConstantBuffers1_reply(struct npt_cs_encode
     for (uint32_t _i = 0; _i < _n; _i++)
         npt_encode_npt_wire_object_ref(enc, &args->_refs_ppConstantBuffers[_i]);
 }
-    if (args->pFirstConstant) {
-        npt_encode_array_count(enc, args->NumBuffers);
-        npt_encode_UINT_array(enc, args->pFirstConstant, args->NumBuffers);
-    } else {
-        npt_encode_array_count(enc, 0);
+    {
+        const uint64_t _n_pFirstConstant = (uint64_t)(args->NumBuffers) < args->_cap_pFirstConstant ? (uint64_t)(args->NumBuffers) : args->_cap_pFirstConstant;
+        if (args->pFirstConstant) {
+            npt_encode_array_count(enc, _n_pFirstConstant);
+            npt_encode_UINT_array(enc, args->pFirstConstant, _n_pFirstConstant);
+        } else {
+            npt_encode_array_count(enc, 0);
+        }
     }
-    if (args->pNumConstants) {
-        npt_encode_array_count(enc, args->NumBuffers);
-        npt_encode_UINT_array(enc, args->pNumConstants, args->NumBuffers);
-    } else {
-        npt_encode_array_count(enc, 0);
+    {
+        const uint64_t _n_pNumConstants = (uint64_t)(args->NumBuffers) < args->_cap_pNumConstants ? (uint64_t)(args->NumBuffers) : args->_cap_pNumConstants;
+        if (args->pNumConstants) {
+            npt_encode_array_count(enc, _n_pNumConstants);
+            npt_encode_UINT_array(enc, args->pNumConstants, _n_pNumConstants);
+        } else {
+            npt_encode_array_count(enc, 0);
+        }
     }
 }
 
@@ -19218,6 +19627,12 @@ struct npt_command_ID3D11DeviceContext1_PSGetConstantBuffers1 {
     uint64_t *_guest_ids_ppConstantBuffers;
     uint32_t _guest_id_count_ppConstantBuffers;
     struct npt_wire_object_ref *_refs_ppConstantBuffers;
+    /* Elements allocated for pFirstConstant at decode; the reply never
+     * encodes more, whatever count the callee wrote back. */
+    uint64_t _cap_pFirstConstant;
+    /* Elements allocated for pNumConstants at decode; the reply never
+     * encodes more, whatever count the callee wrote back. */
+    uint64_t _cap_pNumConstants;
 };
 
 static inline void
@@ -19228,6 +19643,11 @@ npt_decode_ID3D11DeviceContext1_PSGetConstantBuffers1_args_temp(struct npt_cs_de
     /* Decode input parameters from the wire */
     npt_decode_UINT(dec, &args->StartSlot);
     npt_decode_UINT(dec, &args->NumBuffers);
+    /* A binding run must stay inside the slot table the API fixes. */
+    if ((uint64_t)args->StartSlot + (uint64_t)args->NumBuffers > (uint64_t)(D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT)) {
+        npt_cs_decoder_set_fatal(dec);
+        return;
+    }
     _cnt_ppConstantBuffers = npt_decode_array_count_unchecked(dec);
     _has_cnt_ppConstantBuffers = _cnt_ppConstantBuffers != 0;
     args->_guest_id_count_ppConstantBuffers = (uint32_t)_cnt_ppConstantBuffers;
@@ -19244,8 +19664,6 @@ npt_decode_ID3D11DeviceContext1_PSGetConstantBuffers1_args_temp(struct npt_cs_de
     } else {
         args->ppConstantBuffers = NULL;
     }
-
-
     /* A counted array must hold every element the callee walks. */
     if ((_has_cnt_ppConstantBuffers > 0 && _cnt_ppConstantBuffers != (uint64_t)(args->NumBuffers))) {
         npt_cs_decoder_set_fatal(dec);
@@ -19262,6 +19680,7 @@ npt_decode_ID3D11DeviceContext1_PSGetConstantBuffers1_args_temp(struct npt_cs_de
     } else {
         args->pFirstConstant = NULL;
     }
+    args->_cap_pFirstConstant = args->pFirstConstant ? (uint64_t)(args->NumBuffers) : 0;
     if (args->NumBuffers) {
         args->pNumConstants = npt_cs_decoder_alloc_temp_array(dec, sizeof(UINT), args->NumBuffers);
         if (!args->pNumConstants) return;
@@ -19269,6 +19688,7 @@ npt_decode_ID3D11DeviceContext1_PSGetConstantBuffers1_args_temp(struct npt_cs_de
     } else {
         args->pNumConstants = NULL;
     }
+    args->_cap_pNumConstants = args->pNumConstants ? (uint64_t)(args->NumBuffers) : 0;
 }
 
 static inline void
@@ -19292,17 +19712,23 @@ npt_encode_ID3D11DeviceContext1_PSGetConstantBuffers1_reply(struct npt_cs_encode
     for (uint32_t _i = 0; _i < _n; _i++)
         npt_encode_npt_wire_object_ref(enc, &args->_refs_ppConstantBuffers[_i]);
 }
-    if (args->pFirstConstant) {
-        npt_encode_array_count(enc, args->NumBuffers);
-        npt_encode_UINT_array(enc, args->pFirstConstant, args->NumBuffers);
-    } else {
-        npt_encode_array_count(enc, 0);
+    {
+        const uint64_t _n_pFirstConstant = (uint64_t)(args->NumBuffers) < args->_cap_pFirstConstant ? (uint64_t)(args->NumBuffers) : args->_cap_pFirstConstant;
+        if (args->pFirstConstant) {
+            npt_encode_array_count(enc, _n_pFirstConstant);
+            npt_encode_UINT_array(enc, args->pFirstConstant, _n_pFirstConstant);
+        } else {
+            npt_encode_array_count(enc, 0);
+        }
     }
-    if (args->pNumConstants) {
-        npt_encode_array_count(enc, args->NumBuffers);
-        npt_encode_UINT_array(enc, args->pNumConstants, args->NumBuffers);
-    } else {
-        npt_encode_array_count(enc, 0);
+    {
+        const uint64_t _n_pNumConstants = (uint64_t)(args->NumBuffers) < args->_cap_pNumConstants ? (uint64_t)(args->NumBuffers) : args->_cap_pNumConstants;
+        if (args->pNumConstants) {
+            npt_encode_array_count(enc, _n_pNumConstants);
+            npt_encode_UINT_array(enc, args->pNumConstants, _n_pNumConstants);
+        } else {
+            npt_encode_array_count(enc, 0);
+        }
     }
 }
 
@@ -19419,6 +19845,12 @@ struct npt_command_ID3D11DeviceContext1_CSGetConstantBuffers1 {
     uint64_t *_guest_ids_ppConstantBuffers;
     uint32_t _guest_id_count_ppConstantBuffers;
     struct npt_wire_object_ref *_refs_ppConstantBuffers;
+    /* Elements allocated for pFirstConstant at decode; the reply never
+     * encodes more, whatever count the callee wrote back. */
+    uint64_t _cap_pFirstConstant;
+    /* Elements allocated for pNumConstants at decode; the reply never
+     * encodes more, whatever count the callee wrote back. */
+    uint64_t _cap_pNumConstants;
 };
 
 static inline void
@@ -19429,6 +19861,11 @@ npt_decode_ID3D11DeviceContext1_CSGetConstantBuffers1_args_temp(struct npt_cs_de
     /* Decode input parameters from the wire */
     npt_decode_UINT(dec, &args->StartSlot);
     npt_decode_UINT(dec, &args->NumBuffers);
+    /* A binding run must stay inside the slot table the API fixes. */
+    if ((uint64_t)args->StartSlot + (uint64_t)args->NumBuffers > (uint64_t)(D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT)) {
+        npt_cs_decoder_set_fatal(dec);
+        return;
+    }
     _cnt_ppConstantBuffers = npt_decode_array_count_unchecked(dec);
     _has_cnt_ppConstantBuffers = _cnt_ppConstantBuffers != 0;
     args->_guest_id_count_ppConstantBuffers = (uint32_t)_cnt_ppConstantBuffers;
@@ -19445,8 +19882,6 @@ npt_decode_ID3D11DeviceContext1_CSGetConstantBuffers1_args_temp(struct npt_cs_de
     } else {
         args->ppConstantBuffers = NULL;
     }
-
-
     /* A counted array must hold every element the callee walks. */
     if ((_has_cnt_ppConstantBuffers > 0 && _cnt_ppConstantBuffers != (uint64_t)(args->NumBuffers))) {
         npt_cs_decoder_set_fatal(dec);
@@ -19463,6 +19898,7 @@ npt_decode_ID3D11DeviceContext1_CSGetConstantBuffers1_args_temp(struct npt_cs_de
     } else {
         args->pFirstConstant = NULL;
     }
+    args->_cap_pFirstConstant = args->pFirstConstant ? (uint64_t)(args->NumBuffers) : 0;
     if (args->NumBuffers) {
         args->pNumConstants = npt_cs_decoder_alloc_temp_array(dec, sizeof(UINT), args->NumBuffers);
         if (!args->pNumConstants) return;
@@ -19470,6 +19906,7 @@ npt_decode_ID3D11DeviceContext1_CSGetConstantBuffers1_args_temp(struct npt_cs_de
     } else {
         args->pNumConstants = NULL;
     }
+    args->_cap_pNumConstants = args->pNumConstants ? (uint64_t)(args->NumBuffers) : 0;
 }
 
 static inline void
@@ -19493,17 +19930,23 @@ npt_encode_ID3D11DeviceContext1_CSGetConstantBuffers1_reply(struct npt_cs_encode
     for (uint32_t _i = 0; _i < _n; _i++)
         npt_encode_npt_wire_object_ref(enc, &args->_refs_ppConstantBuffers[_i]);
 }
-    if (args->pFirstConstant) {
-        npt_encode_array_count(enc, args->NumBuffers);
-        npt_encode_UINT_array(enc, args->pFirstConstant, args->NumBuffers);
-    } else {
-        npt_encode_array_count(enc, 0);
+    {
+        const uint64_t _n_pFirstConstant = (uint64_t)(args->NumBuffers) < args->_cap_pFirstConstant ? (uint64_t)(args->NumBuffers) : args->_cap_pFirstConstant;
+        if (args->pFirstConstant) {
+            npt_encode_array_count(enc, _n_pFirstConstant);
+            npt_encode_UINT_array(enc, args->pFirstConstant, _n_pFirstConstant);
+        } else {
+            npt_encode_array_count(enc, 0);
+        }
     }
-    if (args->pNumConstants) {
-        npt_encode_array_count(enc, args->NumBuffers);
-        npt_encode_UINT_array(enc, args->pNumConstants, args->NumBuffers);
-    } else {
-        npt_encode_array_count(enc, 0);
+    {
+        const uint64_t _n_pNumConstants = (uint64_t)(args->NumBuffers) < args->_cap_pNumConstants ? (uint64_t)(args->NumBuffers) : args->_cap_pNumConstants;
+        if (args->pNumConstants) {
+            npt_encode_array_count(enc, _n_pNumConstants);
+            npt_encode_UINT_array(enc, args->pNumConstants, _n_pNumConstants);
+        } else {
+            npt_encode_array_count(enc, 0);
+        }
     }
 }
 
@@ -19787,6 +20230,8 @@ npt_decode_ID3D11DeviceContext1_ClearView_args_temp(struct npt_cs_decoder *dec,
         _has_cnt_pRect = 1;
         args->pRect = npt_cs_decoder_alloc_temp_array(dec, sizeof(D3D11_RECT), _cnt_pRect ? _cnt_pRect : 1);
         if (!args->pRect) return;
+        /* Present but empty: a callee that walks it anyway reads zeros, not the previous command. */
+        if (!_cnt_pRect) memset((void *)args->pRect, 0, sizeof(D3D11_RECT));
         for (uint32_t _i = 0; _i < (uint32_t)_cnt_pRect; _i++)
             npt_decode_D3D11_RECT(dec, (D3D11_RECT *)&args->pRect[_i]);
     } else {
@@ -19938,6 +20383,8 @@ npt_decode_ID3D11DeviceContext1_DiscardView1_args_temp(struct npt_cs_decoder *de
         _has_cnt_pRects = 1;
         args->pRects = npt_cs_decoder_alloc_temp_array(dec, sizeof(D3D11_RECT), _cnt_pRects ? _cnt_pRects : 1);
         if (!args->pRects) return;
+        /* Present but empty: a callee that walks it anyway reads zeros, not the previous command. */
+        if (!_cnt_pRects) memset((void *)args->pRects, 0, sizeof(D3D11_RECT));
         for (uint32_t _i = 0; _i < (uint32_t)_cnt_pRects; _i++)
             npt_decode_D3D11_RECT(dec, (D3D11_RECT *)&args->pRects[_i]);
     } else {
@@ -20101,6 +20548,8 @@ npt_decode_ID3D11DeviceContext2_UpdateTileMappings_args_temp(struct npt_cs_decod
         _has_cnt_pTiledResourceRegionStartCoordinates = 1;
         args->pTiledResourceRegionStartCoordinates = npt_cs_decoder_alloc_temp_array(dec, sizeof(D3D11_TILED_RESOURCE_COORDINATE), _cnt_pTiledResourceRegionStartCoordinates ? _cnt_pTiledResourceRegionStartCoordinates : 1);
         if (!args->pTiledResourceRegionStartCoordinates) return;
+        /* Present but empty: a callee that walks it anyway reads zeros, not the previous command. */
+        if (!_cnt_pTiledResourceRegionStartCoordinates) memset((void *)args->pTiledResourceRegionStartCoordinates, 0, sizeof(D3D11_TILED_RESOURCE_COORDINATE));
         for (uint32_t _i = 0; _i < (uint32_t)_cnt_pTiledResourceRegionStartCoordinates; _i++)
             npt_decode_D3D11_TILED_RESOURCE_COORDINATE(dec, (D3D11_TILED_RESOURCE_COORDINATE *)&args->pTiledResourceRegionStartCoordinates[_i]);
     } else {
@@ -20111,6 +20560,8 @@ npt_decode_ID3D11DeviceContext2_UpdateTileMappings_args_temp(struct npt_cs_decod
         _has_cnt_pTiledResourceRegionSizes = 1;
         args->pTiledResourceRegionSizes = npt_cs_decoder_alloc_temp_array(dec, sizeof(D3D11_TILE_REGION_SIZE), _cnt_pTiledResourceRegionSizes ? _cnt_pTiledResourceRegionSizes : 1);
         if (!args->pTiledResourceRegionSizes) return;
+        /* Present but empty: a callee that walks it anyway reads zeros, not the previous command. */
+        if (!_cnt_pTiledResourceRegionSizes) memset((void *)args->pTiledResourceRegionSizes, 0, sizeof(D3D11_TILE_REGION_SIZE));
         for (uint32_t _i = 0; _i < (uint32_t)_cnt_pTiledResourceRegionSizes; _i++)
             npt_decode_D3D11_TILE_REGION_SIZE(dec, (D3D11_TILE_REGION_SIZE *)&args->pTiledResourceRegionSizes[_i]);
     } else {
@@ -20127,6 +20578,8 @@ npt_decode_ID3D11DeviceContext2_UpdateTileMappings_args_temp(struct npt_cs_decod
         _has_cnt_pRangeFlags = 1;
         args->pRangeFlags = npt_cs_decoder_alloc_temp_array(dec, sizeof(UINT), _cnt_pRangeFlags ? _cnt_pRangeFlags : 1);
         if (!args->pRangeFlags) return;
+        /* Present but empty: a callee that walks it anyway reads zeros, not the previous command. */
+        if (!_cnt_pRangeFlags) memset((void *)args->pRangeFlags, 0, sizeof(UINT));
         npt_decode_UINT_array(dec, (UINT *)args->pRangeFlags, _cnt_pRangeFlags);
     } else {
         args->pRangeFlags = NULL;
@@ -20136,6 +20589,8 @@ npt_decode_ID3D11DeviceContext2_UpdateTileMappings_args_temp(struct npt_cs_decod
         _has_cnt_pTilePoolStartOffsets = 1;
         args->pTilePoolStartOffsets = npt_cs_decoder_alloc_temp_array(dec, sizeof(UINT), _cnt_pTilePoolStartOffsets ? _cnt_pTilePoolStartOffsets : 1);
         if (!args->pTilePoolStartOffsets) return;
+        /* Present but empty: a callee that walks it anyway reads zeros, not the previous command. */
+        if (!_cnt_pTilePoolStartOffsets) memset((void *)args->pTilePoolStartOffsets, 0, sizeof(UINT));
         npt_decode_UINT_array(dec, (UINT *)args->pTilePoolStartOffsets, _cnt_pTilePoolStartOffsets);
     } else {
         args->pTilePoolStartOffsets = NULL;
@@ -20145,6 +20600,8 @@ npt_decode_ID3D11DeviceContext2_UpdateTileMappings_args_temp(struct npt_cs_decod
         _has_cnt_pRangeTileCounts = 1;
         args->pRangeTileCounts = npt_cs_decoder_alloc_temp_array(dec, sizeof(UINT), _cnt_pRangeTileCounts ? _cnt_pRangeTileCounts : 1);
         if (!args->pRangeTileCounts) return;
+        /* Present but empty: a callee that walks it anyway reads zeros, not the previous command. */
+        if (!_cnt_pRangeTileCounts) memset((void *)args->pRangeTileCounts, 0, sizeof(UINT));
         npt_decode_UINT_array(dec, (UINT *)args->pRangeTileCounts, _cnt_pRangeTileCounts);
     } else {
         args->pRangeTileCounts = NULL;
@@ -20671,9 +21128,9 @@ npt_decode_ID3D11DeviceContext2_UpdateTiles_args_temp(struct npt_cs_decoder *dec
         npt_cs_decoder_set_fatal(dec); /* non-optional pointer is NULL */
         return;
     }
-    /* ERROR: pSourceTileData (void) is not serializable */
+    /* pSourceTileData (void) is not serializable */
+    npt_cs_decoder_set_fatal(dec);
     return;
-    npt_decode_UINT(dec, &args->Flags);
     /* Allocate temp storage for output-only parameters */
 
 

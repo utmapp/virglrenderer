@@ -362,6 +362,9 @@ struct npt_command_IDXGIDevice_QueryResourceResidency {
     IUnknown ** ppResources;
     DXGI_RESIDENCY * pResidencyStatus;
     UINT NumResources;
+    /* Elements allocated for pResidencyStatus at decode; the reply never
+     * encodes more, whatever count the callee wrote back. */
+    uint64_t _cap_pResidencyStatus;
     HRESULT ret;
 };
 
@@ -384,7 +387,6 @@ npt_decode_IDXGIDevice_QueryResourceResidency_args_temp(struct npt_cs_decoder *d
     } else {
         args->ppResources = NULL;
     }
-
     npt_decode_UINT(dec, &args->NumResources);
     /* A counted array must hold every element the callee walks. */
     if ((_has_cnt_ppResources > 0 && _cnt_ppResources < (uint64_t)(args->NumResources)) ||
@@ -401,6 +403,7 @@ npt_decode_IDXGIDevice_QueryResourceResidency_args_temp(struct npt_cs_decoder *d
     } else {
         args->pResidencyStatus = NULL;
     }
+    args->_cap_pResidencyStatus = args->pResidencyStatus ? (uint64_t)(args->NumResources) : 0;
 
 }
 
@@ -424,11 +427,14 @@ npt_encode_IDXGIDevice_QueryResourceResidency_reply(struct npt_cs_encoder *enc,
         .cmd_return = (uint32_t)args->ret,
     };
     npt_cs_encoder_write(enc, sizeof(_reply), &_reply, sizeof(_reply));
-    if (args->pResidencyStatus) {
-        npt_encode_array_count(enc, args->NumResources);
-        npt_encode_DXGI_RESIDENCY_array(enc, args->pResidencyStatus, args->NumResources);
-    } else {
-        npt_encode_array_count(enc, 0);
+    {
+        const uint64_t _n_pResidencyStatus = ((HRESULT)args->ret < 0) ? 0 : ((uint64_t)(args->NumResources) < args->_cap_pResidencyStatus ? (uint64_t)(args->NumResources) : args->_cap_pResidencyStatus);
+        if (args->pResidencyStatus) {
+            npt_encode_array_count(enc, _n_pResidencyStatus);
+            npt_encode_DXGI_RESIDENCY_array(enc, args->pResidencyStatus, _n_pResidencyStatus);
+        } else {
+            npt_encode_array_count(enc, 0);
+        }
     }
 }
 
@@ -1192,6 +1198,9 @@ struct npt_command_IDXGIDevice2_ReclaimResources {
     UINT NumResources;
     IDXGIResource ** ppResources;
     BOOL * pDiscarded;
+    /* Elements allocated for pDiscarded at decode; the reply never
+     * encodes more, whatever count the callee wrote back. */
+    uint64_t _cap_pDiscarded;
     HRESULT ret;
 };
 
@@ -1215,7 +1224,6 @@ npt_decode_IDXGIDevice2_ReclaimResources_args_temp(struct npt_cs_decoder *dec,
     } else {
         args->ppResources = NULL;
     }
-
     /* A counted array must hold every element the callee walks. */
     if ((_has_cnt_ppResources > 0 && _cnt_ppResources < (uint64_t)(args->NumResources)) ||
         (_has_cnt_ppResources == 0 && (uint64_t)(args->NumResources) != 0)) {
@@ -1232,6 +1240,7 @@ npt_decode_IDXGIDevice2_ReclaimResources_args_temp(struct npt_cs_decoder *dec,
     } else {
         args->pDiscarded = NULL;
     }
+    args->_cap_pDiscarded = args->pDiscarded ? (uint64_t)(args->NumResources) : 0;
 }
 
 static inline void
@@ -1254,11 +1263,14 @@ npt_encode_IDXGIDevice2_ReclaimResources_reply(struct npt_cs_encoder *enc,
         .cmd_return = (uint32_t)args->ret,
     };
     npt_cs_encoder_write(enc, sizeof(_reply), &_reply, sizeof(_reply));
-    if (args->pDiscarded) {
-        npt_encode_array_count(enc, args->NumResources);
-        npt_encode_BOOL_array(enc, args->pDiscarded, args->NumResources);
-    } else {
-        npt_encode_array_count(enc, 0);
+    {
+        const uint64_t _n_pDiscarded = ((HRESULT)args->ret < 0) ? 0 : ((uint64_t)(args->NumResources) < args->_cap_pDiscarded ? (uint64_t)(args->NumResources) : args->_cap_pDiscarded);
+        if (args->pDiscarded) {
+            npt_encode_array_count(enc, _n_pDiscarded);
+            npt_encode_BOOL_array(enc, args->pDiscarded, _n_pDiscarded);
+        } else {
+            npt_encode_array_count(enc, 0);
+        }
     }
 }
 
@@ -1769,6 +1781,9 @@ struct npt_command_IDXGIDevice4_ReclaimResources1 {
     UINT NumResources;
     IDXGIResource ** ppResources;
     DXGI_RECLAIM_RESOURCE_RESULTS * pResults;
+    /* Elements allocated for pResults at decode; the reply never
+     * encodes more, whatever count the callee wrote back. */
+    uint64_t _cap_pResults;
     HRESULT ret;
 };
 
@@ -1792,7 +1807,6 @@ npt_decode_IDXGIDevice4_ReclaimResources1_args_temp(struct npt_cs_decoder *dec,
     } else {
         args->ppResources = NULL;
     }
-
     /* A counted array must hold every element the callee walks. */
     if ((_has_cnt_ppResources > 0 && _cnt_ppResources < (uint64_t)(args->NumResources)) ||
         (_has_cnt_ppResources == 0 && (uint64_t)(args->NumResources) != 0)) {
@@ -1809,6 +1823,7 @@ npt_decode_IDXGIDevice4_ReclaimResources1_args_temp(struct npt_cs_decoder *dec,
     } else {
         args->pResults = NULL;
     }
+    args->_cap_pResults = args->pResults ? (uint64_t)(args->NumResources) : 0;
 }
 
 static inline void
@@ -1831,11 +1846,14 @@ npt_encode_IDXGIDevice4_ReclaimResources1_reply(struct npt_cs_encoder *enc,
         .cmd_return = (uint32_t)args->ret,
     };
     npt_cs_encoder_write(enc, sizeof(_reply), &_reply, sizeof(_reply));
-    if (args->pResults) {
-        npt_encode_array_count(enc, args->NumResources);
-        npt_encode_DXGI_RECLAIM_RESOURCE_RESULTS_array(enc, args->pResults, args->NumResources);
-    } else {
-        npt_encode_array_count(enc, 0);
+    {
+        const uint64_t _n_pResults = ((HRESULT)args->ret < 0) ? 0 : ((uint64_t)(args->NumResources) < args->_cap_pResults ? (uint64_t)(args->NumResources) : args->_cap_pResults);
+        if (args->pResults) {
+            npt_encode_array_count(enc, _n_pResults);
+            npt_encode_DXGI_RECLAIM_RESOURCE_RESULTS_array(enc, args->pResults, _n_pResults);
+        } else {
+            npt_encode_array_count(enc, 0);
+        }
     }
 }
 

@@ -1316,7 +1316,6 @@ npt_decode_ID3D12WorkGraphProperties_GetWorkGraphMemoryRequirements_args_temp(st
 {
     /* Decode input parameters from the wire */
     npt_decode_UINT(dec, &args->WorkGraphIndex);
-
     /* Allocate temp storage for output-only parameters */
 
     args->pWorkGraphMemoryRequirements = npt_cs_decoder_alloc_temp(dec, sizeof(D3D12_WORK_GRAPH_MEMORY_REQUIREMENTS));

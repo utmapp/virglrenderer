@@ -334,6 +334,8 @@ npt_decode_ID3D11VideoContext_SubmitDecoderBuffers_args_temp(struct npt_cs_decod
         _has_cnt_pBufferDesc = 1;
         args->pBufferDesc = npt_cs_decoder_alloc_temp_array(dec, sizeof(D3D11_VIDEO_DECODER_BUFFER_DESC), _cnt_pBufferDesc ? _cnt_pBufferDesc : 1);
         if (!args->pBufferDesc) return;
+        /* Present but empty: a callee that walks it anyway reads zeros, not the previous command. */
+        if (!_cnt_pBufferDesc) memset((void *)args->pBufferDesc, 0, sizeof(D3D11_VIDEO_DECODER_BUFFER_DESC));
         for (uint32_t _i = 0; _i < (uint32_t)_cnt_pBufferDesc; _i++)
             npt_decode_D3D11_VIDEO_DECODER_BUFFER_DESC(dec, (D3D11_VIDEO_DECODER_BUFFER_DESC *)&args->pBufferDesc[_i]);
     } else {
@@ -1459,7 +1461,8 @@ npt_decode_ID3D11VideoContext_VideoProcessorSetOutputExtension_args_temp(struct 
         return;
     }
     npt_decode_UINT(dec, &args->DataSize);
-    /* ERROR: pData (void) is not serializable */
+    /* pData (void) is not serializable */
+    npt_cs_decoder_set_fatal(dec);
     return;
     /* Allocate temp storage for output-only parameters */
 
@@ -1595,8 +1598,6 @@ npt_decode_ID3D11VideoContext_VideoProcessorGetOutputTargetRect_args_temp(struct
         npt_decode_uint64_t(dec, &_id);
         args->pVideoProcessor = (ID3D11VideoProcessor *)npt_object_from_id(_id);
     }
-
-
     /* Allocate temp storage for output-only parameters */
 
     args->Enabled = npt_cs_decoder_alloc_temp(dec, sizeof(BOOL));
@@ -1738,8 +1739,6 @@ npt_decode_ID3D11VideoContext_VideoProcessorGetOutputBackgroundColor_args_temp(s
         npt_decode_uint64_t(dec, &_id);
         args->pVideoProcessor = (ID3D11VideoProcessor *)npt_object_from_id(_id);
     }
-
-
     /* Allocate temp storage for output-only parameters */
 
     args->pYCbCr = npt_cs_decoder_alloc_temp(dec, sizeof(BOOL));
@@ -1880,7 +1879,6 @@ npt_decode_ID3D11VideoContext_VideoProcessorGetOutputColorSpace_args_temp(struct
         npt_decode_uint64_t(dec, &_id);
         args->pVideoProcessor = (ID3D11VideoProcessor *)npt_object_from_id(_id);
     }
-
     /* Allocate temp storage for output-only parameters */
 
     args->pColorSpace = npt_cs_decoder_alloc_temp(dec, sizeof(D3D11_VIDEO_PROCESSOR_COLOR_SPACE));
@@ -2017,8 +2015,6 @@ npt_decode_ID3D11VideoContext_VideoProcessorGetOutputAlphaFillMode_args_temp(str
         npt_decode_uint64_t(dec, &_id);
         args->pVideoProcessor = (ID3D11VideoProcessor *)npt_object_from_id(_id);
     }
-
-
     /* Allocate temp storage for output-only parameters */
 
     args->pAlphaFillMode = npt_cs_decoder_alloc_temp(dec, sizeof(D3D11_VIDEO_PROCESSOR_ALPHA_FILL_MODE));
@@ -2160,8 +2156,6 @@ npt_decode_ID3D11VideoContext_VideoProcessorGetOutputConstriction_args_temp(stru
         npt_decode_uint64_t(dec, &_id);
         args->pVideoProcessor = (ID3D11VideoProcessor *)npt_object_from_id(_id);
     }
-
-
     /* Allocate temp storage for output-only parameters */
 
     args->pEnabled = npt_cs_decoder_alloc_temp(dec, sizeof(BOOL));
@@ -2302,7 +2296,6 @@ npt_decode_ID3D11VideoContext_VideoProcessorGetOutputStereoMode_args_temp(struct
         npt_decode_uint64_t(dec, &_id);
         args->pVideoProcessor = (ID3D11VideoProcessor *)npt_object_from_id(_id);
     }
-
     /* Allocate temp storage for output-only parameters */
 
     args->pEnabled = npt_cs_decoder_alloc_temp(dec, sizeof(BOOL));
@@ -2428,6 +2421,9 @@ struct npt_command_ID3D11VideoContext_VideoProcessorGetOutputExtension {
     const GUID * pExtensionGuid;
     UINT DataSize;
     void * pData;
+    /* Elements allocated for pData at decode; the reply never
+     * encodes more, whatever count the callee wrote back. */
+    uint64_t _cap_pData;
     APP_DEPRECATED_HRESULT ret;
 };
 
@@ -2451,7 +2447,6 @@ npt_decode_ID3D11VideoContext_VideoProcessorGetOutputExtension_args_temp(struct 
         return;
     }
     npt_decode_UINT(dec, &args->DataSize);
-
     /* Allocate temp storage for output-only parameters */
 
 
@@ -2463,6 +2458,7 @@ npt_decode_ID3D11VideoContext_VideoProcessorGetOutputExtension_args_temp(struct 
     } else {
         args->pData = NULL;
     }
+    args->_cap_pData = args->pData ? (uint64_t)(args->DataSize) : 0;
 }
 
 static inline void
@@ -2481,11 +2477,14 @@ npt_encode_ID3D11VideoContext_VideoProcessorGetOutputExtension_reply(struct npt_
         .cmd_return = (uint32_t)args->ret,
     };
     npt_cs_encoder_write(enc, sizeof(_reply), &_reply, sizeof(_reply));
-    if (args->pData) {
-        npt_encode_array_count(enc, args->DataSize);
-        npt_encode_blob_array(enc, args->pData, args->DataSize);
-    } else {
-        npt_encode_array_count(enc, 0);
+    {
+        const uint64_t _n_pData = (uint64_t)(args->DataSize) < args->_cap_pData ? (uint64_t)(args->DataSize) : args->_cap_pData;
+        if (args->pData) {
+            npt_encode_array_count(enc, _n_pData);
+            npt_encode_blob_array(enc, args->pData, _n_pData);
+        } else {
+            npt_encode_array_count(enc, 0);
+        }
     }
 }
 
@@ -3458,6 +3457,8 @@ npt_decode_ID3D11VideoContext_VideoProcessorSetStreamPalette_args_temp(struct np
         _has_cnt_pEntries = 1;
         args->pEntries = npt_cs_decoder_alloc_temp_array(dec, sizeof(UINT), _cnt_pEntries ? _cnt_pEntries : 1);
         if (!args->pEntries) return;
+        /* Present but empty: a callee that walks it anyway reads zeros, not the previous command. */
+        if (!_cnt_pEntries) memset((void *)args->pEntries, 0, sizeof(UINT));
         npt_decode_UINT_array(dec, (UINT *)args->pEntries, _cnt_pEntries);
     } else {
         args->pEntries = NULL;
@@ -4335,7 +4336,8 @@ npt_decode_ID3D11VideoContext_VideoProcessorSetStreamExtension_args_temp(struct 
         return;
     }
     npt_decode_UINT(dec, &args->DataSize);
-    /* ERROR: pData (void) is not serializable */
+    /* pData (void) is not serializable */
+    npt_cs_decoder_set_fatal(dec);
     return;
     /* Allocate temp storage for output-only parameters */
 
@@ -4473,7 +4475,6 @@ npt_decode_ID3D11VideoContext_VideoProcessorGetStreamFrameFormat_args_temp(struc
         args->pVideoProcessor = (ID3D11VideoProcessor *)npt_object_from_id(_id);
     }
     npt_decode_UINT(dec, &args->StreamIndex);
-
     /* Allocate temp storage for output-only parameters */
 
 
@@ -4612,7 +4613,6 @@ npt_decode_ID3D11VideoContext_VideoProcessorGetStreamColorSpace_args_temp(struct
         args->pVideoProcessor = (ID3D11VideoProcessor *)npt_object_from_id(_id);
     }
     npt_decode_UINT(dec, &args->StreamIndex);
-
     /* Allocate temp storage for output-only parameters */
 
 
@@ -4753,9 +4753,6 @@ npt_decode_ID3D11VideoContext_VideoProcessorGetStreamOutputRate_args_temp(struct
         args->pVideoProcessor = (ID3D11VideoProcessor *)npt_object_from_id(_id);
     }
     npt_decode_UINT(dec, &args->StreamIndex);
-
-
-
     /* Allocate temp storage for output-only parameters */
 
 
@@ -4905,8 +4902,6 @@ npt_decode_ID3D11VideoContext_VideoProcessorGetStreamSourceRect_args_temp(struct
         args->pVideoProcessor = (ID3D11VideoProcessor *)npt_object_from_id(_id);
     }
     npt_decode_UINT(dec, &args->StreamIndex);
-
-
     /* Allocate temp storage for output-only parameters */
 
 
@@ -5051,8 +5046,6 @@ npt_decode_ID3D11VideoContext_VideoProcessorGetStreamDestRect_args_temp(struct n
         args->pVideoProcessor = (ID3D11VideoProcessor *)npt_object_from_id(_id);
     }
     npt_decode_UINT(dec, &args->StreamIndex);
-
-
     /* Allocate temp storage for output-only parameters */
 
 
@@ -5197,8 +5190,6 @@ npt_decode_ID3D11VideoContext_VideoProcessorGetStreamAlpha_args_temp(struct npt_
         args->pVideoProcessor = (ID3D11VideoProcessor *)npt_object_from_id(_id);
     }
     npt_decode_UINT(dec, &args->StreamIndex);
-
-
     /* Allocate temp storage for output-only parameters */
 
 
@@ -5330,6 +5321,9 @@ struct npt_command_ID3D11VideoContext_VideoProcessorGetStreamPalette {
     UINT StreamIndex;
     UINT Count;
     UINT * pEntries;
+    /* Elements allocated for pEntries at decode; the reply never
+     * encodes more, whatever count the callee wrote back. */
+    uint64_t _cap_pEntries;
 };
 
 static inline void
@@ -5344,7 +5338,6 @@ npt_decode_ID3D11VideoContext_VideoProcessorGetStreamPalette_args_temp(struct np
     }
     npt_decode_UINT(dec, &args->StreamIndex);
     npt_decode_UINT(dec, &args->Count);
-
     /* Allocate temp storage for output-only parameters */
 
 
@@ -5356,6 +5349,7 @@ npt_decode_ID3D11VideoContext_VideoProcessorGetStreamPalette_args_temp(struct np
     } else {
         args->pEntries = NULL;
     }
+    args->_cap_pEntries = args->pEntries ? (uint64_t)(args->Count) : 0;
 }
 
 static inline void
@@ -5374,11 +5368,14 @@ npt_encode_ID3D11VideoContext_VideoProcessorGetStreamPalette_reply(struct npt_cs
         .cmd_return = 0,
     };
     npt_cs_encoder_write(enc, sizeof(_reply), &_reply, sizeof(_reply));
-    if (args->pEntries) {
-        npt_encode_array_count(enc, args->Count);
-        npt_encode_UINT_array(enc, args->pEntries, args->Count);
-    } else {
-        npt_encode_array_count(enc, 0);
+    {
+        const uint64_t _n_pEntries = (uint64_t)(args->Count) < args->_cap_pEntries ? (uint64_t)(args->Count) : args->_cap_pEntries;
+        if (args->pEntries) {
+            npt_encode_array_count(enc, _n_pEntries);
+            npt_encode_UINT_array(enc, args->pEntries, _n_pEntries);
+        } else {
+            npt_encode_array_count(enc, 0);
+        }
     }
 }
 
@@ -5494,9 +5491,6 @@ npt_decode_ID3D11VideoContext_VideoProcessorGetStreamPixelAspectRatio_args_temp(
         args->pVideoProcessor = (ID3D11VideoProcessor *)npt_object_from_id(_id);
     }
     npt_decode_UINT(dec, &args->StreamIndex);
-
-
-
     /* Allocate temp storage for output-only parameters */
 
 
@@ -5647,9 +5641,6 @@ npt_decode_ID3D11VideoContext_VideoProcessorGetStreamLumaKey_args_temp(struct np
         args->pVideoProcessor = (ID3D11VideoProcessor *)npt_object_from_id(_id);
     }
     npt_decode_UINT(dec, &args->StreamIndex);
-
-
-
     /* Allocate temp storage for output-only parameters */
 
 
@@ -5803,12 +5794,6 @@ npt_decode_ID3D11VideoContext_VideoProcessorGetStreamStereoFormat_args_temp(stru
         args->pVideoProcessor = (ID3D11VideoProcessor *)npt_object_from_id(_id);
     }
     npt_decode_UINT(dec, &args->StreamIndex);
-
-
-
-
-
-
     /* Allocate temp storage for output-only parameters */
 
 
@@ -5972,7 +5957,6 @@ npt_decode_ID3D11VideoContext_VideoProcessorGetStreamAutoProcessingMode_args_tem
         args->pVideoProcessor = (ID3D11VideoProcessor *)npt_object_from_id(_id);
     }
     npt_decode_UINT(dec, &args->StreamIndex);
-
     /* Allocate temp storage for output-only parameters */
 
 
@@ -6114,8 +6098,6 @@ npt_decode_ID3D11VideoContext_VideoProcessorGetStreamFilter_args_temp(struct npt
     }
     npt_decode_UINT(dec, &args->StreamIndex);
     npt_decode_D3D11_VIDEO_PROCESSOR_FILTER(dec, &args->Filter);
-
-
     /* Allocate temp storage for output-only parameters */
 
 
@@ -6249,6 +6231,9 @@ struct npt_command_ID3D11VideoContext_VideoProcessorGetStreamExtension {
     const GUID * pExtensionGuid;
     UINT DataSize;
     void * pData;
+    /* Elements allocated for pData at decode; the reply never
+     * encodes more, whatever count the callee wrote back. */
+    uint64_t _cap_pData;
     APP_DEPRECATED_HRESULT ret;
 };
 
@@ -6273,7 +6258,6 @@ npt_decode_ID3D11VideoContext_VideoProcessorGetStreamExtension_args_temp(struct 
         return;
     }
     npt_decode_UINT(dec, &args->DataSize);
-
     /* Allocate temp storage for output-only parameters */
 
 
@@ -6286,6 +6270,7 @@ npt_decode_ID3D11VideoContext_VideoProcessorGetStreamExtension_args_temp(struct 
     } else {
         args->pData = NULL;
     }
+    args->_cap_pData = args->pData ? (uint64_t)(args->DataSize) : 0;
 }
 
 static inline void
@@ -6304,11 +6289,14 @@ npt_encode_ID3D11VideoContext_VideoProcessorGetStreamExtension_reply(struct npt_
         .cmd_return = (uint32_t)args->ret,
     };
     npt_cs_encoder_write(enc, sizeof(_reply), &_reply, sizeof(_reply));
-    if (args->pData) {
-        npt_encode_array_count(enc, args->DataSize);
-        npt_encode_blob_array(enc, args->pData, args->DataSize);
-    } else {
-        npt_encode_array_count(enc, 0);
+    {
+        const uint64_t _n_pData = (uint64_t)(args->DataSize) < args->_cap_pData ? (uint64_t)(args->DataSize) : args->_cap_pData;
+        if (args->pData) {
+            npt_encode_array_count(enc, _n_pData);
+            npt_encode_blob_array(enc, args->pData, _n_pData);
+        } else {
+            npt_encode_array_count(enc, 0);
+        }
     }
 }
 
@@ -6437,6 +6425,8 @@ npt_decode_ID3D11VideoContext_VideoProcessorBlt_args_temp(struct npt_cs_decoder 
         _has_cnt_pStreams = 1;
         args->pStreams = npt_cs_decoder_alloc_temp_array(dec, sizeof(D3D11_VIDEO_PROCESSOR_STREAM), _cnt_pStreams ? _cnt_pStreams : 1);
         if (!args->pStreams) return;
+        /* Present but empty: a callee that walks it anyway reads zeros, not the previous command. */
+        if (!_cnt_pStreams) memset((void *)args->pStreams, 0, sizeof(D3D11_VIDEO_PROCESSOR_STREAM));
         for (uint32_t _i = 0; _i < (uint32_t)_cnt_pStreams; _i++)
             npt_decode_D3D11_VIDEO_PROCESSOR_STREAM(dec, (D3D11_VIDEO_PROCESSOR_STREAM *)&args->pStreams[_i]);
     } else {
@@ -7103,6 +7093,9 @@ struct npt_command_ID3D11VideoContext_StartSessionKeyRefresh {
     ID3D11CryptoSession * pCryptoSession;
     UINT RandomNumberSize;
     void * pRandomNumber;
+    /* Elements allocated for pRandomNumber at decode; the reply never
+     * encodes more, whatever count the callee wrote back. */
+    uint64_t _cap_pRandomNumber;
 };
 
 static inline void
@@ -7116,7 +7109,6 @@ npt_decode_ID3D11VideoContext_StartSessionKeyRefresh_args_temp(struct npt_cs_dec
         args->pCryptoSession = (ID3D11CryptoSession *)npt_object_from_id(_id);
     }
     npt_decode_UINT(dec, &args->RandomNumberSize);
-
     /* Allocate temp storage for output-only parameters */
 
 
@@ -7127,6 +7119,7 @@ npt_decode_ID3D11VideoContext_StartSessionKeyRefresh_args_temp(struct npt_cs_dec
     } else {
         args->pRandomNumber = NULL;
     }
+    args->_cap_pRandomNumber = args->pRandomNumber ? (uint64_t)(args->RandomNumberSize) : 0;
 }
 
 static inline void
@@ -7145,11 +7138,14 @@ npt_encode_ID3D11VideoContext_StartSessionKeyRefresh_reply(struct npt_cs_encoder
         .cmd_return = 0,
     };
     npt_cs_encoder_write(enc, sizeof(_reply), &_reply, sizeof(_reply));
-    if (args->pRandomNumber) {
-        npt_encode_array_count(enc, args->RandomNumberSize);
-        npt_encode_blob_array(enc, args->pRandomNumber, args->RandomNumberSize);
-    } else {
-        npt_encode_array_count(enc, 0);
+    {
+        const uint64_t _n_pRandomNumber = (uint64_t)(args->RandomNumberSize) < args->_cap_pRandomNumber ? (uint64_t)(args->RandomNumberSize) : args->_cap_pRandomNumber;
+        if (args->pRandomNumber) {
+            npt_encode_array_count(enc, _n_pRandomNumber);
+            npt_encode_blob_array(enc, args->pRandomNumber, _n_pRandomNumber);
+        } else {
+            npt_encode_array_count(enc, 0);
+        }
     }
 }
 
@@ -7379,6 +7375,9 @@ struct npt_command_ID3D11VideoContext_GetEncryptionBltKey {
     ID3D11CryptoSession * pCryptoSession;
     UINT KeySize;
     void * pReadbackKey;
+    /* Elements allocated for pReadbackKey at decode; the reply never
+     * encodes more, whatever count the callee wrote back. */
+    uint64_t _cap_pReadbackKey;
     HRESULT ret;
 };
 
@@ -7393,7 +7392,6 @@ npt_decode_ID3D11VideoContext_GetEncryptionBltKey_args_temp(struct npt_cs_decode
         args->pCryptoSession = (ID3D11CryptoSession *)npt_object_from_id(_id);
     }
     npt_decode_UINT(dec, &args->KeySize);
-
     /* Allocate temp storage for output-only parameters */
 
 
@@ -7404,6 +7402,7 @@ npt_decode_ID3D11VideoContext_GetEncryptionBltKey_args_temp(struct npt_cs_decode
     } else {
         args->pReadbackKey = NULL;
     }
+    args->_cap_pReadbackKey = args->pReadbackKey ? (uint64_t)(args->KeySize) : 0;
 }
 
 static inline void
@@ -7422,11 +7421,14 @@ npt_encode_ID3D11VideoContext_GetEncryptionBltKey_reply(struct npt_cs_encoder *e
         .cmd_return = (uint32_t)args->ret,
     };
     npt_cs_encoder_write(enc, sizeof(_reply), &_reply, sizeof(_reply));
-    if (args->pReadbackKey) {
-        npt_encode_array_count(enc, args->KeySize);
-        npt_encode_blob_array(enc, args->pReadbackKey, args->KeySize);
-    } else {
-        npt_encode_array_count(enc, 0);
+    {
+        const uint64_t _n_pReadbackKey = ((HRESULT)args->ret < 0) ? 0 : ((uint64_t)(args->KeySize) < args->_cap_pReadbackKey ? (uint64_t)(args->KeySize) : args->_cap_pReadbackKey);
+        if (args->pReadbackKey) {
+            npt_encode_array_count(enc, _n_pReadbackKey);
+            npt_encode_blob_array(enc, args->pReadbackKey, _n_pReadbackKey);
+        } else {
+            npt_encode_array_count(enc, 0);
+        }
     }
 }
 
@@ -7686,6 +7688,9 @@ struct npt_command_ID3D11VideoContext_QueryAuthenticatedChannel {
     const void * pInput;
     UINT OutputSize;
     void * pOutput;
+    /* Elements allocated for pOutput at decode; the reply never
+     * encodes more, whatever count the callee wrote back. */
+    uint64_t _cap_pOutput;
     HRESULT ret;
 };
 
@@ -7711,7 +7716,6 @@ npt_decode_ID3D11VideoContext_QueryAuthenticatedChannel_args_temp(struct npt_cs_
         args->pInput = NULL;
     }
     npt_decode_UINT(dec, &args->OutputSize);
-
     /* A counted array must hold every element the callee walks. */
     if ((_has_cnt_pInput > 0 && _cnt_pInput < (uint64_t)(args->InputSize)) ||
         (_has_cnt_pInput == 0 && (uint64_t)(args->InputSize) != 0)) {
@@ -7730,6 +7734,7 @@ npt_decode_ID3D11VideoContext_QueryAuthenticatedChannel_args_temp(struct npt_cs_
     } else {
         args->pOutput = NULL;
     }
+    args->_cap_pOutput = args->pOutput ? (uint64_t)(args->OutputSize) : 0;
 }
 
 static inline void
@@ -7748,11 +7753,14 @@ npt_encode_ID3D11VideoContext_QueryAuthenticatedChannel_reply(struct npt_cs_enco
         .cmd_return = (uint32_t)args->ret,
     };
     npt_cs_encoder_write(enc, sizeof(_reply), &_reply, sizeof(_reply));
-    if (args->pOutput) {
-        npt_encode_array_count(enc, args->OutputSize);
-        npt_encode_blob_array(enc, args->pOutput, args->OutputSize);
-    } else {
-        npt_encode_array_count(enc, 0);
+    {
+        const uint64_t _n_pOutput = ((HRESULT)args->ret < 0) ? 0 : ((uint64_t)(args->OutputSize) < args->_cap_pOutput ? (uint64_t)(args->OutputSize) : args->_cap_pOutput);
+        if (args->pOutput) {
+            npt_encode_array_count(enc, _n_pOutput);
+            npt_encode_blob_array(enc, args->pOutput, _n_pOutput);
+        } else {
+            npt_encode_array_count(enc, 0);
+        }
     }
 }
 
@@ -7878,7 +7886,6 @@ npt_decode_ID3D11VideoContext_ConfigureAuthenticatedChannel_args_temp(struct npt
     } else {
         args->pInput = NULL;
     }
-
     /* A counted array must hold every element the callee walks. */
     if ((_has_cnt_pInput > 0 && _cnt_pInput < (uint64_t)(args->InputSize)) ||
         (_has_cnt_pInput == 0 && (uint64_t)(args->InputSize) != 0)) {
@@ -8165,8 +8172,6 @@ npt_decode_ID3D11VideoContext_VideoProcessorGetStreamRotation_args_temp(struct n
         args->pVideoProcessor = (ID3D11VideoProcessor *)npt_object_from_id(_id);
     }
     npt_decode_UINT(dec, &args->StreamIndex);
-
-
     /* Allocate temp storage for output-only parameters */
 
 
@@ -8317,6 +8322,8 @@ npt_decode_ID3D11VideoContext1_SubmitDecoderBuffers1_args_temp(struct npt_cs_dec
         _has_cnt_pBufferDesc = 1;
         args->pBufferDesc = npt_cs_decoder_alloc_temp_array(dec, sizeof(D3D11_VIDEO_DECODER_BUFFER_DESC1), _cnt_pBufferDesc ? _cnt_pBufferDesc : 1);
         if (!args->pBufferDesc) return;
+        /* Present but empty: a callee that walks it anyway reads zeros, not the previous command. */
+        if (!_cnt_pBufferDesc) memset((void *)args->pBufferDesc, 0, sizeof(D3D11_VIDEO_DECODER_BUFFER_DESC1));
         for (uint32_t _i = 0; _i < (uint32_t)_cnt_pBufferDesc; _i++)
             npt_decode_D3D11_VIDEO_DECODER_BUFFER_DESC1(dec, (D3D11_VIDEO_DECODER_BUFFER_DESC1 *)&args->pBufferDesc[_i]);
     } else {
@@ -8474,7 +8481,6 @@ npt_decode_ID3D11VideoContext1_GetDataForNewHardwareKey_args_temp(struct npt_cs_
     } else {
         args->pPrivatInputData = NULL;
     }
-
     /* A counted array must hold every element the callee walks. */
     if ((_has_cnt_pPrivatInputData > 0 && _cnt_pPrivatInputData < (uint64_t)(args->PrivateInputSize)) ||
         (_has_cnt_pPrivatInputData == 0 && (uint64_t)(args->PrivateInputSize) != 0)) {
@@ -8619,7 +8625,6 @@ npt_decode_ID3D11VideoContext1_CheckCryptoSessionStatus_args_temp(struct npt_cs_
         npt_decode_uint64_t(dec, &_id);
         args->pCryptoSession = (ID3D11CryptoSession *)npt_object_from_id(_id);
     }
-
     /* Allocate temp storage for output-only parameters */
 
     args->pStatus = npt_cs_decoder_alloc_temp(dec, sizeof(D3D11_CRYPTO_SESSION_STATUS));
@@ -9307,7 +9312,6 @@ npt_decode_ID3D11VideoContext1_VideoProcessorGetOutputColorSpace1_args_temp(stru
         npt_decode_uint64_t(dec, &_id);
         args->pVideoProcessor = (ID3D11VideoProcessor *)npt_object_from_id(_id);
     }
-
     /* Allocate temp storage for output-only parameters */
 
     args->pColorSpace = npt_cs_decoder_alloc_temp(dec, sizeof(DXGI_COLOR_SPACE_TYPE));
@@ -9443,7 +9447,6 @@ npt_decode_ID3D11VideoContext1_VideoProcessorGetOutputShaderUsage_args_temp(stru
         npt_decode_uint64_t(dec, &_id);
         args->pVideoProcessor = (ID3D11VideoProcessor *)npt_object_from_id(_id);
     }
-
     /* Allocate temp storage for output-only parameters */
 
     args->pShaderUsage = npt_cs_decoder_alloc_temp(dec, sizeof(BOOL));
@@ -9857,7 +9860,6 @@ npt_decode_ID3D11VideoContext1_VideoProcessorGetStreamColorSpace1_args_temp(stru
         args->pVideoProcessor = (ID3D11VideoProcessor *)npt_object_from_id(_id);
     }
     npt_decode_UINT(dec, &args->StreamIndex);
-
     /* Allocate temp storage for output-only parameters */
 
 
@@ -9998,9 +10000,6 @@ npt_decode_ID3D11VideoContext1_VideoProcessorGetStreamMirror_args_temp(struct np
         args->pVideoProcessor = (ID3D11VideoProcessor *)npt_object_from_id(_id);
     }
     npt_decode_UINT(dec, &args->StreamIndex);
-
-
-
     /* Allocate temp storage for output-only parameters */
 
 
@@ -10163,12 +10162,13 @@ npt_decode_ID3D11VideoContext1_VideoProcessorGetBehaviorHints_args_temp(struct n
         _has_cnt_pStreams = 1;
         args->pStreams = npt_cs_decoder_alloc_temp_array(dec, sizeof(D3D11_VIDEO_PROCESSOR_STREAM_BEHAVIOR_HINT), _cnt_pStreams ? _cnt_pStreams : 1);
         if (!args->pStreams) return;
+        /* Present but empty: a callee that walks it anyway reads zeros, not the previous command. */
+        if (!_cnt_pStreams) memset((void *)args->pStreams, 0, sizeof(D3D11_VIDEO_PROCESSOR_STREAM_BEHAVIOR_HINT));
         for (uint32_t _i = 0; _i < (uint32_t)_cnt_pStreams; _i++)
             npt_decode_D3D11_VIDEO_PROCESSOR_STREAM_BEHAVIOR_HINT(dec, (D3D11_VIDEO_PROCESSOR_STREAM_BEHAVIOR_HINT *)&args->pStreams[_i]);
     } else {
         args->pStreams = NULL;
     }
-
     /* A counted array must hold every element the callee walks. */
     if ((_has_cnt_pStreams > 0 && _cnt_pStreams < (uint64_t)(args->StreamCount)) ||
         (_has_cnt_pStreams == 0 && (uint64_t)(args->StreamCount) != 0)) {
@@ -10457,6 +10457,9 @@ struct npt_command_ID3D11VideoContext2_VideoProcessorGetOutputHDRMetaData {
     DXGI_HDR_METADATA_TYPE * pType;
     UINT Size;
     void * pMetaData;
+    /* Elements allocated for pMetaData at decode; the reply never
+     * encodes more, whatever count the callee wrote back. */
+    uint64_t _cap_pMetaData;
 };
 
 static inline void
@@ -10469,9 +10472,7 @@ npt_decode_ID3D11VideoContext2_VideoProcessorGetOutputHDRMetaData_args_temp(stru
         npt_decode_uint64_t(dec, &_id);
         args->pVideoProcessor = (ID3D11VideoProcessor *)npt_object_from_id(_id);
     }
-
     npt_decode_UINT(dec, &args->Size);
-
     /* Allocate temp storage for output-only parameters */
 
     args->pType = npt_cs_decoder_alloc_temp(dec, sizeof(DXGI_HDR_METADATA_TYPE));
@@ -10485,6 +10486,7 @@ npt_decode_ID3D11VideoContext2_VideoProcessorGetOutputHDRMetaData_args_temp(stru
     } else {
         args->pMetaData = NULL;
     }
+    args->_cap_pMetaData = args->pMetaData ? (uint64_t)(args->Size) : 0;
 }
 
 static inline void
@@ -10505,11 +10507,14 @@ npt_encode_ID3D11VideoContext2_VideoProcessorGetOutputHDRMetaData_reply(struct n
     npt_cs_encoder_write(enc, sizeof(_reply), &_reply, sizeof(_reply));
     if (npt_encode_simple_pointer(enc, args->pType))
         npt_encode_DXGI_HDR_METADATA_TYPE(enc, args->pType);
-    if (args->pMetaData) {
-        npt_encode_array_count(enc, args->Size);
-        npt_encode_blob_array(enc, args->pMetaData, args->Size);
-    } else {
-        npt_encode_array_count(enc, 0);
+    {
+        const uint64_t _n_pMetaData = (uint64_t)(args->Size) < args->_cap_pMetaData ? (uint64_t)(args->Size) : args->_cap_pMetaData;
+        if (args->pMetaData) {
+            npt_encode_array_count(enc, _n_pMetaData);
+            npt_encode_blob_array(enc, args->pMetaData, _n_pMetaData);
+        } else {
+            npt_encode_array_count(enc, 0);
+        }
     }
 }
 
@@ -10767,6 +10772,9 @@ struct npt_command_ID3D11VideoContext2_VideoProcessorGetStreamHDRMetaData {
     DXGI_HDR_METADATA_TYPE * pType;
     UINT Size;
     void * pMetaData;
+    /* Elements allocated for pMetaData at decode; the reply never
+     * encodes more, whatever count the callee wrote back. */
+    uint64_t _cap_pMetaData;
 };
 
 static inline void
@@ -10780,9 +10788,7 @@ npt_decode_ID3D11VideoContext2_VideoProcessorGetStreamHDRMetaData_args_temp(stru
         args->pVideoProcessor = (ID3D11VideoProcessor *)npt_object_from_id(_id);
     }
     npt_decode_UINT(dec, &args->StreamIndex);
-
     npt_decode_UINT(dec, &args->Size);
-
     /* Allocate temp storage for output-only parameters */
 
 
@@ -10797,6 +10803,7 @@ npt_decode_ID3D11VideoContext2_VideoProcessorGetStreamHDRMetaData_args_temp(stru
     } else {
         args->pMetaData = NULL;
     }
+    args->_cap_pMetaData = args->pMetaData ? (uint64_t)(args->Size) : 0;
 }
 
 static inline void
@@ -10817,11 +10824,14 @@ npt_encode_ID3D11VideoContext2_VideoProcessorGetStreamHDRMetaData_reply(struct n
     npt_cs_encoder_write(enc, sizeof(_reply), &_reply, sizeof(_reply));
     if (npt_encode_simple_pointer(enc, args->pType))
         npt_encode_DXGI_HDR_METADATA_TYPE(enc, args->pType);
-    if (args->pMetaData) {
-        npt_encode_array_count(enc, args->Size);
-        npt_encode_blob_array(enc, args->pMetaData, args->Size);
-    } else {
-        npt_encode_array_count(enc, 0);
+    {
+        const uint64_t _n_pMetaData = (uint64_t)(args->Size) < args->_cap_pMetaData ? (uint64_t)(args->Size) : args->_cap_pMetaData;
+        if (args->pMetaData) {
+            npt_encode_array_count(enc, _n_pMetaData);
+            npt_encode_blob_array(enc, args->pMetaData, _n_pMetaData);
+        } else {
+            npt_encode_array_count(enc, 0);
+        }
     }
 }
 
@@ -10963,6 +10973,8 @@ npt_decode_ID3D11VideoContext3_DecoderBeginFrame1_args_temp(struct npt_cs_decode
         _has_cnt_pHistogramOffsets = 1;
         args->pHistogramOffsets = npt_cs_decoder_alloc_temp_array(dec, sizeof(UINT), _cnt_pHistogramOffsets ? _cnt_pHistogramOffsets : 1);
         if (!args->pHistogramOffsets) return;
+        /* Present but empty: a callee that walks it anyway reads zeros, not the previous command. */
+        if (!_cnt_pHistogramOffsets) memset((void *)args->pHistogramOffsets, 0, sizeof(UINT));
         npt_decode_UINT_array(dec, (UINT *)args->pHistogramOffsets, _cnt_pHistogramOffsets);
     } else {
         args->pHistogramOffsets = NULL;
@@ -11144,6 +11156,8 @@ npt_decode_ID3D11VideoContext3_SubmitDecoderBuffers2_args_temp(struct npt_cs_dec
         _has_cnt_pBufferDesc = 1;
         args->pBufferDesc = npt_cs_decoder_alloc_temp_array(dec, sizeof(D3D11_VIDEO_DECODER_BUFFER_DESC2), _cnt_pBufferDesc ? _cnt_pBufferDesc : 1);
         if (!args->pBufferDesc) return;
+        /* Present but empty: a callee that walks it anyway reads zeros, not the previous command. */
+        if (!_cnt_pBufferDesc) memset((void *)args->pBufferDesc, 0, sizeof(D3D11_VIDEO_DECODER_BUFFER_DESC2));
         for (uint32_t _i = 0; _i < (uint32_t)_cnt_pBufferDesc; _i++)
             npt_decode_D3D11_VIDEO_DECODER_BUFFER_DESC2(dec, (D3D11_VIDEO_DECODER_BUFFER_DESC2 *)&args->pBufferDesc[_i]);
     } else {

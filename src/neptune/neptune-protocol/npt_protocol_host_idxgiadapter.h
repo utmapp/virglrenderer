@@ -319,7 +319,6 @@ npt_decode_IDXGIAdapter_CheckInterfaceSupport_args_temp(struct npt_cs_decoder *d
         npt_cs_decoder_set_fatal(dec); /* non-optional pointer is NULL */
         return;
     }
-
     /* Allocate temp storage for output-only parameters */
 
     args->pUMDVersion = npt_cs_decoder_alloc_temp(dec, sizeof(LARGE_INTEGER));
@@ -713,7 +712,6 @@ npt_decode_IDXGIAdapter3_RegisterHardwareContentProtectionTeardownStatusEvent_ar
         npt_decode_uint64_t(dec, &_id);
         args->hEvent = (HANDLE)(uintptr_t)npt_win32_handle_from_id(_id);
     }
-
     /* Allocate temp storage for output-only parameters */
 
     args->pdwCookie = npt_cs_decoder_alloc_temp(dec, sizeof(DWORD));
@@ -972,7 +970,6 @@ npt_decode_IDXGIAdapter3_QueryVideoMemoryInfo_args_temp(struct npt_cs_decoder *d
     /* Decode input parameters from the wire */
     npt_decode_UINT(dec, &args->NodeIndex);
     npt_decode_DXGI_MEMORY_SEGMENT_GROUP(dec, &args->MemorySegmentGroup);
-
     /* Allocate temp storage for output-only parameters */
 
 
@@ -1240,7 +1237,6 @@ npt_decode_IDXGIAdapter3_RegisterVideoMemoryBudgetChangeNotificationEvent_args_t
         npt_decode_uint64_t(dec, &_id);
         args->hEvent = (HANDLE)(uintptr_t)npt_win32_handle_from_id(_id);
     }
-
     /* Allocate temp storage for output-only parameters */
 
     args->pdwCookie = npt_cs_decoder_alloc_temp(dec, sizeof(DWORD));

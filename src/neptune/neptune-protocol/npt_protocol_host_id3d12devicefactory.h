@@ -706,6 +706,8 @@ npt_decode_ID3D12DeviceFactory_EnableExperimentalFeatures_args_temp(struct npt_c
         _has_cnt_pIIDs = 1;
         args->pIIDs = npt_cs_decoder_alloc_temp_array(dec, sizeof(IID), _cnt_pIIDs ? _cnt_pIIDs : 1);
         if (!args->pIIDs) return;
+        /* Present but empty: a callee that walks it anyway reads zeros, not the previous command. */
+        if (!_cnt_pIIDs) memset((void *)args->pIIDs, 0, sizeof(IID));
         for (uint32_t _i = 0; _i < (uint32_t)_cnt_pIIDs; _i++)
             npt_decode_IID(dec, (IID *)&args->pIIDs[_i]);
     } else {
@@ -725,6 +727,8 @@ npt_decode_ID3D12DeviceFactory_EnableExperimentalFeatures_args_temp(struct npt_c
         _has_cnt_pConfigurationStructSizes = 1;
         args->pConfigurationStructSizes = npt_cs_decoder_alloc_temp_array(dec, sizeof(UINT), _cnt_pConfigurationStructSizes ? _cnt_pConfigurationStructSizes : 1);
         if (!args->pConfigurationStructSizes) return;
+        /* Present but empty: a callee that walks it anyway reads zeros, not the previous command. */
+        if (!_cnt_pConfigurationStructSizes) memset((void *)args->pConfigurationStructSizes, 0, sizeof(UINT));
         npt_decode_UINT_array(dec, (UINT *)args->pConfigurationStructSizes, _cnt_pConfigurationStructSizes);
     } else {
         args->pConfigurationStructSizes = NULL;

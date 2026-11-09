@@ -38,7 +38,6 @@ npt_decode_ID3D12VirtualizationGuestDevice_ShareWithHost_args_temp(struct npt_cs
         npt_decode_uint64_t(dec, &_id);
         args->pObject = (ID3D12DeviceChild *)npt_object_from_id(_id);
     }
-
     /* Allocate temp storage for output-only parameters */
 
     args->pHandle = npt_cs_decoder_alloc_temp(dec, sizeof(HANDLE));
@@ -176,7 +175,6 @@ npt_decode_ID3D12VirtualizationGuestDevice_CreateFenceFd_args_temp(struct npt_cs
         args->pFence = (ID3D12Fence *)npt_object_from_id(_id);
     }
     npt_decode_UINT64(dec, &args->FenceValue);
-
     /* Allocate temp storage for output-only parameters */
 
 

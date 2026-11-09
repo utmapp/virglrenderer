@@ -521,6 +521,8 @@ npt_decode_D3D11CreateDevice_args_temp(struct npt_cs_decoder *dec,
         _has_cnt_pFeatureLevels = 1;
         args->pFeatureLevels = npt_cs_decoder_alloc_temp_array(dec, sizeof(D3D_FEATURE_LEVEL), _cnt_pFeatureLevels ? _cnt_pFeatureLevels : 1);
         if (!args->pFeatureLevels) return;
+        /* Present but empty: a callee that walks it anyway reads zeros, not the previous command. */
+        if (!_cnt_pFeatureLevels) memset((void *)args->pFeatureLevels, 0, sizeof(D3D_FEATURE_LEVEL));
         npt_decode_D3D_FEATURE_LEVEL_array(dec, (D3D_FEATURE_LEVEL *)args->pFeatureLevels, _cnt_pFeatureLevels);
     } else {
         args->pFeatureLevels = NULL;
@@ -539,7 +541,6 @@ npt_decode_D3D11CreateDevice_args_temp(struct npt_cs_decoder *dec,
             args->ppDevice = NULL;
         }
     }
-
     {
         uint64_t _gid;
         npt_decode_uint64_t(dec, &_gid);
@@ -709,6 +710,8 @@ npt_decode_D3D11CreateDeviceAndSwapChain_args_temp(struct npt_cs_decoder *dec,
         _has_cnt_pFeatureLevels = 1;
         args->pFeatureLevels = npt_cs_decoder_alloc_temp_array(dec, sizeof(D3D_FEATURE_LEVEL), _cnt_pFeatureLevels ? _cnt_pFeatureLevels : 1);
         if (!args->pFeatureLevels) return;
+        /* Present but empty: a callee that walks it anyway reads zeros, not the previous command. */
+        if (!_cnt_pFeatureLevels) memset((void *)args->pFeatureLevels, 0, sizeof(D3D_FEATURE_LEVEL));
         npt_decode_D3D_FEATURE_LEVEL_array(dec, (D3D_FEATURE_LEVEL *)args->pFeatureLevels, _cnt_pFeatureLevels);
     } else {
         args->pFeatureLevels = NULL;
@@ -746,7 +749,6 @@ npt_decode_D3D11CreateDeviceAndSwapChain_args_temp(struct npt_cs_decoder *dec,
             args->ppDevice = NULL;
         }
     }
-
     {
         uint64_t _gid;
         npt_decode_uint64_t(dec, &_gid);
@@ -917,6 +919,8 @@ npt_decode_D3D11On12CreateDevice_args_temp(struct npt_cs_decoder *dec,
         _has_cnt_pFeatureLevels = 1;
         args->pFeatureLevels = npt_cs_decoder_alloc_temp_array(dec, sizeof(D3D_FEATURE_LEVEL), _cnt_pFeatureLevels ? _cnt_pFeatureLevels : 1);
         if (!args->pFeatureLevels) return;
+        /* Present but empty: a callee that walks it anyway reads zeros, not the previous command. */
+        if (!_cnt_pFeatureLevels) memset((void *)args->pFeatureLevels, 0, sizeof(D3D_FEATURE_LEVEL));
         npt_decode_D3D_FEATURE_LEVEL_array(dec, (D3D_FEATURE_LEVEL *)args->pFeatureLevels, _cnt_pFeatureLevels);
     } else {
         args->pFeatureLevels = NULL;
@@ -961,7 +965,6 @@ npt_decode_D3D11On12CreateDevice_args_temp(struct npt_cs_decoder *dec,
             args->ppImmediateContext = NULL;
         }
     }
-
     /* A counted array must hold every element the callee walks. */
     if ((_has_cnt_pFeatureLevels > 0 && _cnt_pFeatureLevels < (uint64_t)(args->FeatureLevels))) {
         npt_cs_decoder_set_fatal(dec);
@@ -1248,7 +1251,6 @@ npt_decode_D3D12CreateRootSignatureDeserializer_args_temp(struct npt_cs_decoder 
         npt_cs_decoder_set_fatal(dec); /* non-optional pointer is NULL */
         return;
     }
-
     /* A counted array must hold every element the callee walks. */
     if ((_has_cnt_pSrcData > 0 && _cnt_pSrcData < (uint64_t)(args->SrcDataSizeInBytes)) ||
         (_has_cnt_pSrcData == 0 && (uint64_t)(args->SrcDataSizeInBytes) != 0)) {
@@ -1376,7 +1378,6 @@ npt_decode_D3D12CreateVersionedRootSignatureDeserializer_args_temp(struct npt_cs
         npt_cs_decoder_set_fatal(dec); /* non-optional pointer is NULL */
         return;
     }
-
     /* A counted array must hold every element the callee walks. */
     if ((_has_cnt_pSrcData > 0 && _cnt_pSrcData < (uint64_t)(args->SrcDataSizeInBytes)) ||
         (_has_cnt_pSrcData == 0 && (uint64_t)(args->SrcDataSizeInBytes) != 0)) {
@@ -1478,6 +1479,12 @@ struct npt_command_D3D12SerializeRootSignature {
     void * pBlobData;
     UINT * pErrorBlobSize;
     void * pErrorBlobData;
+    /* Elements allocated for pBlobData at decode; the reply never
+     * encodes more, whatever count the callee wrote back. */
+    uint64_t _cap_pBlobData;
+    /* Elements allocated for pErrorBlobData at decode; the reply never
+     * encodes more, whatever count the callee wrote back. */
+    uint64_t _cap_pErrorBlobData;
     HRESULT ret;
 };
 
@@ -1505,7 +1512,6 @@ npt_decode_D3D12SerializeRootSignature_args_temp(struct npt_cs_decoder *dec,
         npt_cs_decoder_set_fatal(dec); /* non-optional pointer is NULL */
         return;
     }
-
     if (npt_decode_simple_pointer(dec)) {
         args->pErrorBlobSize = npt_cs_decoder_alloc_temp(dec, sizeof(UINT));
         if (!args->pErrorBlobSize) return;
@@ -1515,7 +1521,6 @@ npt_decode_D3D12SerializeRootSignature_args_temp(struct npt_cs_decoder *dec,
         npt_cs_decoder_set_fatal(dec); /* non-optional pointer is NULL */
         return;
     }
-
     /* Allocate temp storage for output-only parameters */
 
 
@@ -1527,6 +1532,7 @@ npt_decode_D3D12SerializeRootSignature_args_temp(struct npt_cs_decoder *dec,
     } else {
         args->pBlobData = NULL;
     }
+    args->_cap_pBlobData = args->pBlobData ? (uint64_t)(*args->pBlobSize) : 0;
 
     if (*args->pErrorBlobSize) {
         args->pErrorBlobData = npt_cs_decoder_alloc_temp(dec, *args->pErrorBlobSize);
@@ -1535,6 +1541,7 @@ npt_decode_D3D12SerializeRootSignature_args_temp(struct npt_cs_decoder *dec,
     } else {
         args->pErrorBlobData = NULL;
     }
+    args->_cap_pErrorBlobData = args->pErrorBlobData ? (uint64_t)(*args->pErrorBlobSize) : 0;
 }
 
 static inline void
@@ -1553,19 +1560,25 @@ npt_encode_D3D12SerializeRootSignature_reply(struct npt_cs_encoder *enc,
     npt_cs_encoder_write(enc, sizeof(_reply), &_reply, sizeof(_reply));
     if (npt_encode_simple_pointer(enc, args->pBlobSize))
         npt_encode_UINT(enc, args->pBlobSize);
-    if (args->pBlobData) {
-        npt_encode_array_count(enc, *args->pBlobSize);
-        npt_encode_blob_array(enc, args->pBlobData, *args->pBlobSize);
-    } else {
-        npt_encode_array_count(enc, 0);
+    {
+        const uint64_t _n_pBlobData = ((HRESULT)args->ret < 0) ? 0 : ((uint64_t)(*args->pBlobSize) < args->_cap_pBlobData ? (uint64_t)(*args->pBlobSize) : args->_cap_pBlobData);
+        if (args->pBlobData) {
+            npt_encode_array_count(enc, _n_pBlobData);
+            npt_encode_blob_array(enc, args->pBlobData, _n_pBlobData);
+        } else {
+            npt_encode_array_count(enc, 0);
+        }
     }
     if (npt_encode_simple_pointer(enc, args->pErrorBlobSize))
         npt_encode_UINT(enc, args->pErrorBlobSize);
-    if (args->pErrorBlobData) {
-        npt_encode_array_count(enc, *args->pErrorBlobSize);
-        npt_encode_blob_array(enc, args->pErrorBlobData, *args->pErrorBlobSize);
-    } else {
-        npt_encode_array_count(enc, 0);
+    {
+        const uint64_t _n_pErrorBlobData = ((HRESULT)args->ret < 0) ? 0 : ((uint64_t)(*args->pErrorBlobSize) < args->_cap_pErrorBlobData ? (uint64_t)(*args->pErrorBlobSize) : args->_cap_pErrorBlobData);
+        if (args->pErrorBlobData) {
+            npt_encode_array_count(enc, _n_pErrorBlobData);
+            npt_encode_blob_array(enc, args->pErrorBlobData, _n_pErrorBlobData);
+        } else {
+            npt_encode_array_count(enc, 0);
+        }
     }
 }
 
@@ -1636,6 +1649,12 @@ struct npt_command_D3D12SerializeVersionedRootSignature {
     void * pBlobData;
     UINT * pErrorBlobSize;
     void * pErrorBlobData;
+    /* Elements allocated for pBlobData at decode; the reply never
+     * encodes more, whatever count the callee wrote back. */
+    uint64_t _cap_pBlobData;
+    /* Elements allocated for pErrorBlobData at decode; the reply never
+     * encodes more, whatever count the callee wrote back. */
+    uint64_t _cap_pErrorBlobData;
     HRESULT ret;
 };
 
@@ -1662,7 +1681,6 @@ npt_decode_D3D12SerializeVersionedRootSignature_args_temp(struct npt_cs_decoder 
         npt_cs_decoder_set_fatal(dec); /* non-optional pointer is NULL */
         return;
     }
-
     if (npt_decode_simple_pointer(dec)) {
         args->pErrorBlobSize = npt_cs_decoder_alloc_temp(dec, sizeof(UINT));
         if (!args->pErrorBlobSize) return;
@@ -1672,7 +1690,6 @@ npt_decode_D3D12SerializeVersionedRootSignature_args_temp(struct npt_cs_decoder 
         npt_cs_decoder_set_fatal(dec); /* non-optional pointer is NULL */
         return;
     }
-
     /* Allocate temp storage for output-only parameters */
 
 
@@ -1683,6 +1700,7 @@ npt_decode_D3D12SerializeVersionedRootSignature_args_temp(struct npt_cs_decoder 
     } else {
         args->pBlobData = NULL;
     }
+    args->_cap_pBlobData = args->pBlobData ? (uint64_t)(*args->pBlobSize) : 0;
 
     if (*args->pErrorBlobSize) {
         args->pErrorBlobData = npt_cs_decoder_alloc_temp(dec, *args->pErrorBlobSize);
@@ -1691,6 +1709,7 @@ npt_decode_D3D12SerializeVersionedRootSignature_args_temp(struct npt_cs_decoder 
     } else {
         args->pErrorBlobData = NULL;
     }
+    args->_cap_pErrorBlobData = args->pErrorBlobData ? (uint64_t)(*args->pErrorBlobSize) : 0;
 }
 
 static inline void
@@ -1709,19 +1728,25 @@ npt_encode_D3D12SerializeVersionedRootSignature_reply(struct npt_cs_encoder *enc
     npt_cs_encoder_write(enc, sizeof(_reply), &_reply, sizeof(_reply));
     if (npt_encode_simple_pointer(enc, args->pBlobSize))
         npt_encode_UINT(enc, args->pBlobSize);
-    if (args->pBlobData) {
-        npt_encode_array_count(enc, *args->pBlobSize);
-        npt_encode_blob_array(enc, args->pBlobData, *args->pBlobSize);
-    } else {
-        npt_encode_array_count(enc, 0);
+    {
+        const uint64_t _n_pBlobData = ((HRESULT)args->ret < 0) ? 0 : ((uint64_t)(*args->pBlobSize) < args->_cap_pBlobData ? (uint64_t)(*args->pBlobSize) : args->_cap_pBlobData);
+        if (args->pBlobData) {
+            npt_encode_array_count(enc, _n_pBlobData);
+            npt_encode_blob_array(enc, args->pBlobData, _n_pBlobData);
+        } else {
+            npt_encode_array_count(enc, 0);
+        }
     }
     if (npt_encode_simple_pointer(enc, args->pErrorBlobSize))
         npt_encode_UINT(enc, args->pErrorBlobSize);
-    if (args->pErrorBlobData) {
-        npt_encode_array_count(enc, *args->pErrorBlobSize);
-        npt_encode_blob_array(enc, args->pErrorBlobData, *args->pErrorBlobSize);
-    } else {
-        npt_encode_array_count(enc, 0);
+    {
+        const uint64_t _n_pErrorBlobData = ((HRESULT)args->ret < 0) ? 0 : ((uint64_t)(*args->pErrorBlobSize) < args->_cap_pErrorBlobData ? (uint64_t)(*args->pErrorBlobSize) : args->_cap_pErrorBlobData);
+        if (args->pErrorBlobData) {
+            npt_encode_array_count(enc, _n_pErrorBlobData);
+            npt_encode_blob_array(enc, args->pErrorBlobData, _n_pErrorBlobData);
+        } else {
+            npt_encode_array_count(enc, 0);
+        }
     }
 }
 

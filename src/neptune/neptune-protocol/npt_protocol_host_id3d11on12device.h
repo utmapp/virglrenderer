@@ -859,6 +859,8 @@ npt_decode_ID3D11On12Device2_ReturnUnderlyingResource_args_temp(struct npt_cs_de
         _has_cnt_pSignalValues = 1;
         args->pSignalValues = npt_cs_decoder_alloc_temp_array(dec, sizeof(UINT64), _cnt_pSignalValues ? _cnt_pSignalValues : 1);
         if (!args->pSignalValues) return;
+        /* Present but empty: a callee that walks it anyway reads zeros, not the previous command. */
+        if (!_cnt_pSignalValues) memset((void *)args->pSignalValues, 0, sizeof(UINT64));
         npt_decode_UINT64_array(dec, (UINT64 *)args->pSignalValues, _cnt_pSignalValues);
     } else {
         args->pSignalValues = NULL;

@@ -410,6 +410,9 @@ struct npt_command_ID3D11CryptoSession_GetCertificate {
     void *_self;
     UINT CertificateSize;
     BYTE * pCertificate;
+    /* Elements allocated for pCertificate at decode; the reply never
+     * encodes more, whatever count the callee wrote back. */
+    uint64_t _cap_pCertificate;
     HRESULT ret;
 };
 
@@ -419,7 +422,6 @@ npt_decode_ID3D11CryptoSession_GetCertificate_args_temp(struct npt_cs_decoder *d
 {
     /* Decode input parameters from the wire */
     npt_decode_UINT(dec, &args->CertificateSize);
-
     /* Allocate temp storage for output-only parameters */
 
     if (args->CertificateSize) {
@@ -429,6 +431,7 @@ npt_decode_ID3D11CryptoSession_GetCertificate_args_temp(struct npt_cs_decoder *d
     } else {
         args->pCertificate = NULL;
     }
+    args->_cap_pCertificate = args->pCertificate ? (uint64_t)(args->CertificateSize) : 0;
 }
 
 static inline void
@@ -446,11 +449,14 @@ npt_encode_ID3D11CryptoSession_GetCertificate_reply(struct npt_cs_encoder *enc,
         .cmd_return = (uint32_t)args->ret,
     };
     npt_cs_encoder_write(enc, sizeof(_reply), &_reply, sizeof(_reply));
-    if (args->pCertificate) {
-        npt_encode_array_count(enc, args->CertificateSize);
-        npt_encode_BYTE_array(enc, args->pCertificate, args->CertificateSize);
-    } else {
-        npt_encode_array_count(enc, 0);
+    {
+        const uint64_t _n_pCertificate = ((HRESULT)args->ret < 0) ? 0 : ((uint64_t)(args->CertificateSize) < args->_cap_pCertificate ? (uint64_t)(args->CertificateSize) : args->_cap_pCertificate);
+        if (args->pCertificate) {
+            npt_encode_array_count(enc, _n_pCertificate);
+            npt_encode_BYTE_array(enc, args->pCertificate, _n_pCertificate);
+        } else {
+            npt_encode_array_count(enc, 0);
+        }
     }
 }
 

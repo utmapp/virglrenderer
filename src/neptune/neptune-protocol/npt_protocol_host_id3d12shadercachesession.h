@@ -27,6 +27,9 @@ struct npt_command_ID3D12ShaderCacheSession_FindValue {
     UINT KeySize;
     void * pValue;
     UINT * pValueSize;
+    /* Elements allocated for pValue at decode; the reply never
+     * encodes more, whatever count the callee wrote back. */
+    uint64_t _cap_pValue;
     HRESULT ret;
 };
 
@@ -46,7 +49,6 @@ npt_decode_ID3D12ShaderCacheSession_FindValue_args_temp(struct npt_cs_decoder *d
         args->pKey = NULL;
     }
     npt_decode_UINT(dec, &args->KeySize);
-
     if (npt_decode_simple_pointer(dec)) {
         args->pValueSize = npt_cs_decoder_alloc_temp(dec, sizeof(UINT));
         if (!args->pValueSize) return;
@@ -72,6 +74,7 @@ npt_decode_ID3D12ShaderCacheSession_FindValue_args_temp(struct npt_cs_decoder *d
     } else {
         args->pValue = NULL;
     }
+    args->_cap_pValue = args->pValue ? (uint64_t)(*args->pValueSize) : 0;
 
 }
 
@@ -90,11 +93,14 @@ npt_encode_ID3D12ShaderCacheSession_FindValue_reply(struct npt_cs_encoder *enc,
         .cmd_return = (uint32_t)args->ret,
     };
     npt_cs_encoder_write(enc, sizeof(_reply), &_reply, sizeof(_reply));
-    if (args->pValue) {
-        npt_encode_array_count(enc, *args->pValueSize);
-        npt_encode_blob_array(enc, args->pValue, *args->pValueSize);
-    } else {
-        npt_encode_array_count(enc, 0);
+    {
+        const uint64_t _n_pValue = ((HRESULT)args->ret < 0) ? 0 : ((uint64_t)(*args->pValueSize) < args->_cap_pValue ? (uint64_t)(*args->pValueSize) : args->_cap_pValue);
+        if (args->pValue) {
+            npt_encode_array_count(enc, _n_pValue);
+            npt_encode_blob_array(enc, args->pValue, _n_pValue);
+        } else {
+            npt_encode_array_count(enc, 0);
+        }
     }
     if (npt_encode_simple_pointer(enc, args->pValueSize))
         npt_encode_UINT(enc, args->pValueSize);

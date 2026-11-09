@@ -460,7 +460,6 @@ npt_decode_IDXGISwapChain_GetFullscreenState_args_temp(struct npt_cs_decoder *de
                                                        struct npt_command_IDXGISwapChain_GetFullscreenState *args)
 {
     /* Decode input parameters from the wire */
-
     {
         uint64_t _gid;
         npt_decode_uint64_t(dec, &_gid);
@@ -3005,7 +3004,6 @@ npt_decode_IDXGISwapChain2_GetSourceSize_args_temp(struct npt_cs_decoder *dec,
 {
     /* Decode input parameters from the wire */
 
-
     /* Allocate temp storage for output-only parameters */
     args->pWidth = npt_cs_decoder_alloc_temp(dec, sizeof(UINT));
     if (!args->pWidth) return;
@@ -3904,7 +3902,6 @@ npt_decode_IDXGISwapChain3_CheckColorSpaceSupport_args_temp(struct npt_cs_decode
 {
     /* Decode input parameters from the wire */
     npt_decode_DXGI_COLOR_SPACE_TYPE(dec, &args->ColorSpace);
-
     /* Allocate temp storage for output-only parameters */
 
     args->pColorSpaceSupport = npt_cs_decoder_alloc_temp(dec, sizeof(UINT));
@@ -4177,6 +4174,8 @@ npt_decode_IDXGISwapChain3_ResizeBuffers1_args_temp(struct npt_cs_decoder *dec,
         _has_cnt_pCreationNodeMask = 1;
         args->pCreationNodeMask = npt_cs_decoder_alloc_temp_array(dec, sizeof(UINT), _cnt_pCreationNodeMask ? _cnt_pCreationNodeMask : 1);
         if (!args->pCreationNodeMask) return;
+        /* Present but empty: a callee that walks it anyway reads zeros, not the previous command. */
+        if (!_cnt_pCreationNodeMask) memset((void *)args->pCreationNodeMask, 0, sizeof(UINT));
         npt_decode_UINT_array(dec, (UINT *)args->pCreationNodeMask, _cnt_pCreationNodeMask);
     } else {
         args->pCreationNodeMask = NULL;

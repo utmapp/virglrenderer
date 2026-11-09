@@ -235,6 +235,9 @@ npt_decode_D3D12_PIPELINE_STATE_STREAM_DESC(struct npt_cs_decoder *dec, D3D12_PI
     base = (uint8_t *)npt_cs_decoder_alloc_temp_array(dec, npt_pss_max_record_size(), count);
     if (!base)
         return;
+    /* The records are rebuilt at their natural alignment; the padding
+     * between a record's type and its payload is not on the wire. */
+    memset(base, 0, npt_pss_max_record_size() * count);
     for (i = 0; i < count; i++) {
         D3D12_PIPELINE_STATE_SUBOBJECT_TYPE type;
         struct npt_pss_record rec;

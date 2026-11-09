@@ -1533,7 +1533,6 @@ npt_decode_IDXGIFactory2_GetSharedResourceAdapterLuid_args_temp(struct npt_cs_de
         npt_decode_uint64_t(dec, &_id);
         args->hResource = (HANDLE)(uintptr_t)npt_win32_handle_from_id(_id);
     }
-
     /* Allocate temp storage for output-only parameters */
 
     args->pLuid = npt_cs_decoder_alloc_temp(dec, sizeof(LUID));
@@ -1672,7 +1671,6 @@ npt_decode_IDXGIFactory2_RegisterStereoStatusWindow_args_temp(struct npt_cs_deco
         args->WindowHandle = (HWND)(uintptr_t)npt_win32_handle_from_id(_id);
     }
     npt_decode_UINT(dec, &args->wMsg);
-
     /* Allocate temp storage for output-only parameters */
 
 
@@ -1810,7 +1808,6 @@ npt_decode_IDXGIFactory2_RegisterStereoStatusEvent_args_temp(struct npt_cs_decod
         npt_decode_uint64_t(dec, &_id);
         args->hEvent = (HANDLE)(uintptr_t)npt_win32_handle_from_id(_id);
     }
-
     /* Allocate temp storage for output-only parameters */
 
     args->pdwCookie = npt_cs_decoder_alloc_temp(dec, sizeof(DWORD));
@@ -2073,7 +2070,6 @@ npt_decode_IDXGIFactory2_RegisterOcclusionStatusWindow_args_temp(struct npt_cs_d
         args->WindowHandle = (HWND)(uintptr_t)npt_win32_handle_from_id(_id);
     }
     npt_decode_UINT(dec, &args->wMsg);
-
     /* Allocate temp storage for output-only parameters */
 
 
@@ -2211,7 +2207,6 @@ npt_decode_IDXGIFactory2_RegisterOcclusionStatusEvent_args_temp(struct npt_cs_de
         npt_decode_uint64_t(dec, &_id);
         args->hEvent = (HANDLE)(uintptr_t)npt_win32_handle_from_id(_id);
     }
-
     /* Allocate temp storage for output-only parameters */
 
     args->pdwCookie = npt_cs_decoder_alloc_temp(dec, sizeof(DWORD));
@@ -3400,7 +3395,6 @@ npt_decode_IDXGIFactory7_RegisterAdaptersChangedEvent_args_temp(struct npt_cs_de
         npt_decode_uint64_t(dec, &_id);
         args->hEvent = (HANDLE)(uintptr_t)npt_win32_handle_from_id(_id);
     }
-
     /* Allocate temp storage for output-only parameters */
 
     args->pdwCookie = npt_cs_decoder_alloc_temp(dec, sizeof(DWORD));

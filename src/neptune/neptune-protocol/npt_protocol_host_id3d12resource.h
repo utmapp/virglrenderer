@@ -42,7 +42,6 @@ npt_decode_ID3D12Resource_Map_args_temp(struct npt_cs_decoder *dec,
     } else {
         args->pReadRange = NULL;
     }
-
     /* Allocate temp storage for output-only parameters */
 
 
@@ -568,10 +567,9 @@ npt_decode_ID3D12Resource_WriteToSubresource_args_temp(struct npt_cs_decoder *de
     } else {
         args->pDstBox = NULL;
     }
-    /* ERROR: pSrcData (void) is not serializable */
+    /* pSrcData (void) is not serializable */
+    npt_cs_decoder_set_fatal(dec);
     return;
-    npt_decode_UINT(dec, &args->SrcRowPitch);
-    npt_decode_UINT(dec, &args->SrcDepthPitch);
     /* Allocate temp storage for output-only parameters */
 
 
@@ -704,7 +702,6 @@ npt_decode_ID3D12Resource_ReadFromSubresource_args_temp(struct npt_cs_decoder *d
                                                         struct npt_command_ID3D12Resource_ReadFromSubresource *args)
 {
     /* Decode input parameters from the wire */
-
     npt_decode_UINT(dec, &args->DstRowPitch);
     npt_decode_UINT(dec, &args->DstDepthPitch);
     npt_decode_UINT(dec, &args->SrcSubresource);
@@ -716,9 +713,9 @@ npt_decode_ID3D12Resource_ReadFromSubresource_args_temp(struct npt_cs_decoder *d
         args->pSrcBox = NULL;
     }
     /* Allocate temp storage for output-only parameters */
-    args->pDstData = npt_cs_decoder_alloc_temp(dec, 1);
-    if (!args->pDstData) return;
-    memset(args->pDstData, 0, 1);
+    /* pDstData (void) is not serializable */
+    npt_cs_decoder_set_fatal(dec);
+    return;
 
 
 
@@ -848,7 +845,6 @@ npt_decode_ID3D12Resource_GetHeapProperties_args_temp(struct npt_cs_decoder *dec
                                                       struct npt_command_ID3D12Resource_GetHeapProperties *args)
 {
     /* Decode input parameters from the wire */
-
 
     /* Allocate temp storage for output-only parameters */
     args->pHeapProperties = npt_cs_decoder_alloc_temp(dec, sizeof(D3D12_HEAP_PROPERTIES));

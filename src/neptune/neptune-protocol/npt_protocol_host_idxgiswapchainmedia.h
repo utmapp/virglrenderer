@@ -289,8 +289,6 @@ npt_decode_IDXGISwapChainMedia_CheckPresentDurationSupport_args_temp(struct npt_
 {
     /* Decode input parameters from the wire */
     npt_decode_UINT(dec, &args->DesiredPresentDuration);
-
-
     /* Allocate temp storage for output-only parameters */
 
     args->pClosestSmallerPresentDuration = npt_cs_decoder_alloc_temp(dec, sizeof(UINT));

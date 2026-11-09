@@ -47,7 +47,6 @@ npt_decode_ID3D11Fence_CreateSharedHandle_args_temp(struct npt_cs_decoder *dec,
             args->lpName = NULL;
         }
     }
-
     /* Allocate temp storage for output-only parameters */
 
 

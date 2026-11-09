@@ -707,7 +707,6 @@ npt_decode_IDXGIResource1_CreateSharedHandle_args_temp(struct npt_cs_decoder *de
             args->lpName = NULL;
         }
     }
-
     /* Allocate temp storage for output-only parameters */
 
 

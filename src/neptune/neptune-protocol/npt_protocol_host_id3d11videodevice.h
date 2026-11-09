@@ -1476,7 +1476,6 @@ npt_decode_ID3D11VideoDevice_GetVideoDecoderProfile_args_temp(struct npt_cs_deco
 {
     /* Decode input parameters from the wire */
     npt_decode_UINT(dec, &args->Index);
-
     /* Allocate temp storage for output-only parameters */
 
     args->pDecoderProfile = npt_cs_decoder_alloc_temp(dec, sizeof(GUID));
@@ -1618,7 +1617,6 @@ npt_decode_ID3D11VideoDevice_CheckVideoDecoderFormat_args_temp(struct npt_cs_dec
         return;
     }
     npt_decode_DXGI_FORMAT(dec, &args->Format);
-
     /* Allocate temp storage for output-only parameters */
 
 
@@ -1759,7 +1757,6 @@ npt_decode_ID3D11VideoDevice_GetVideoDecoderConfigCount_args_temp(struct npt_cs_
         npt_cs_decoder_set_fatal(dec); /* non-optional pointer is NULL */
         return;
     }
-
     /* Allocate temp storage for output-only parameters */
 
     args->pCount = npt_cs_decoder_alloc_temp(dec, sizeof(UINT));
@@ -1901,7 +1898,6 @@ npt_decode_ID3D11VideoDevice_GetVideoDecoderConfig_args_temp(struct npt_cs_decod
         return;
     }
     npt_decode_UINT(dec, &args->Index);
-
     /* Allocate temp storage for output-only parameters */
 
 
@@ -2048,7 +2044,6 @@ npt_decode_ID3D11VideoDevice_GetContentProtectionCaps_args_temp(struct npt_cs_de
     } else {
         args->pDecoderProfile = NULL;
     }
-
     /* Allocate temp storage for output-only parameters */
 
 
@@ -2199,7 +2194,6 @@ npt_decode_ID3D11VideoDevice_CheckCryptoKeyExchange_args_temp(struct npt_cs_deco
         args->pDecoderProfile = NULL;
     }
     npt_decode_UINT(dec, &args->Index);
-
     /* Allocate temp storage for output-only parameters */
 
 
@@ -2654,8 +2648,6 @@ npt_decode_ID3D11VideoDevice1_GetCryptoSessionPrivateDataSize_args_temp(struct n
         npt_cs_decoder_set_fatal(dec); /* non-optional pointer is NULL */
         return;
     }
-
-
     /* Allocate temp storage for output-only parameters */
 
 
@@ -2826,7 +2818,6 @@ npt_decode_ID3D11VideoDevice1_GetVideoDecoderCaps_args_temp(struct npt_cs_decode
     } else {
         args->pCryptoType = NULL;
     }
-
     /* Allocate temp storage for output-only parameters */
 
 
@@ -3004,8 +2995,6 @@ npt_decode_ID3D11VideoDevice1_CheckVideoDecoderDownsampling_args_temp(struct npt
         npt_cs_decoder_set_fatal(dec); /* non-optional pointer is NULL */
         return;
     }
-
-
     /* Allocate temp storage for output-only parameters */
 
 
@@ -3176,7 +3165,6 @@ npt_decode_ID3D11VideoDevice1_RecommendVideoDecoderDownsampleParameters_args_tem
         npt_cs_decoder_set_fatal(dec); /* non-optional pointer is NULL */
         return;
     }
-
     /* Allocate temp storage for output-only parameters */
 
 
@@ -3303,6 +3291,9 @@ struct npt_command_ID3D11VideoDevice2_CheckFeatureSupport {
     D3D11_FEATURE_VIDEO Feature;
     void * pFeatureSupportData;
     UINT FeatureSupportDataSize;
+    /* Elements allocated for pFeatureSupportData at decode; the reply never
+     * encodes more, whatever count the callee wrote back. */
+    uint64_t _cap_pFeatureSupportData;
     HRESULT ret;
 };
 
@@ -3312,7 +3303,6 @@ npt_decode_ID3D11VideoDevice2_CheckFeatureSupport_args_temp(struct npt_cs_decode
 {
     /* Decode input parameters from the wire */
     npt_decode_D3D11_FEATURE_VIDEO(dec, &args->Feature);
-
     npt_decode_UINT(dec, &args->FeatureSupportDataSize);
     /* Allocate temp storage for output-only parameters */
 
@@ -3323,6 +3313,7 @@ npt_decode_ID3D11VideoDevice2_CheckFeatureSupport_args_temp(struct npt_cs_decode
     } else {
         args->pFeatureSupportData = NULL;
     }
+    args->_cap_pFeatureSupportData = args->pFeatureSupportData ? (uint64_t)(args->FeatureSupportDataSize) : 0;
 
 }
 
@@ -3341,11 +3332,14 @@ npt_encode_ID3D11VideoDevice2_CheckFeatureSupport_reply(struct npt_cs_encoder *e
         .cmd_return = (uint32_t)args->ret,
     };
     npt_cs_encoder_write(enc, sizeof(_reply), &_reply, sizeof(_reply));
-    if (args->pFeatureSupportData) {
-        npt_encode_array_count(enc, args->FeatureSupportDataSize);
-        npt_encode_blob_array(enc, args->pFeatureSupportData, args->FeatureSupportDataSize);
-    } else {
-        npt_encode_array_count(enc, 0);
+    {
+        const uint64_t _n_pFeatureSupportData = ((HRESULT)args->ret < 0) ? 0 : ((uint64_t)(args->FeatureSupportDataSize) < args->_cap_pFeatureSupportData ? (uint64_t)(args->FeatureSupportDataSize) : args->_cap_pFeatureSupportData);
+        if (args->pFeatureSupportData) {
+            npt_encode_array_count(enc, _n_pFeatureSupportData);
+            npt_encode_blob_array(enc, args->pFeatureSupportData, _n_pFeatureSupportData);
+        } else {
+            npt_encode_array_count(enc, 0);
+        }
     }
 }
 

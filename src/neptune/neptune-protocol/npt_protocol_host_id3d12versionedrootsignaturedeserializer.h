@@ -34,7 +34,6 @@ npt_decode_ID3D12VersionedRootSignatureDeserializer_GetRootSignatureDescAtVersio
 {
     /* Decode input parameters from the wire */
     npt_decode_D3D_ROOT_SIGNATURE_VERSION(dec, &args->convertToVersion);
-
     /* Allocate temp storage for output-only parameters */
 
     args->ppDesc = npt_cs_decoder_alloc_temp(dec, sizeof(void *));

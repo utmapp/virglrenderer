@@ -16,6 +16,15 @@
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 #pragma GCC diagnostic ignored "-Wpointer-arith"
 
+/* a * b, or UINT64_MAX when the product does not fit: a count no stream
+ * can hold, so every bound checked against it fails. */
+static inline uint64_t
+npt_mul_sat_u64(uint64_t a, uint64_t b)
+{
+    uint64_t r;
+    return __builtin_mul_overflow(a, b, &r) ? UINT64_MAX : r;
+}
+
 /* Forward declarations: structs with mutual recursion (e.g.
  * D3D12_STATE_SUBOBJECT ↔ D3D12_SUBOBJECT_TO_EXPORTS_ASSOCIATION via the
  * tagged-union overlay) need every helper visible before any body emits. */
@@ -2359,29 +2368,29 @@ static inline size_t
 npt_sizeof_DXGI_DISPLAY_COLOR_SPACE(const DXGI_DISPLAY_COLOR_SPACE *val, int max_mode)
 {
     size_t size = 0;
-    size += npt_sizeof_array_count(8 * 2);
-    size += npt_sizeof_FLOAT_array((const FLOAT *)val->PrimaryCoordinates, 8 * 2);
-    size += npt_sizeof_array_count(16 * 2);
-    size += npt_sizeof_FLOAT_array((const FLOAT *)val->WhitePoints, 16 * 2);
+    size += npt_sizeof_array_count(npt_mul_sat_u64((uint64_t)(8), (uint64_t)(2)));
+    size += npt_sizeof_FLOAT_array((const FLOAT *)val->PrimaryCoordinates, npt_mul_sat_u64((uint64_t)(8), (uint64_t)(2)));
+    size += npt_sizeof_array_count(npt_mul_sat_u64((uint64_t)(16), (uint64_t)(2)));
+    size += npt_sizeof_FLOAT_array((const FLOAT *)val->WhitePoints, npt_mul_sat_u64((uint64_t)(16), (uint64_t)(2)));
     return size;
 }
 
 static inline void
 npt_encode_DXGI_DISPLAY_COLOR_SPACE(struct npt_cs_encoder *enc, const DXGI_DISPLAY_COLOR_SPACE *val)
 {
-    npt_encode_array_count(enc, 8 * 2);
-    npt_encode_FLOAT_array(enc, (const FLOAT *)val->PrimaryCoordinates, 8 * 2);
-    npt_encode_array_count(enc, 16 * 2);
-    npt_encode_FLOAT_array(enc, (const FLOAT *)val->WhitePoints, 16 * 2);
+    npt_encode_array_count(enc, npt_mul_sat_u64((uint64_t)(8), (uint64_t)(2)));
+    npt_encode_FLOAT_array(enc, (const FLOAT *)val->PrimaryCoordinates, npt_mul_sat_u64((uint64_t)(8), (uint64_t)(2)));
+    npt_encode_array_count(enc, npt_mul_sat_u64((uint64_t)(16), (uint64_t)(2)));
+    npt_encode_FLOAT_array(enc, (const FLOAT *)val->WhitePoints, npt_mul_sat_u64((uint64_t)(16), (uint64_t)(2)));
 }
 
 static inline void
 npt_decode_DXGI_DISPLAY_COLOR_SPACE(struct npt_cs_decoder *dec, DXGI_DISPLAY_COLOR_SPACE *val)
 {
-    (void)npt_decode_array_count(dec, 8 * 2);
-    npt_decode_FLOAT_array(dec, (FLOAT *)val->PrimaryCoordinates, 8 * 2);
-    (void)npt_decode_array_count(dec, 16 * 2);
-    npt_decode_FLOAT_array(dec, (FLOAT *)val->WhitePoints, 16 * 2);
+    (void)npt_decode_array_count(dec, npt_mul_sat_u64((uint64_t)(8), (uint64_t)(2)));
+    npt_decode_FLOAT_array(dec, (FLOAT *)val->PrimaryCoordinates, npt_mul_sat_u64((uint64_t)(8), (uint64_t)(2)));
+    (void)npt_decode_array_count(dec, npt_mul_sat_u64((uint64_t)(16), (uint64_t)(2)));
+    npt_decode_FLOAT_array(dec, (FLOAT *)val->WhitePoints, npt_mul_sat_u64((uint64_t)(16), (uint64_t)(2)));
 }
 
 /* DXGI_OUTDUPL_MOVE_RECT (struct) */
@@ -2708,6 +2717,8 @@ npt_decode_DXGI_PRESENT_PARAMETERS(struct npt_cs_decoder *dec, DXGI_PRESENT_PARA
         _has_cnt_pDirtyRects = 1;
         val->pDirtyRects = npt_cs_decoder_alloc_temp_array(dec, sizeof(RECT), _cnt_pDirtyRects ? _cnt_pDirtyRects : 1);
         if (!val->pDirtyRects) return;
+        /* Present but empty: a callee that walks it anyway reads zeros, not the previous command. */
+        if (!_cnt_pDirtyRects) memset((void *)val->pDirtyRects, 0, sizeof(RECT));
         for (uint32_t _i = 0; _i < (uint32_t)_cnt_pDirtyRects; _i++)
             npt_decode_RECT(dec, (RECT *)&val->pDirtyRects[_i]);
     } else {
@@ -3686,10 +3697,9 @@ npt_encode_D3D11_SUBRESOURCE_DATA(struct npt_cs_encoder *enc, const D3D11_SUBRES
 static inline void
 npt_decode_D3D11_SUBRESOURCE_DATA(struct npt_cs_decoder *dec, D3D11_SUBRESOURCE_DATA *val)
 {
-    /* ERROR: pSysMem (void) is not serializable */
+    /* pSysMem (void) is not serializable */
+    npt_cs_decoder_set_fatal(dec);
     return;
-    npt_decode_UINT(dec, &val->SysMemPitch);
-    npt_decode_UINT(dec, &val->SysMemSlicePitch);
 }
 
 /* D3D11_MAPPED_SUBRESOURCE (struct) */
@@ -3717,10 +3727,9 @@ npt_encode_D3D11_MAPPED_SUBRESOURCE(struct npt_cs_encoder *enc, const D3D11_MAPP
 static inline void
 npt_decode_D3D11_MAPPED_SUBRESOURCE(struct npt_cs_decoder *dec, D3D11_MAPPED_SUBRESOURCE *val)
 {
-    /* ERROR: pData (void) is not serializable */
+    /* pData (void) is not serializable */
+    npt_cs_decoder_set_fatal(dec);
     return;
-    npt_decode_UINT(dec, &val->RowPitch);
-    npt_decode_UINT(dec, &val->DepthPitch);
 }
 
 /* D3D11_BUFFER_DESC (struct) */
@@ -8532,6 +8541,8 @@ npt_decode_D3D11_VIDEO_DECODER_BUFFER_DESC1(struct npt_cs_decoder *dec, D3D11_VI
         _has_cnt_pSubSampleMappingBlock = 1;
         val->pSubSampleMappingBlock = npt_cs_decoder_alloc_temp_array(dec, sizeof(D3D11_VIDEO_DECODER_SUB_SAMPLE_MAPPING_BLOCK), _cnt_pSubSampleMappingBlock ? _cnt_pSubSampleMappingBlock : 1);
         if (!val->pSubSampleMappingBlock) return;
+        /* Present but empty: a callee that walks it anyway reads zeros, not the previous command. */
+        if (!_cnt_pSubSampleMappingBlock) memset((void *)val->pSubSampleMappingBlock, 0, sizeof(D3D11_VIDEO_DECODER_SUB_SAMPLE_MAPPING_BLOCK));
         for (uint32_t _i = 0; _i < (uint32_t)_cnt_pSubSampleMappingBlock; _i++)
             npt_decode_D3D11_VIDEO_DECODER_SUB_SAMPLE_MAPPING_BLOCK(dec, (D3D11_VIDEO_DECODER_SUB_SAMPLE_MAPPING_BLOCK *)&val->pSubSampleMappingBlock[_i]);
     } else {
@@ -9836,6 +9847,8 @@ npt_decode_D3D11_VIDEO_DECODER_BUFFER_DESC2(struct npt_cs_decoder *dec, D3D11_VI
         _has_cnt_pSubSampleMappingBlock = 1;
         val->pSubSampleMappingBlock = npt_cs_decoder_alloc_temp_array(dec, sizeof(D3D11_VIDEO_DECODER_SUB_SAMPLE_MAPPING_BLOCK), _cnt_pSubSampleMappingBlock ? _cnt_pSubSampleMappingBlock : 1);
         if (!val->pSubSampleMappingBlock) return;
+        /* Present but empty: a callee that walks it anyway reads zeros, not the previous command. */
+        if (!_cnt_pSubSampleMappingBlock) memset((void *)val->pSubSampleMappingBlock, 0, sizeof(D3D11_VIDEO_DECODER_SUB_SAMPLE_MAPPING_BLOCK));
         for (uint32_t _i = 0; _i < (uint32_t)_cnt_pSubSampleMappingBlock; _i++)
             npt_decode_D3D11_VIDEO_DECODER_SUB_SAMPLE_MAPPING_BLOCK(dec, (D3D11_VIDEO_DECODER_SUB_SAMPLE_MAPPING_BLOCK *)&val->pSubSampleMappingBlock[_i]);
     } else {
@@ -10658,6 +10671,8 @@ npt_decode_D3D12_STREAM_OUTPUT_DESC(struct npt_cs_decoder *dec, D3D12_STREAM_OUT
         _has_cnt_pSODeclaration = 1;
         val->pSODeclaration = npt_cs_decoder_alloc_temp_array(dec, sizeof(D3D12_SO_DECLARATION_ENTRY), _cnt_pSODeclaration ? _cnt_pSODeclaration : 1);
         if (!val->pSODeclaration) return;
+        /* Present but empty: a callee that walks it anyway reads zeros, not the previous command. */
+        if (!_cnt_pSODeclaration) memset((void *)val->pSODeclaration, 0, sizeof(D3D12_SO_DECLARATION_ENTRY));
         for (uint32_t _i = 0; _i < (uint32_t)_cnt_pSODeclaration; _i++)
             npt_decode_D3D12_SO_DECLARATION_ENTRY(dec, (D3D12_SO_DECLARATION_ENTRY *)&val->pSODeclaration[_i]);
     } else {
@@ -10669,6 +10684,8 @@ npt_decode_D3D12_STREAM_OUTPUT_DESC(struct npt_cs_decoder *dec, D3D12_STREAM_OUT
         _has_cnt_pBufferStrides = 1;
         val->pBufferStrides = npt_cs_decoder_alloc_temp_array(dec, sizeof(UINT), _cnt_pBufferStrides ? _cnt_pBufferStrides : 1);
         if (!val->pBufferStrides) return;
+        /* Present but empty: a callee that walks it anyway reads zeros, not the previous command. */
+        if (!_cnt_pBufferStrides) memset((void *)val->pBufferStrides, 0, sizeof(UINT));
         npt_decode_UINT_array(dec, (UINT *)val->pBufferStrides, _cnt_pBufferStrides);
     } else {
         val->pBufferStrides = NULL;
@@ -10719,6 +10736,8 @@ npt_decode_D3D12_INPUT_LAYOUT_DESC(struct npt_cs_decoder *dec, D3D12_INPUT_LAYOU
         _has_cnt_pInputElementDescs = 1;
         val->pInputElementDescs = npt_cs_decoder_alloc_temp_array(dec, sizeof(D3D12_INPUT_ELEMENT_DESC), _cnt_pInputElementDescs ? _cnt_pInputElementDescs : 1);
         if (!val->pInputElementDescs) return;
+        /* Present but empty: a callee that walks it anyway reads zeros, not the previous command. */
+        if (!_cnt_pInputElementDescs) memset((void *)val->pInputElementDescs, 0, sizeof(D3D12_INPUT_ELEMENT_DESC));
         for (uint32_t _i = 0; _i < (uint32_t)_cnt_pInputElementDescs; _i++)
             npt_decode_D3D12_INPUT_ELEMENT_DESC(dec, (D3D12_INPUT_ELEMENT_DESC *)&val->pInputElementDescs[_i]);
     } else {
@@ -11196,6 +11215,8 @@ npt_decode_D3D12_FEATURE_DATA_FEATURE_LEVELS(struct npt_cs_decoder *dec, D3D12_F
         _has_cnt_pFeatureLevelsRequested = 1;
         val->pFeatureLevelsRequested = npt_cs_decoder_alloc_temp_array(dec, sizeof(D3D_FEATURE_LEVEL), _cnt_pFeatureLevelsRequested ? _cnt_pFeatureLevelsRequested : 1);
         if (!val->pFeatureLevelsRequested) return;
+        /* Present but empty: a callee that walks it anyway reads zeros, not the previous command. */
+        if (!_cnt_pFeatureLevelsRequested) memset((void *)val->pFeatureLevelsRequested, 0, sizeof(D3D_FEATURE_LEVEL));
         npt_decode_D3D_FEATURE_LEVEL_array(dec, (D3D_FEATURE_LEVEL *)val->pFeatureLevelsRequested, _cnt_pFeatureLevelsRequested);
     } else {
         val->pFeatureLevelsRequested = NULL;
@@ -13180,6 +13201,8 @@ npt_decode_D3D12_VIEW_INSTANCING_DESC(struct npt_cs_decoder *dec, D3D12_VIEW_INS
         _has_cnt_pViewInstanceLocations = 1;
         val->pViewInstanceLocations = npt_cs_decoder_alloc_temp_array(dec, sizeof(D3D12_VIEW_INSTANCE_LOCATION), _cnt_pViewInstanceLocations ? _cnt_pViewInstanceLocations : 1);
         if (!val->pViewInstanceLocations) return;
+        /* Present but empty: a callee that walks it anyway reads zeros, not the previous command. */
+        if (!_cnt_pViewInstanceLocations) memset((void *)val->pViewInstanceLocations, 0, sizeof(D3D12_VIEW_INSTANCE_LOCATION));
         for (uint32_t _i = 0; _i < (uint32_t)_cnt_pViewInstanceLocations; _i++)
             npt_decode_D3D12_VIEW_INSTANCE_LOCATION(dec, (D3D12_VIEW_INSTANCE_LOCATION *)&val->pViewInstanceLocations[_i]);
     } else {
@@ -14854,6 +14877,8 @@ npt_decode_D3D12_ROOT_DESCRIPTOR_TABLE(struct npt_cs_decoder *dec, D3D12_ROOT_DE
         _has_cnt_pDescriptorRanges = 1;
         val->pDescriptorRanges = npt_cs_decoder_alloc_temp_array(dec, sizeof(D3D12_DESCRIPTOR_RANGE), _cnt_pDescriptorRanges ? _cnt_pDescriptorRanges : 1);
         if (!val->pDescriptorRanges) return;
+        /* Present but empty: a callee that walks it anyway reads zeros, not the previous command. */
+        if (!_cnt_pDescriptorRanges) memset((void *)val->pDescriptorRanges, 0, sizeof(D3D12_DESCRIPTOR_RANGE));
         for (uint32_t _i = 0; _i < (uint32_t)_cnt_pDescriptorRanges; _i++)
             npt_decode_D3D12_DESCRIPTOR_RANGE(dec, (D3D12_DESCRIPTOR_RANGE *)&val->pDescriptorRanges[_i]);
     } else {
@@ -15154,6 +15179,8 @@ npt_decode_D3D12_ROOT_SIGNATURE_DESC(struct npt_cs_decoder *dec, D3D12_ROOT_SIGN
         _has_cnt_pParameters = 1;
         val->pParameters = npt_cs_decoder_alloc_temp_array(dec, sizeof(D3D12_ROOT_PARAMETER), _cnt_pParameters ? _cnt_pParameters : 1);
         if (!val->pParameters) return;
+        /* Present but empty: a callee that walks it anyway reads zeros, not the previous command. */
+        if (!_cnt_pParameters) memset((void *)val->pParameters, 0, sizeof(D3D12_ROOT_PARAMETER));
         for (uint32_t _i = 0; _i < (uint32_t)_cnt_pParameters; _i++)
             npt_decode_D3D12_ROOT_PARAMETER(dec, (D3D12_ROOT_PARAMETER *)&val->pParameters[_i]);
     } else {
@@ -15165,6 +15192,8 @@ npt_decode_D3D12_ROOT_SIGNATURE_DESC(struct npt_cs_decoder *dec, D3D12_ROOT_SIGN
         _has_cnt_pStaticSamplers = 1;
         val->pStaticSamplers = npt_cs_decoder_alloc_temp_array(dec, sizeof(D3D12_STATIC_SAMPLER_DESC), _cnt_pStaticSamplers ? _cnt_pStaticSamplers : 1);
         if (!val->pStaticSamplers) return;
+        /* Present but empty: a callee that walks it anyway reads zeros, not the previous command. */
+        if (!_cnt_pStaticSamplers) memset((void *)val->pStaticSamplers, 0, sizeof(D3D12_STATIC_SAMPLER_DESC));
         for (uint32_t _i = 0; _i < (uint32_t)_cnt_pStaticSamplers; _i++)
             npt_decode_D3D12_STATIC_SAMPLER_DESC(dec, (D3D12_STATIC_SAMPLER_DESC *)&val->pStaticSamplers[_i]);
     } else {
@@ -15253,6 +15282,8 @@ npt_decode_D3D12_ROOT_DESCRIPTOR_TABLE1(struct npt_cs_decoder *dec, D3D12_ROOT_D
         _has_cnt_pDescriptorRanges = 1;
         val->pDescriptorRanges = npt_cs_decoder_alloc_temp_array(dec, sizeof(D3D12_DESCRIPTOR_RANGE1), _cnt_pDescriptorRanges ? _cnt_pDescriptorRanges : 1);
         if (!val->pDescriptorRanges) return;
+        /* Present but empty: a callee that walks it anyway reads zeros, not the previous command. */
+        if (!_cnt_pDescriptorRanges) memset((void *)val->pDescriptorRanges, 0, sizeof(D3D12_DESCRIPTOR_RANGE1));
         for (uint32_t _i = 0; _i < (uint32_t)_cnt_pDescriptorRanges; _i++)
             npt_decode_D3D12_DESCRIPTOR_RANGE1(dec, (D3D12_DESCRIPTOR_RANGE1 *)&val->pDescriptorRanges[_i]);
     } else {
@@ -15409,6 +15440,8 @@ npt_decode_D3D12_ROOT_SIGNATURE_DESC1(struct npt_cs_decoder *dec, D3D12_ROOT_SIG
         _has_cnt_pParameters = 1;
         val->pParameters = npt_cs_decoder_alloc_temp_array(dec, sizeof(D3D12_ROOT_PARAMETER1), _cnt_pParameters ? _cnt_pParameters : 1);
         if (!val->pParameters) return;
+        /* Present but empty: a callee that walks it anyway reads zeros, not the previous command. */
+        if (!_cnt_pParameters) memset((void *)val->pParameters, 0, sizeof(D3D12_ROOT_PARAMETER1));
         for (uint32_t _i = 0; _i < (uint32_t)_cnt_pParameters; _i++)
             npt_decode_D3D12_ROOT_PARAMETER1(dec, (D3D12_ROOT_PARAMETER1 *)&val->pParameters[_i]);
     } else {
@@ -15420,6 +15453,8 @@ npt_decode_D3D12_ROOT_SIGNATURE_DESC1(struct npt_cs_decoder *dec, D3D12_ROOT_SIG
         _has_cnt_pStaticSamplers = 1;
         val->pStaticSamplers = npt_cs_decoder_alloc_temp_array(dec, sizeof(D3D12_STATIC_SAMPLER_DESC), _cnt_pStaticSamplers ? _cnt_pStaticSamplers : 1);
         if (!val->pStaticSamplers) return;
+        /* Present but empty: a callee that walks it anyway reads zeros, not the previous command. */
+        if (!_cnt_pStaticSamplers) memset((void *)val->pStaticSamplers, 0, sizeof(D3D12_STATIC_SAMPLER_DESC));
         for (uint32_t _i = 0; _i < (uint32_t)_cnt_pStaticSamplers; _i++)
             npt_decode_D3D12_STATIC_SAMPLER_DESC(dec, (D3D12_STATIC_SAMPLER_DESC *)&val->pStaticSamplers[_i]);
     } else {
@@ -15486,6 +15521,8 @@ npt_decode_D3D12_ROOT_SIGNATURE_DESC2(struct npt_cs_decoder *dec, D3D12_ROOT_SIG
         _has_cnt_pParameters = 1;
         val->pParameters = npt_cs_decoder_alloc_temp_array(dec, sizeof(D3D12_ROOT_PARAMETER1), _cnt_pParameters ? _cnt_pParameters : 1);
         if (!val->pParameters) return;
+        /* Present but empty: a callee that walks it anyway reads zeros, not the previous command. */
+        if (!_cnt_pParameters) memset((void *)val->pParameters, 0, sizeof(D3D12_ROOT_PARAMETER1));
         for (uint32_t _i = 0; _i < (uint32_t)_cnt_pParameters; _i++)
             npt_decode_D3D12_ROOT_PARAMETER1(dec, (D3D12_ROOT_PARAMETER1 *)&val->pParameters[_i]);
     } else {
@@ -15497,6 +15534,8 @@ npt_decode_D3D12_ROOT_SIGNATURE_DESC2(struct npt_cs_decoder *dec, D3D12_ROOT_SIG
         _has_cnt_pStaticSamplers = 1;
         val->pStaticSamplers = npt_cs_decoder_alloc_temp_array(dec, sizeof(D3D12_STATIC_SAMPLER_DESC1), _cnt_pStaticSamplers ? _cnt_pStaticSamplers : 1);
         if (!val->pStaticSamplers) return;
+        /* Present but empty: a callee that walks it anyway reads zeros, not the previous command. */
+        if (!_cnt_pStaticSamplers) memset((void *)val->pStaticSamplers, 0, sizeof(D3D12_STATIC_SAMPLER_DESC1));
         for (uint32_t _i = 0; _i < (uint32_t)_cnt_pStaticSamplers; _i++)
             npt_decode_D3D12_STATIC_SAMPLER_DESC1(dec, (D3D12_STATIC_SAMPLER_DESC1 *)&val->pStaticSamplers[_i]);
     } else {
@@ -15659,6 +15698,8 @@ npt_decode_D3D12_DISCARD_REGION(struct npt_cs_decoder *dec, D3D12_DISCARD_REGION
         _has_cnt_pRects = 1;
         val->pRects = npt_cs_decoder_alloc_temp_array(dec, sizeof(D3D12_RECT), _cnt_pRects ? _cnt_pRects : 1);
         if (!val->pRects) return;
+        /* Present but empty: a callee that walks it anyway reads zeros, not the previous command. */
+        if (!_cnt_pRects) memset((void *)val->pRects, 0, sizeof(D3D12_RECT));
         for (uint32_t _i = 0; _i < (uint32_t)_cnt_pRects; _i++)
             npt_decode_D3D12_RECT(dec, (D3D12_RECT *)&val->pRects[_i]);
     } else {
@@ -16155,6 +16196,8 @@ npt_decode_D3D12_COMMAND_SIGNATURE_DESC(struct npt_cs_decoder *dec, D3D12_COMMAN
         _has_cnt_pArgumentDescs = 1;
         val->pArgumentDescs = npt_cs_decoder_alloc_temp_array(dec, sizeof(D3D12_INDIRECT_ARGUMENT_DESC), _cnt_pArgumentDescs ? _cnt_pArgumentDescs : 1);
         if (!val->pArgumentDescs) return;
+        /* Present but empty: a callee that walks it anyway reads zeros, not the previous command. */
+        if (!_cnt_pArgumentDescs) memset((void *)val->pArgumentDescs, 0, sizeof(D3D12_INDIRECT_ARGUMENT_DESC));
         for (uint32_t _i = 0; _i < (uint32_t)_cnt_pArgumentDescs; _i++)
             npt_decode_D3D12_INDIRECT_ARGUMENT_DESC(dec, (D3D12_INDIRECT_ARGUMENT_DESC *)&val->pArgumentDescs[_i]);
     } else {
@@ -16665,6 +16708,8 @@ npt_decode_D3D12_DXIL_LIBRARY_DESC(struct npt_cs_decoder *dec, D3D12_DXIL_LIBRAR
         _has_cnt_pExports = 1;
         val->pExports = npt_cs_decoder_alloc_temp_array(dec, sizeof(D3D12_EXPORT_DESC), _cnt_pExports ? _cnt_pExports : 1);
         if (!val->pExports) return;
+        /* Present but empty: a callee that walks it anyway reads zeros, not the previous command. */
+        if (!_cnt_pExports) memset((void *)val->pExports, 0, sizeof(D3D12_EXPORT_DESC));
         for (uint32_t _i = 0; _i < (uint32_t)_cnt_pExports; _i++)
             npt_decode_D3D12_EXPORT_DESC(dec, (D3D12_EXPORT_DESC *)&val->pExports[_i]);
     } else {
@@ -16719,6 +16764,8 @@ npt_decode_D3D12_EXISTING_COLLECTION_DESC(struct npt_cs_decoder *dec, D3D12_EXIS
         _has_cnt_pExports = 1;
         val->pExports = npt_cs_decoder_alloc_temp_array(dec, sizeof(D3D12_EXPORT_DESC), _cnt_pExports ? _cnt_pExports : 1);
         if (!val->pExports) return;
+        /* Present but empty: a callee that walks it anyway reads zeros, not the previous command. */
+        if (!_cnt_pExports) memset((void *)val->pExports, 0, sizeof(D3D12_EXPORT_DESC));
         for (uint32_t _i = 0; _i < (uint32_t)_cnt_pExports; _i++)
             npt_decode_D3D12_EXPORT_DESC(dec, (D3D12_EXPORT_DESC *)&val->pExports[_i]);
     } else {
@@ -17265,6 +17312,8 @@ npt_decode_D3D12_BROADCASTING_LAUNCH_OVERRIDES(struct npt_cs_decoder *dec, D3D12
         _has_cnt_pDispatchGrid = 1;
         val->pDispatchGrid = npt_cs_decoder_alloc_temp_array(dec, sizeof(UINT), _cnt_pDispatchGrid ? _cnt_pDispatchGrid : 1);
         if (!val->pDispatchGrid) return;
+        /* Present but empty: a callee that walks it anyway reads zeros, not the previous command. */
+        if (!_cnt_pDispatchGrid) memset((void *)val->pDispatchGrid, 0, sizeof(UINT));
         npt_decode_UINT_array(dec, (UINT *)val->pDispatchGrid, _cnt_pDispatchGrid);
     } else {
         val->pDispatchGrid = NULL;
@@ -17274,6 +17323,8 @@ npt_decode_D3D12_BROADCASTING_LAUNCH_OVERRIDES(struct npt_cs_decoder *dec, D3D12
         _has_cnt_pMaxDispatchGrid = 1;
         val->pMaxDispatchGrid = npt_cs_decoder_alloc_temp_array(dec, sizeof(UINT), _cnt_pMaxDispatchGrid ? _cnt_pMaxDispatchGrid : 1);
         if (!val->pMaxDispatchGrid) return;
+        /* Present but empty: a callee that walks it anyway reads zeros, not the previous command. */
+        if (!_cnt_pMaxDispatchGrid) memset((void *)val->pMaxDispatchGrid, 0, sizeof(UINT));
         npt_decode_UINT_array(dec, (UINT *)val->pMaxDispatchGrid, _cnt_pMaxDispatchGrid);
     } else {
         val->pMaxDispatchGrid = NULL;
@@ -17284,6 +17335,8 @@ npt_decode_D3D12_BROADCASTING_LAUNCH_OVERRIDES(struct npt_cs_decoder *dec, D3D12
         _has_cnt_pOutputOverrides = 1;
         val->pOutputOverrides = npt_cs_decoder_alloc_temp_array(dec, sizeof(D3D12_NODE_OUTPUT_OVERRIDES), _cnt_pOutputOverrides ? _cnt_pOutputOverrides : 1);
         if (!val->pOutputOverrides) return;
+        /* Present but empty: a callee that walks it anyway reads zeros, not the previous command. */
+        if (!_cnt_pOutputOverrides) memset((void *)val->pOutputOverrides, 0, sizeof(D3D12_NODE_OUTPUT_OVERRIDES));
         for (uint32_t _i = 0; _i < (uint32_t)_cnt_pOutputOverrides; _i++)
             npt_decode_D3D12_NODE_OUTPUT_OVERRIDES(dec, (D3D12_NODE_OUTPUT_OVERRIDES *)&val->pOutputOverrides[_i]);
     } else {
@@ -17382,6 +17435,8 @@ npt_decode_D3D12_COALESCING_LAUNCH_OVERRIDES(struct npt_cs_decoder *dec, D3D12_C
         _has_cnt_pOutputOverrides = 1;
         val->pOutputOverrides = npt_cs_decoder_alloc_temp_array(dec, sizeof(D3D12_NODE_OUTPUT_OVERRIDES), _cnt_pOutputOverrides ? _cnt_pOutputOverrides : 1);
         if (!val->pOutputOverrides) return;
+        /* Present but empty: a callee that walks it anyway reads zeros, not the previous command. */
+        if (!_cnt_pOutputOverrides) memset((void *)val->pOutputOverrides, 0, sizeof(D3D12_NODE_OUTPUT_OVERRIDES));
         for (uint32_t _i = 0; _i < (uint32_t)_cnt_pOutputOverrides; _i++)
             npt_decode_D3D12_NODE_OUTPUT_OVERRIDES(dec, (D3D12_NODE_OUTPUT_OVERRIDES *)&val->pOutputOverrides[_i]);
     } else {
@@ -17476,6 +17531,8 @@ npt_decode_D3D12_THREAD_LAUNCH_OVERRIDES(struct npt_cs_decoder *dec, D3D12_THREA
         _has_cnt_pOutputOverrides = 1;
         val->pOutputOverrides = npt_cs_decoder_alloc_temp_array(dec, sizeof(D3D12_NODE_OUTPUT_OVERRIDES), _cnt_pOutputOverrides ? _cnt_pOutputOverrides : 1);
         if (!val->pOutputOverrides) return;
+        /* Present but empty: a callee that walks it anyway reads zeros, not the previous command. */
+        if (!_cnt_pOutputOverrides) memset((void *)val->pOutputOverrides, 0, sizeof(D3D12_NODE_OUTPUT_OVERRIDES));
         for (uint32_t _i = 0; _i < (uint32_t)_cnt_pOutputOverrides; _i++)
             npt_decode_D3D12_NODE_OUTPUT_OVERRIDES(dec, (D3D12_NODE_OUTPUT_OVERRIDES *)&val->pOutputOverrides[_i]);
     } else {
@@ -17570,6 +17627,8 @@ npt_decode_D3D12_COMMON_COMPUTE_NODE_OVERRIDES(struct npt_cs_decoder *dec, D3D12
         _has_cnt_pOutputOverrides = 1;
         val->pOutputOverrides = npt_cs_decoder_alloc_temp_array(dec, sizeof(D3D12_NODE_OUTPUT_OVERRIDES), _cnt_pOutputOverrides ? _cnt_pOutputOverrides : 1);
         if (!val->pOutputOverrides) return;
+        /* Present but empty: a callee that walks it anyway reads zeros, not the previous command. */
+        if (!_cnt_pOutputOverrides) memset((void *)val->pOutputOverrides, 0, sizeof(D3D12_NODE_OUTPUT_OVERRIDES));
         for (uint32_t _i = 0; _i < (uint32_t)_cnt_pOutputOverrides; _i++)
             npt_decode_D3D12_NODE_OUTPUT_OVERRIDES(dec, (D3D12_NODE_OUTPUT_OVERRIDES *)&val->pOutputOverrides[_i]);
     } else {
@@ -17842,6 +17901,8 @@ npt_decode_D3D12_WORK_GRAPH_DESC(struct npt_cs_decoder *dec, D3D12_WORK_GRAPH_DE
         _has_cnt_pEntrypoints = 1;
         val->pEntrypoints = npt_cs_decoder_alloc_temp_array(dec, sizeof(D3D12_NODE_ID), _cnt_pEntrypoints ? _cnt_pEntrypoints : 1);
         if (!val->pEntrypoints) return;
+        /* Present but empty: a callee that walks it anyway reads zeros, not the previous command. */
+        if (!_cnt_pEntrypoints) memset((void *)val->pEntrypoints, 0, sizeof(D3D12_NODE_ID));
         for (uint32_t _i = 0; _i < (uint32_t)_cnt_pEntrypoints; _i++)
             npt_decode_D3D12_NODE_ID(dec, (D3D12_NODE_ID *)&val->pEntrypoints[_i]);
     } else {
@@ -17853,6 +17914,8 @@ npt_decode_D3D12_WORK_GRAPH_DESC(struct npt_cs_decoder *dec, D3D12_WORK_GRAPH_DE
         _has_cnt_pExplicitlyDefinedNodes = 1;
         val->pExplicitlyDefinedNodes = npt_cs_decoder_alloc_temp_array(dec, sizeof(D3D12_NODE), _cnt_pExplicitlyDefinedNodes ? _cnt_pExplicitlyDefinedNodes : 1);
         if (!val->pExplicitlyDefinedNodes) return;
+        /* Present but empty: a callee that walks it anyway reads zeros, not the previous command. */
+        if (!_cnt_pExplicitlyDefinedNodes) memset((void *)val->pExplicitlyDefinedNodes, 0, sizeof(D3D12_NODE));
         for (uint32_t _i = 0; _i < (uint32_t)_cnt_pExplicitlyDefinedNodes; _i++)
             npt_decode_D3D12_NODE(dec, (D3D12_NODE *)&val->pExplicitlyDefinedNodes[_i]);
     } else {
@@ -17963,6 +18026,7 @@ npt_decode_D3D12_GENERIC_PROGRAM_DESC(struct npt_cs_decoder *dec, D3D12_GENERIC_
         _has_cnt_ppSubobjects = 1;
         val->ppSubobjects = npt_cs_decoder_alloc_temp_array(dec, sizeof(D3D12_STATE_SUBOBJECT *), _cnt_ppSubobjects ? _cnt_ppSubobjects : 1);
         if (!val->ppSubobjects) return;
+        if (!_cnt_ppSubobjects) memset((void *)val->ppSubobjects, 0, sizeof(D3D12_STATE_SUBOBJECT *));
         for (uint32_t _i = 0; _i < (uint32_t)_cnt_ppSubobjects; _i++) {
             D3D12_STATE_SUBOBJECT *_elem = npt_cs_decoder_alloc_temp(dec, sizeof(D3D12_STATE_SUBOBJECT));
             if (!_elem) return;
@@ -18871,6 +18935,8 @@ npt_decode_D3D12_STATE_OBJECT_DESC(struct npt_cs_decoder *dec, D3D12_STATE_OBJEC
         _has_cnt_pSubobjects = 1;
         val->pSubobjects = npt_cs_decoder_alloc_temp_array(dec, sizeof(D3D12_STATE_SUBOBJECT), _cnt_pSubobjects ? _cnt_pSubobjects : 1);
         if (!val->pSubobjects) return;
+        /* Present but empty: a callee that walks it anyway reads zeros, not the previous command. */
+        if (!_cnt_pSubobjects) memset((void *)val->pSubobjects, 0, sizeof(D3D12_STATE_SUBOBJECT));
         for (uint32_t _i = 0; _i < (uint32_t)_cnt_pSubobjects; _i++)
             npt_decode_D3D12_STATE_SUBOBJECT(dec, (D3D12_STATE_SUBOBJECT *)&val->pSubobjects[_i]);
     } else {
@@ -19277,8 +19343,8 @@ static inline size_t
 npt_sizeof_D3D12_RAYTRACING_INSTANCE_DESC(const D3D12_RAYTRACING_INSTANCE_DESC *val, int max_mode)
 {
     size_t size = 0;
-    size += npt_sizeof_array_count(3 * 4);
-    size += npt_sizeof_FLOAT_array((const FLOAT *)val->Transform, 3 * 4);
+    size += npt_sizeof_array_count(npt_mul_sat_u64((uint64_t)(3), (uint64_t)(4)));
+    size += npt_sizeof_FLOAT_array((const FLOAT *)val->Transform, npt_mul_sat_u64((uint64_t)(3), (uint64_t)(4)));
     size += 4; /* bitfield InstanceID */
     size += 4; /* bitfield InstanceMask */
     size += 4; /* bitfield InstanceContributionToHitGroupIndex */
@@ -19290,8 +19356,8 @@ npt_sizeof_D3D12_RAYTRACING_INSTANCE_DESC(const D3D12_RAYTRACING_INSTANCE_DESC *
 static inline void
 npt_encode_D3D12_RAYTRACING_INSTANCE_DESC(struct npt_cs_encoder *enc, const D3D12_RAYTRACING_INSTANCE_DESC *val)
 {
-    npt_encode_array_count(enc, 3 * 4);
-    npt_encode_FLOAT_array(enc, (const FLOAT *)val->Transform, 3 * 4);
+    npt_encode_array_count(enc, npt_mul_sat_u64((uint64_t)(3), (uint64_t)(4)));
+    npt_encode_FLOAT_array(enc, (const FLOAT *)val->Transform, npt_mul_sat_u64((uint64_t)(3), (uint64_t)(4)));
     { uint32_t _tmp = val->InstanceID;
       npt_encode_uint32_t(enc, &_tmp); }
     { uint32_t _tmp = val->InstanceMask;
@@ -19306,8 +19372,8 @@ npt_encode_D3D12_RAYTRACING_INSTANCE_DESC(struct npt_cs_encoder *enc, const D3D1
 static inline void
 npt_decode_D3D12_RAYTRACING_INSTANCE_DESC(struct npt_cs_decoder *dec, D3D12_RAYTRACING_INSTANCE_DESC *val)
 {
-    (void)npt_decode_array_count(dec, 3 * 4);
-    npt_decode_FLOAT_array(dec, (FLOAT *)val->Transform, 3 * 4);
+    (void)npt_decode_array_count(dec, npt_mul_sat_u64((uint64_t)(3), (uint64_t)(4)));
+    npt_decode_FLOAT_array(dec, (FLOAT *)val->Transform, npt_mul_sat_u64((uint64_t)(3), (uint64_t)(4)));
     { uint32_t _tmp;
       npt_decode_uint32_t(dec, &_tmp);
       val->InstanceID = _tmp; }
@@ -19469,6 +19535,8 @@ npt_decode_D3D12_BUILD_RAYTRACING_ACCELERATION_STRUCTURE_INPUTS(struct npt_cs_de
         _has_cnt_pGeometryDescs = 1;
         val->pGeometryDescs = npt_cs_decoder_alloc_temp_array(dec, sizeof(D3D12_RAYTRACING_GEOMETRY_DESC), _cnt_pGeometryDescs ? _cnt_pGeometryDescs : 1);
         if (!val->pGeometryDescs) return;
+        /* Present but empty: a callee that walks it anyway reads zeros, not the previous command. */
+        if (!_cnt_pGeometryDescs) memset((void *)val->pGeometryDescs, 0, sizeof(D3D12_RAYTRACING_GEOMETRY_DESC));
         for (uint32_t _i = 0; _i < (uint32_t)_cnt_pGeometryDescs; _i++)
             npt_decode_D3D12_RAYTRACING_GEOMETRY_DESC(dec, (D3D12_RAYTRACING_GEOMETRY_DESC *)&val->pGeometryDescs[_i]);
     } else {
@@ -19481,6 +19549,7 @@ npt_decode_D3D12_BUILD_RAYTRACING_ACCELERATION_STRUCTURE_INPUTS(struct npt_cs_de
         _has_cnt_ppGeometryDescs = 1;
         val->ppGeometryDescs = npt_cs_decoder_alloc_temp_array(dec, sizeof(D3D12_RAYTRACING_GEOMETRY_DESC *), _cnt_ppGeometryDescs ? _cnt_ppGeometryDescs : 1);
         if (!val->ppGeometryDescs) return;
+        if (!_cnt_ppGeometryDescs) memset((void *)val->ppGeometryDescs, 0, sizeof(D3D12_RAYTRACING_GEOMETRY_DESC *));
         for (uint32_t _i = 0; _i < (uint32_t)_cnt_ppGeometryDescs; _i++) {
             D3D12_RAYTRACING_GEOMETRY_DESC *_elem = npt_cs_decoder_alloc_temp(dec, sizeof(D3D12_RAYTRACING_GEOMETRY_DESC));
             if (!_elem) return;
@@ -20925,6 +20994,8 @@ npt_decode_D3D12_RENDER_PASS_ENDING_ACCESS_RESOLVE_PARAMETERS(struct npt_cs_deco
         _has_cnt_pSubresourceParameters = 1;
         val->pSubresourceParameters = npt_cs_decoder_alloc_temp_array(dec, sizeof(D3D12_RENDER_PASS_ENDING_ACCESS_RESOLVE_SUBRESOURCE_PARAMETERS), _cnt_pSubresourceParameters ? _cnt_pSubresourceParameters : 1);
         if (!val->pSubresourceParameters) return;
+        /* Present but empty: a callee that walks it anyway reads zeros, not the previous command. */
+        if (!_cnt_pSubresourceParameters) memset((void *)val->pSubresourceParameters, 0, sizeof(D3D12_RENDER_PASS_ENDING_ACCESS_RESOLVE_SUBRESOURCE_PARAMETERS));
         for (uint32_t _i = 0; _i < (uint32_t)_cnt_pSubresourceParameters; _i++)
             npt_decode_D3D12_RENDER_PASS_ENDING_ACCESS_RESOLVE_SUBRESOURCE_PARAMETERS(dec, (D3D12_RENDER_PASS_ENDING_ACCESS_RESOLVE_SUBRESOURCE_PARAMETERS *)&val->pSubresourceParameters[_i]);
     } else {
@@ -21292,8 +21363,8 @@ npt_sizeof_D3D12_NODE_CPU_INPUT(const D3D12_NODE_CPU_INPUT *val, int max_mode)
     size += npt_sizeof_UINT(&val->EntrypointIndex, max_mode);
     size += npt_sizeof_UINT(&val->NumRecords, max_mode);
     if (val->pRecords) {
-        size += npt_sizeof_array_count(val->NumRecords * val->RecordStrideInBytes);
-        size += npt_sizeof_blob_array(val->pRecords, val->NumRecords * val->RecordStrideInBytes);
+        size += npt_sizeof_array_count(npt_mul_sat_u64((uint64_t)(val->NumRecords), (uint64_t)(val->RecordStrideInBytes)));
+        size += npt_sizeof_blob_array(val->pRecords, npt_mul_sat_u64((uint64_t)(val->NumRecords), (uint64_t)(val->RecordStrideInBytes)));
     } else {
         size += npt_sizeof_array_count(0);
     }
@@ -21307,8 +21378,8 @@ npt_encode_D3D12_NODE_CPU_INPUT(struct npt_cs_encoder *enc, const D3D12_NODE_CPU
     npt_encode_UINT(enc, &val->EntrypointIndex);
     npt_encode_UINT(enc, &val->NumRecords);
     if (val->pRecords) {
-        npt_encode_array_count(enc, val->NumRecords * val->RecordStrideInBytes);
-        npt_encode_blob_array(enc, val->pRecords, val->NumRecords * val->RecordStrideInBytes);
+        npt_encode_array_count(enc, npt_mul_sat_u64((uint64_t)(val->NumRecords), (uint64_t)(val->RecordStrideInBytes)));
+        npt_encode_blob_array(enc, val->pRecords, npt_mul_sat_u64((uint64_t)(val->NumRecords), (uint64_t)(val->RecordStrideInBytes)));
     } else {
         npt_encode_array_count(enc, 0);
     }
@@ -21332,8 +21403,8 @@ npt_decode_D3D12_NODE_CPU_INPUT(struct npt_cs_decoder *dec, D3D12_NODE_CPU_INPUT
     }
     npt_decode_UINT64(dec, &val->RecordStrideInBytes);
     /* A counted array must hold every element the callee walks. */
-    if ((_has_cnt_pRecords > 0 && _cnt_pRecords < (uint64_t)(val->NumRecords * val->RecordStrideInBytes)) ||
-        (_has_cnt_pRecords == 0 && (uint64_t)(val->NumRecords * val->RecordStrideInBytes) != 0))
+    if ((_has_cnt_pRecords > 0 && _cnt_pRecords < (uint64_t)(npt_mul_sat_u64((uint64_t)(val->NumRecords), (uint64_t)(val->RecordStrideInBytes)))) ||
+        (_has_cnt_pRecords == 0 && (uint64_t)(npt_mul_sat_u64((uint64_t)(val->NumRecords), (uint64_t)(val->RecordStrideInBytes))) != 0))
         npt_cs_decoder_set_fatal(dec);
 }
 
@@ -21811,6 +21882,8 @@ npt_decode_D3D12_BARRIER_GROUP(struct npt_cs_decoder *dec, D3D12_BARRIER_GROUP *
         _has_cnt_pGlobalBarriers = 1;
         val->pGlobalBarriers = npt_cs_decoder_alloc_temp_array(dec, sizeof(D3D12_GLOBAL_BARRIER), _cnt_pGlobalBarriers ? _cnt_pGlobalBarriers : 1);
         if (!val->pGlobalBarriers) return;
+        /* Present but empty: a callee that walks it anyway reads zeros, not the previous command. */
+        if (!_cnt_pGlobalBarriers) memset((void *)val->pGlobalBarriers, 0, sizeof(D3D12_GLOBAL_BARRIER));
         for (uint32_t _i = 0; _i < (uint32_t)_cnt_pGlobalBarriers; _i++)
             npt_decode_D3D12_GLOBAL_BARRIER(dec, (D3D12_GLOBAL_BARRIER *)&val->pGlobalBarriers[_i]);
     } else {
@@ -21823,6 +21896,8 @@ npt_decode_D3D12_BARRIER_GROUP(struct npt_cs_decoder *dec, D3D12_BARRIER_GROUP *
         _has_cnt_pTextureBarriers = 1;
         val->pTextureBarriers = npt_cs_decoder_alloc_temp_array(dec, sizeof(D3D12_TEXTURE_BARRIER), _cnt_pTextureBarriers ? _cnt_pTextureBarriers : 1);
         if (!val->pTextureBarriers) return;
+        /* Present but empty: a callee that walks it anyway reads zeros, not the previous command. */
+        if (!_cnt_pTextureBarriers) memset((void *)val->pTextureBarriers, 0, sizeof(D3D12_TEXTURE_BARRIER));
         for (uint32_t _i = 0; _i < (uint32_t)_cnt_pTextureBarriers; _i++)
             npt_decode_D3D12_TEXTURE_BARRIER(dec, (D3D12_TEXTURE_BARRIER *)&val->pTextureBarriers[_i]);
     } else {
@@ -21835,6 +21910,8 @@ npt_decode_D3D12_BARRIER_GROUP(struct npt_cs_decoder *dec, D3D12_BARRIER_GROUP *
         _has_cnt_pBufferBarriers = 1;
         val->pBufferBarriers = npt_cs_decoder_alloc_temp_array(dec, sizeof(D3D12_BUFFER_BARRIER), _cnt_pBufferBarriers ? _cnt_pBufferBarriers : 1);
         if (!val->pBufferBarriers) return;
+        /* Present but empty: a callee that walks it anyway reads zeros, not the previous command. */
+        if (!_cnt_pBufferBarriers) memset((void *)val->pBufferBarriers, 0, sizeof(D3D12_BUFFER_BARRIER));
         for (uint32_t _i = 0; _i < (uint32_t)_cnt_pBufferBarriers; _i++)
             npt_decode_D3D12_BUFFER_BARRIER(dec, (D3D12_BUFFER_BARRIER *)&val->pBufferBarriers[_i]);
     } else {
@@ -21895,10 +21972,9 @@ npt_encode_D3D12_SUBRESOURCE_DATA(struct npt_cs_encoder *enc, const D3D12_SUBRES
 static inline void
 npt_decode_D3D12_SUBRESOURCE_DATA(struct npt_cs_decoder *dec, D3D12_SUBRESOURCE_DATA *val)
 {
-    /* ERROR: pData (void) is not serializable */
+    /* pData (void) is not serializable */
+    npt_cs_decoder_set_fatal(dec);
     return;
-    npt_decode_LONG_PTR(dec, &val->RowPitch);
-    npt_decode_LONG_PTR(dec, &val->SlicePitch);
 }
 
 /* D3D12_MEMCPY_DEST (struct) */
@@ -21926,10 +22002,9 @@ npt_encode_D3D12_MEMCPY_DEST(struct npt_cs_encoder *enc, const D3D12_MEMCPY_DEST
 static inline void
 npt_decode_D3D12_MEMCPY_DEST(struct npt_cs_decoder *dec, D3D12_MEMCPY_DEST *val)
 {
-    /* ERROR: pData (void) is not serializable */
+    /* pData (void) is not serializable */
+    npt_cs_decoder_set_fatal(dec);
     return;
-    npt_decode_SIZE_T(dec, &val->RowPitch);
-    npt_decode_SIZE_T(dec, &val->SlicePitch);
 }
 
 /* D3D12_DEVICE_CONFIGURATION_DESC (struct) */

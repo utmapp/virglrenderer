@@ -163,7 +163,6 @@ npt_decode_ID3D11VideoProcessorEnumerator_CheckVideoProcessorFormat_args_temp(st
 {
     /* Decode input parameters from the wire */
     npt_decode_DXGI_FORMAT(dec, &args->Format);
-
     /* Allocate temp storage for output-only parameters */
 
     args->pFlags = npt_cs_decoder_alloc_temp(dec, sizeof(UINT));
@@ -424,7 +423,6 @@ npt_decode_ID3D11VideoProcessorEnumerator_GetVideoProcessorRateConversionCaps_ar
 {
     /* Decode input parameters from the wire */
     npt_decode_UINT(dec, &args->TypeIndex);
-
     /* Allocate temp storage for output-only parameters */
 
     args->pCaps = npt_cs_decoder_alloc_temp(dec, sizeof(D3D11_VIDEO_PROCESSOR_RATE_CONVERSION_CAPS));
@@ -558,7 +556,6 @@ npt_decode_ID3D11VideoProcessorEnumerator_GetVideoProcessorCustomRate_args_temp(
     /* Decode input parameters from the wire */
     npt_decode_UINT(dec, &args->TypeIndex);
     npt_decode_UINT(dec, &args->CustomRateIndex);
-
     /* Allocate temp storage for output-only parameters */
 
 
@@ -691,7 +688,6 @@ npt_decode_ID3D11VideoProcessorEnumerator_GetVideoProcessorFilterRange_args_temp
 {
     /* Decode input parameters from the wire */
     npt_decode_D3D11_VIDEO_PROCESSOR_FILTER(dec, &args->Filter);
-
     /* Allocate temp storage for output-only parameters */
 
     args->pRange = npt_cs_decoder_alloc_temp(dec, sizeof(D3D11_VIDEO_PROCESSOR_FILTER_RANGE));
@@ -829,7 +825,6 @@ npt_decode_ID3D11VideoProcessorEnumerator1_CheckVideoProcessorFormatConversion_a
     npt_decode_DXGI_COLOR_SPACE_TYPE(dec, &args->InputColorSpace);
     npt_decode_DXGI_FORMAT(dec, &args->OutputFormat);
     npt_decode_DXGI_COLOR_SPACE_TYPE(dec, &args->OutputColorSpace);
-
     /* Allocate temp storage for output-only parameters */
 
 

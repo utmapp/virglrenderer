@@ -817,7 +817,6 @@ npt_decode_IDXGIDecodeSwapChain_GetDestSize_args_temp(struct npt_cs_decoder *dec
 {
     /* Decode input parameters from the wire */
 
-
     /* Allocate temp storage for output-only parameters */
     args->pWidth = npt_cs_decoder_alloc_temp(dec, sizeof(UINT));
     if (!args->pWidth) return;

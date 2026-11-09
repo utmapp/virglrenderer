@@ -297,6 +297,9 @@ struct npt_command_ID3D11ClassInstance_GetInstanceName {
     void *_self;
     CHAR * pInstanceName;
     SIZE_T * pBufferLength;
+    /* Elements allocated for pInstanceName at decode; the reply never
+     * encodes more, whatever count the callee wrote back. */
+    uint64_t _cap_pInstanceName;
 };
 
 static inline void
@@ -304,7 +307,6 @@ npt_decode_ID3D11ClassInstance_GetInstanceName_args_temp(struct npt_cs_decoder *
                                                          struct npt_command_ID3D11ClassInstance_GetInstanceName *args)
 {
     /* Decode input parameters from the wire */
-
     if (npt_decode_simple_pointer(dec)) {
         args->pBufferLength = npt_cs_decoder_alloc_temp(dec, sizeof(SIZE_T));
         if (!args->pBufferLength) return;
@@ -322,6 +324,7 @@ npt_decode_ID3D11ClassInstance_GetInstanceName_args_temp(struct npt_cs_decoder *
     } else {
         args->pInstanceName = NULL;
     }
+    args->_cap_pInstanceName = args->pInstanceName ? (uint64_t)(*args->pBufferLength) : 0;
 
 }
 
@@ -340,11 +343,14 @@ npt_encode_ID3D11ClassInstance_GetInstanceName_reply(struct npt_cs_encoder *enc,
         .cmd_return = 0,
     };
     npt_cs_encoder_write(enc, sizeof(_reply), &_reply, sizeof(_reply));
-    if (args->pInstanceName) {
-        npt_encode_array_count(enc, *args->pBufferLength);
-        npt_encode_CHAR_array(enc, args->pInstanceName, *args->pBufferLength);
-    } else {
-        npt_encode_array_count(enc, 0);
+    {
+        const uint64_t _n_pInstanceName = (uint64_t)(*args->pBufferLength) < args->_cap_pInstanceName ? (uint64_t)(*args->pBufferLength) : args->_cap_pInstanceName;
+        if (args->pInstanceName) {
+            npt_encode_array_count(enc, _n_pInstanceName);
+            npt_encode_CHAR_array(enc, args->pInstanceName, _n_pInstanceName);
+        } else {
+            npt_encode_array_count(enc, 0);
+        }
     }
     if (npt_encode_simple_pointer(enc, args->pBufferLength))
         npt_encode_SIZE_T(enc, args->pBufferLength);
@@ -446,6 +452,9 @@ struct npt_command_ID3D11ClassInstance_GetTypeName {
     void *_self;
     CHAR * pTypeName;
     SIZE_T * pBufferLength;
+    /* Elements allocated for pTypeName at decode; the reply never
+     * encodes more, whatever count the callee wrote back. */
+    uint64_t _cap_pTypeName;
 };
 
 static inline void
@@ -453,7 +462,6 @@ npt_decode_ID3D11ClassInstance_GetTypeName_args_temp(struct npt_cs_decoder *dec,
                                                      struct npt_command_ID3D11ClassInstance_GetTypeName *args)
 {
     /* Decode input parameters from the wire */
-
     if (npt_decode_simple_pointer(dec)) {
         args->pBufferLength = npt_cs_decoder_alloc_temp(dec, sizeof(SIZE_T));
         if (!args->pBufferLength) return;
@@ -471,6 +479,7 @@ npt_decode_ID3D11ClassInstance_GetTypeName_args_temp(struct npt_cs_decoder *dec,
     } else {
         args->pTypeName = NULL;
     }
+    args->_cap_pTypeName = args->pTypeName ? (uint64_t)(*args->pBufferLength) : 0;
 
 }
 
@@ -489,11 +498,14 @@ npt_encode_ID3D11ClassInstance_GetTypeName_reply(struct npt_cs_encoder *enc,
         .cmd_return = 0,
     };
     npt_cs_encoder_write(enc, sizeof(_reply), &_reply, sizeof(_reply));
-    if (args->pTypeName) {
-        npt_encode_array_count(enc, *args->pBufferLength);
-        npt_encode_CHAR_array(enc, args->pTypeName, *args->pBufferLength);
-    } else {
-        npt_encode_array_count(enc, 0);
+    {
+        const uint64_t _n_pTypeName = (uint64_t)(*args->pBufferLength) < args->_cap_pTypeName ? (uint64_t)(*args->pBufferLength) : args->_cap_pTypeName;
+        if (args->pTypeName) {
+            npt_encode_array_count(enc, _n_pTypeName);
+            npt_encode_CHAR_array(enc, args->pTypeName, _n_pTypeName);
+        } else {
+            npt_encode_array_count(enc, 0);
+        }
     }
     if (npt_encode_simple_pointer(enc, args->pBufferLength))
         npt_encode_SIZE_T(enc, args->pBufferLength);

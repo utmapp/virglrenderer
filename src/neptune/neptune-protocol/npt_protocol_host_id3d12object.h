@@ -26,6 +26,9 @@ struct npt_command_ID3D12Object_GetPrivateData {
     const GUID * guid;
     UINT * pDataSize;
     void * pData;
+    /* Elements allocated for pData at decode; the reply never
+     * encodes more, whatever count the callee wrote back. */
+    uint64_t _cap_pData;
     HRESULT ret;
 };
 
@@ -52,7 +55,6 @@ npt_decode_ID3D12Object_GetPrivateData_args_temp(struct npt_cs_decoder *dec,
         npt_cs_decoder_set_fatal(dec); /* non-optional pointer is NULL */
         return;
     }
-
     /* Allocate temp storage for output-only parameters */
 
 
@@ -63,6 +65,7 @@ npt_decode_ID3D12Object_GetPrivateData_args_temp(struct npt_cs_decoder *dec,
     } else {
         args->pData = NULL;
     }
+    args->_cap_pData = args->pData ? (uint64_t)(*args->pDataSize) : 0;
 }
 
 static inline void
@@ -82,11 +85,14 @@ npt_encode_ID3D12Object_GetPrivateData_reply(struct npt_cs_encoder *enc,
     npt_cs_encoder_write(enc, sizeof(_reply), &_reply, sizeof(_reply));
     if (npt_encode_simple_pointer(enc, args->pDataSize))
         npt_encode_UINT(enc, args->pDataSize);
-    if (args->pData) {
-        npt_encode_array_count(enc, *args->pDataSize);
-        npt_encode_blob_array(enc, args->pData, *args->pDataSize);
-    } else {
-        npt_encode_array_count(enc, 0);
+    {
+        const uint64_t _n_pData = ((HRESULT)args->ret < 0) ? 0 : ((uint64_t)(*args->pDataSize) < args->_cap_pData ? (uint64_t)(*args->pDataSize) : args->_cap_pData);
+        if (args->pData) {
+            npt_encode_array_count(enc, _n_pData);
+            npt_encode_blob_array(enc, args->pData, _n_pData);
+        } else {
+            npt_encode_array_count(enc, 0);
+        }
     }
 }
 

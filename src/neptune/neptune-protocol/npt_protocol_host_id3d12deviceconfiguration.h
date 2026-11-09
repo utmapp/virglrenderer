@@ -151,6 +151,9 @@ struct npt_command_ID3D12DeviceConfiguration_GetEnabledExperimentalFeatures {
     void *_self;
     GUID * pGuids;
     UINT NumGuids;
+    /* Elements allocated for pGuids at decode; the reply never
+     * encodes more, whatever count the callee wrote back. */
+    uint64_t _cap_pGuids;
     HRESULT ret;
 };
 
@@ -159,7 +162,6 @@ npt_decode_ID3D12DeviceConfiguration_GetEnabledExperimentalFeatures_args_temp(st
                                                                               struct npt_command_ID3D12DeviceConfiguration_GetEnabledExperimentalFeatures *args)
 {
     /* Decode input parameters from the wire */
-
     npt_decode_UINT(dec, &args->NumGuids);
     /* Allocate temp storage for output-only parameters */
     if (args->NumGuids) {
@@ -169,6 +171,7 @@ npt_decode_ID3D12DeviceConfiguration_GetEnabledExperimentalFeatures_args_temp(st
     } else {
         args->pGuids = NULL;
     }
+    args->_cap_pGuids = args->pGuids ? (uint64_t)(args->NumGuids) : 0;
 
 }
 
@@ -187,12 +190,15 @@ npt_encode_ID3D12DeviceConfiguration_GetEnabledExperimentalFeatures_reply(struct
         .cmd_return = (uint32_t)args->ret,
     };
     npt_cs_encoder_write(enc, sizeof(_reply), &_reply, sizeof(_reply));
-    if (args->pGuids) {
-        npt_encode_array_count(enc, args->NumGuids);
-        for (uint32_t _i = 0; _i < (uint32_t)(args->NumGuids); _i++)
-            npt_encode_GUID(enc, &args->pGuids[_i]);
-    } else {
-        npt_encode_array_count(enc, 0);
+    {
+        const uint64_t _n_pGuids = ((HRESULT)args->ret < 0) ? 0 : ((uint64_t)(args->NumGuids) < args->_cap_pGuids ? (uint64_t)(args->NumGuids) : args->_cap_pGuids);
+        if (args->pGuids) {
+            npt_encode_array_count(enc, _n_pGuids);
+            for (uint32_t _i = 0; _i < (uint32_t)(_n_pGuids); _i++)
+                npt_encode_GUID(enc, &args->pGuids[_i]);
+        } else {
+            npt_encode_array_count(enc, 0);
+        }
     }
 }
 
