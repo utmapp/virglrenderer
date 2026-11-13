@@ -195,6 +195,7 @@ struct npt_cmd_wait_virtqueue_seqno {
 
 #define NPT_TRANSPORT_COM_RELEASE         0u
 #define NPT_TRANSPORT_COM_QUERY_INTERFACE 1u
+#define NPT_TRANSPORT_COM_GET_SHADER_IDENTIFIER 2u
 
 /* Sent when the guest wrapper refcount hits zero.  object_id lives in
  * header.object_id.  The payload names, for every OTHER ring of the
@@ -225,6 +226,24 @@ struct npt_cmd_com_query_interface {
    /* header.object_id = source object's guest id */
    GUID iid;
    uint64_t guest_id;
+};
+
+/* DXR: ID3D12StateObjectProperties::GetShaderIdentifier.  The generated
+ * protocol cannot carry its untyped 32-byte answer, so it travels here.
+ * Synchronous.  header.object_id = an ID3D12StateObjectProperties guest
+ * id.  Followed by name_units UTF-16 code units (terminator included),
+ * zero-padded to a multiple of 8 bytes.  cmd_return is S_OK when the
+ * export exists, E_INVALIDARG when the host returned NULL. */
+#define NPT_SHADER_IDENTIFIER_SIZE 32u
+struct npt_cmd_com_get_shader_identifier {
+   struct npt_command_header header;
+   uint32_t name_units;
+   uint32_t pad;
+};
+
+struct npt_cmd_com_get_shader_identifier_reply {
+   struct npt_reply_header header;
+   uint8_t identifier[NPT_SHADER_IDENTIFIER_SIZE];
 };
 
 struct npt_cmd_com_query_interface_reply {

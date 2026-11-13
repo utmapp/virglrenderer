@@ -151,6 +151,8 @@ npt_context_init_dispatch(struct npt_context *ctx)
    d->id3d11fence_dispatch_overrides = &npt_id3d11fence_overrides;
    d->id3d12device_dispatch_overrides = &npt_id3d12device_overrides;
    d->id3d12device2_dispatch_overrides = &npt_id3d12device2_overrides;
+   d->id3d12device5_dispatch_overrides = &npt_id3d12device5_overrides;
+   d->id3d12device7_dispatch_overrides = &npt_id3d12device7_overrides;
    d->id3d11devicecontext_dispatch_overrides = &npt_query_dc_overrides;
    d->id3d11devicecontext4_dispatch_overrides = &npt_fence_dc4_overrides;
    d->id3d12commandqueue_dispatch_overrides =

@@ -362,6 +362,63 @@ npt_dispatch_com_query_interface(struct npt_context *ctx,
 }
 
 static void
+npt_dispatch_com_get_shader_identifier(struct npt_context *ctx,
+                                       struct npt_cs_decoder *dec,
+                                       struct npt_cs_encoder *enc,
+                                       const struct npt_command_header *header)
+{
+   struct npt_cmd_com_get_shader_identifier cmd;
+   cmd.header = *header;
+   npt_cs_decoder_read(dec, sizeof(cmd) - sizeof(cmd.header),
+                       &cmd.name_units, sizeof(cmd) - sizeof(cmd.header));
+   if (npt_cs_decoder_get_fatal(dec))
+      return;
+   const uint32_t units = cmd.name_units;
+   if (!units || units > 4096) {
+      npt_cs_decoder_set_fatal(dec);
+      return;
+   }
+   const size_t padded = ((size_t)units * 2 + 7) & ~(size_t)7;
+   uint16_t *name = calloc(1, padded);
+   if (!name) {
+      npt_cs_decoder_set_fatal(dec);
+      return;
+   }
+   npt_cs_decoder_read(dec, padded, name, padded);
+   if (npt_cs_decoder_get_fatal(dec)) {
+      free(name);
+      return;
+   }
+   name[units - 1] = 0;
+
+   struct npt_cmd_com_get_shader_identifier_reply reply;
+   memset(&reply, 0, sizeof(reply));
+   HRESULT hr = NPT_E_INVALIDARG;
+   void *props = npt_context_lookup_object(
+      ctx, dec, header->object_id, NPT_OBJECT_TYPE_ID3D12STATEOBJECTPROPERTIES);
+   if (props) {
+      typedef void *(NPT_STDMETHODCALLTYPE *PFN_GetShaderIdentifier)(void *, const WCHAR *);
+      void **vtbl = *(void ***)props;
+      PFN_GetShaderIdentifier fn =
+         (PFN_GetShaderIdentifier)vtbl[NPT_VTBL_ID3D12StateObjectProperties_GetShaderIdentifier];
+      const void *id = fn(props, (const WCHAR *)name);
+      if (id) {
+         memcpy(reply.identifier, id, NPT_SHADER_IDENTIFIER_SIZE);
+         hr = NPT_S_OK;
+      }
+   }
+   free(name);
+   reply.header.cmd_type = header->cmd_type;
+   reply.header.cmd_return = (uint32_t)hr;
+   if (header->cmd_flags & NPT_CMD_FLAG_REPLY) {
+      if (npt_cs_encoder_acquire(enc)) {
+         npt_cs_encoder_write(enc, sizeof(reply), &reply, sizeof(reply));
+         npt_cs_encoder_release(enc);
+      }
+   }
+}
+
+static void
 npt_dispatch_map_resource(struct npt_context *ctx,
                           struct npt_cs_decoder *dec,
                           struct npt_cs_encoder *enc,
@@ -679,6 +736,9 @@ npt_dispatch_subgroup_com(struct npt_context *ctx,
       return true;
    case NPT_TRANSPORT_COM_QUERY_INTERFACE:
       npt_dispatch_com_query_interface(ctx, dec, enc, header);
+      return true;
+   case NPT_TRANSPORT_COM_GET_SHADER_IDENTIFIER:
+      npt_dispatch_com_get_shader_identifier(ctx, dec, enc, header);
       return true;
    default:
       return false;
