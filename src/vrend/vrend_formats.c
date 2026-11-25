@@ -533,6 +533,15 @@ static void vrend_add_compressed_formats(struct vrend_format_table *table, int n
 #define add_formats(x) vrend_add_formats((x), ARRAY_SIZE((x)))
 #define add_compressed_formats(x) vrend_add_compressed_formats((x), ARRAY_SIZE((x)))
 
+/* ANGLE doesn't list GL_EXT_texture_compression_s3tc, it has one extension
+ * for each of the three formats. */
+static bool vrend_has_angle_s3tc(void)
+{
+   return epoxy_has_gl_extension("GL_EXT_texture_compression_dxt1") &&
+          epoxy_has_gl_extension("GL_ANGLE_texture_compression_dxt3") &&
+          epoxy_has_gl_extension("GL_ANGLE_texture_compression_dxt5");
+}
+
 void vrend_build_format_list_common(void)
 {
   add_formats(base_rgba_formats);
@@ -563,10 +572,13 @@ void vrend_build_format_list_common(void)
 
   /* compressed */
   if (epoxy_has_gl_extension("GL_S3_s3tc") ||
-      epoxy_has_gl_extension("GL_EXT_texture_compression_s3tc") ||
-      epoxy_has_gl_extension("GL_ANGLE_texture_compression_dxt")) {
+      epoxy_has_gl_extension("GL_EXT_texture_compression_s3tc")) {
      add_compressed_formats(dxtn_formats);
      add_compressed_formats(dxtn_srgb_formats);
+  } else if (vrend_has_angle_s3tc()) {
+     add_compressed_formats(dxtn_formats);
+     if (epoxy_has_gl_extension("GL_EXT_texture_compression_s3tc_srgb"))
+        add_compressed_formats(dxtn_srgb_formats);
   }
 
   if (epoxy_has_gl_extension("GL_ARB_texture_compression_rgtc") ||
